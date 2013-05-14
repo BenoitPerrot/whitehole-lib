@@ -35,12 +35,23 @@
 (function () {
     'use strict';
 
+    var modules = {};
+
     function trace(msg) {
         if (require.verbose)
             println(msg);
     }
 
-    var modules = {};
+    function traceLoadedModules() {
+    	var k;
+
+    	if (require.verbose) {
+    		println('Loaded modules: ');
+    		for (k in modules)
+    			if (modules.hasOwnProperty(k))
+    				println('  ' + k + ' -> ' + modules[k]);
+    	}
+    }
 
     function loadModule(moduleName) {
         var modulePath = require.path + '/' + moduleName + '.js';
@@ -77,8 +88,14 @@
     };
 
     require = function (dependencies, f) {
+    	var d, i, k;
         trace('Entry point');
-        f.apply(undefined, loadModules(dependencies));
+        
+        d = loadModules(dependencies);
+        
+        traceLoadedModules();
+        
+        f.apply(undefined, d);
     };
 
     // Configuration
