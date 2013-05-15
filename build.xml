@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<property name="commonDir" value="../whitehole-common"/>
+
+	<macrodef name="rhinoscript">
+		<attribute name="require-path" default="." />
+		<attribute name="require-verbose" default="false" />
+		<attribute name="src" default="" />
+		<text name="text" optional="yes" />
+		<sequential>
+			<script language="javascript">
+				<![CDATA[
+// Rhino's load() is not available when running Ant in Eclipse?
+function load(path) {
+	return eval('' + org.apache.tools.ant.util.FileUtils.readFully(new java.io.FileReader(path)));
+}
+
+var define, require;
+(function (AMD) {
+	define = AMD.define;
+	require = AMD.require;
+} (load("build-aux/org/whitehole/infra/AMD.js")));
+// Configure require:
+require.path = "@{require-path}";
+require.verbose = @{require-verbose};
+
+if ("@{src}" !== "")
+	load("@{src}");
+
+@{text}
+]]>
+			</script>
+		</sequential>
+	</macrodef>
+
+	<target name="build-assembly.ia32_x64-sources">
+		<rhinoscript require-path="build-aux">
+require(['org/whitehole/assembly/ia32_x64/generateMnemonic'], 
+	function (generateMnemonic) {
+		'use strict';
+		var ns = 'org/whitehole/assembly/ia32_x64';
+		generateMnemonic(commonDir + '/resources/' + ns + '/opcodeMaps.json',
+	                     './src/' + ns + '/Mnemonic.java');
+});
+		</rhinoscript>
+	</target>
+
+	<target name="build-sources" depends="build-assembly.ia32_x64-sources" />
+
+</project>
