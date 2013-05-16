@@ -60,6 +60,7 @@ require(['@{generator}'],
 
 	<target name="build-assembly.ia32_x64-sources">
 		<generate generator="org/whitehole/assembly/ia32_x64/generateMnemonic" input="${commonDir}/resources/org/whitehole/assembly/ia32_x64/opcodeMaps.json" output="src/org/whitehole/assembly/ia32_x64/Mnemonic.java" />
+		<generate generator="org/whitehole/assembly/ia32_x64/generateRegisterName" input="${commonDir}/resources/org/whitehole/assembly/ia32_x64/registerMaps.json" output="src/org/whitehole/assembly/ia32_x64/RegisterName.java" />
 	</target>
 
 	<target name="build-sources" depends="build-infra.types-sources, build-assembly.ia32_x64-sources" />
