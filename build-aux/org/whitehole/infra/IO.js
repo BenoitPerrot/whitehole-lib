@@ -87,6 +87,7 @@ define('org/whitehole/infra/IO',
                    this.body = new IndentingStringBuilder('    ');
 
                    this.ns = [];
+                   this.imports = {};
                    this.isFirstEnumMember = [];
                },
                {
@@ -95,6 +96,14 @@ define('org/whitehole/infra/IO',
                        return this;
                    },
                    closeDocument: function () {
+                       return this;
+                   },
+
+                   addImport: function (i) {
+                       if (!this.imports.hasOwnProperty(i)) {
+                           this.imports[i] = true;
+                           this.head.printLine('import ' + i + ';');
+                       }
                        return this;
                    },
 
@@ -131,6 +140,51 @@ define('org/whitehole/infra/IO',
 
                        return this;
                    },
+                   closeEnumMembers: function () {
+                       this.body.endLine(';');
+                       return this;
+                   },
+
+                   openFunction: function (prefix, name, args) {
+                       this.body.startLine(prefix + ' ' + name);
+                       this.body.append('(');
+                       if (args)
+                           this.body.append(args);
+                       this.body.append(') ');
+                       return this.openBlock();
+                   },
+                   closeFunction: function () {
+                       this.closeBlock();
+                       this.body.printLine();
+                       return this;
+                   },
+
+                   openSwitch: function (x) {
+                       this.body.startLine('switch (' + x + ') ');
+                       return this.openBlock();
+                   },
+
+                   openCase: function (c) {
+                       this.body.startLine('case ' + c + ': ');
+                       return this.openBlock();
+                   },
+
+                   closeCase: function () {
+                       return this.closeBlock();
+                   },
+
+                   openDefault: function () {
+                       this.body.startLine('default: ');
+                       return this.openBlock();
+                   },
+
+                   closeDefault: function () {
+                       return this.closeBlock();
+                   },
+
+                   closeSwitch: function () {
+                       return this.closeBlock();
+                   },
 
                    openBlock: function () {
                        this.body.endLine('{').indentMore();
@@ -138,6 +192,11 @@ define('org/whitehole/infra/IO',
                    },
                    closeBlock: function () {
                        this.body.indentLess().printLine('}');
+                       return this;
+                   },
+
+                   addStatement: function (s) {
+                       this.body.printLine(s + ';');
                        return this;
                    },
 
