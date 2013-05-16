@@ -34,6 +34,17 @@ if ("@{src}" !== "")
 		</sequential>
 	</macrodef>
 
+	<target name="build-infra.types-sources">
+		<rhinoscript require-path="build-aux">
+require(['org/whitehole/infra/types/generateBinaryWidth'], 
+	function (generateBinaryWidth) {
+		'use strict';
+		var ns = 'org/whitehole/infra/types';
+		generateBinaryWidth('./src/' + ns + '/BinaryWidth.java');
+});
+		</rhinoscript>
+	</target>
+
 	<target name="build-assembly.ia32_x64-sources">
 		<rhinoscript require-path="build-aux">
 require(['org/whitehole/assembly/ia32_x64/generateMnemonic'], 
@@ -45,7 +56,7 @@ require(['org/whitehole/assembly/ia32_x64/generateMnemonic'],
 });
 		</rhinoscript>
 	</target>
-
-	<target name="build-sources" depends="build-assembly.ia32_x64-sources" />
+	
+	<target name="build-sources" depends="build-infra.types-sources, build-assembly.ia32_x64-sources" />
 
 </project>
