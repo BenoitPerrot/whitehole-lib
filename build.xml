@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
-	
-	<property name="commonDir" value="../whitehole-common"/>
+
+	<property name="commonDir" value="../whitehole-common" />
 
 	<macrodef name="rhinoscript">
 		<attribute name="require-path" default="." />
@@ -34,29 +34,34 @@ if ("@{src}" !== "")
 		</sequential>
 	</macrodef>
 
-	<target name="build-infra.types-sources">
-		<rhinoscript require-path="build-aux">
-require(['org/whitehole/infra/types/generateBinaryWidth'], 
-	function (generateBinaryWidth) {
+	<macrodef name="generate">
+		<attribute name="generator" />
+		<attribute name="input" default="" />
+		<attribute name="output" />
+		<sequential>
+			<rhinoscript require-path="build-aux">
+				<![CDATA[
+require(['@{generator}'], 
+	function (g) {
 		'use strict';
-		var ns = 'org/whitehole/infra/types';
-		generateBinaryWidth('./src/' + ns + '/BinaryWidth.java');
+		if ("@{input}" !== "")
+			g("@{input}", "@{output}");
+		else
+			g("@{output}");
 });
-		</rhinoscript>
+]]>
+			</rhinoscript>
+		</sequential>
+	</macrodef>
+
+	<target name="build-infra.types-sources">
+		<generate generator="org/whitehole/infra/types/generateBinaryWidth" output="src/org/whitehole/infra/types/BinaryWidth.java" />
 	</target>
 
 	<target name="build-assembly.ia32_x64-sources">
-		<rhinoscript require-path="build-aux">
-require(['org/whitehole/assembly/ia32_x64/generateMnemonic'], 
-	function (generateMnemonic) {
-		'use strict';
-		var ns = 'org/whitehole/assembly/ia32_x64';
-		generateMnemonic(commonDir + '/resources/' + ns + '/opcodeMaps.json',
-	                     './src/' + ns + '/Mnemonic.java');
-});
-		</rhinoscript>
+		<generate generator="org/whitehole/assembly/ia32_x64/generateMnemonic" input="${commonDir}/resources/org/whitehole/assembly/ia32_x64/opcodeMaps.json" output="src/org/whitehole/assembly/ia32_x64/Mnemonic.java" />
 	</target>
-	
+
 	<target name="build-sources" depends="build-infra.types-sources, build-assembly.ia32_x64-sources" />
 
 </project>
