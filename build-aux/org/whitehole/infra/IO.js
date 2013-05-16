@@ -116,6 +116,16 @@ define('org/whitehole/infra/IO',
                        this.ns.pop();
                        return this;
                    },
+                   
+                   openClass: function (name, visibility, base) {
+                	   this.body.startLine(visibility + ' class ' + name + ' ');
+                       if (base)
+                           this.body.append('extends ' + base + ' ');
+                       return this.openBlock();
+                   },
+                   closeClass: function () {
+                	   return this.closeBlock();
+                   },
 
                    openEnum: function (name, visibility) {
                        this.body.startLine(visibility + ' enum ' + name + ' ');
@@ -146,8 +156,10 @@ define('org/whitehole/infra/IO',
                    },
 
                    openFunction: function (prefix, name, args) {
-                       this.body.startLine(prefix + ' ' + name);
-                       this.body.append('(');
+                	   this.body.startLine();
+                	   if (prefix)
+                		   this.body.append(prefix + ' ');
+                	   this.body.append(name).append('(');
                        if (args)
                            this.body.append(args);
                        this.body.append(') ');
@@ -157,6 +169,27 @@ define('org/whitehole/infra/IO',
                        this.closeBlock();
                        this.body.printLine();
                        return this;
+                   },
+                   
+                   openIf: function (test) {
+                       this.body.startLine("if (" + test + ") ");
+                       return this.openBlock();
+                   },
+
+                   openElse: function () {
+                       this.closeBlock();
+                       this.body.startLine("else ");
+                       return this.openBlock();
+                   },
+
+                   openElseIf: function (test) {
+                       this.closeBlock();
+                       this.body.startLine("else if (" + test + ") ");
+                       return this.openBlock();
+                   },
+
+                   closeIf: function () {
+                       return this.closeBlock();
                    },
 
                    openSwitch: function (x) {

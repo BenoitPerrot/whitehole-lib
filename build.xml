@@ -56,6 +56,7 @@ require(['@{generator}'],
 
 	<target name="build-infra.types-sources">
 		<generate generator="org/whitehole/infra/types/generateBinaryWidth" output="src/org/whitehole/infra/types/BinaryWidth.java" />
+		<generate generator="org/whitehole/infra/types/generateByteArrayN" output="src/org/whitehole/infra/types" />
 	</target>
 
 	<target name="build-assembly.ia32_x64-sources">
