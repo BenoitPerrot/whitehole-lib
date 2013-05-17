@@ -32,128 +32,122 @@
 // Build a Java enumeration for ia32/x64 register names
 //
 
-define('org/whitehole/assembly/ia32_x64/generateRegisterName',
-    [
-        'org/whitehole/infra/IO'
-    ],
-    function (IO) {
-        'use strict';
+define('org/whitehole/assembly/ia32_x64/generateRegisterName', [ 'org/whitehole/infra/IO' ], function(IO) {
+	'use strict';
 
-        // Add an enum member for each register name in maps
-        //
-        function generateEnumMembers(cw, registerMaps) {
-            var gprs, w, k;
+	// Add an enum member for each register name in maps
+	//
+	function generateEnumMembers(cw, registerMaps) {
+		var gprs, w, k;
 
-            function addAsEnumMember(n) {
-                cw.addEnumMember(n);
-            }
+		function addAsEnumMember(n) {
+			cw.addEnumMember(n);
+		}
 
-            gprs = registerMaps.generalPurpose;
-            for (w in gprs)
-                if (gprs.hasOwnProperty(w))
-                    gprs[w].forEach(addAsEnumMember);
+		gprs = registerMaps.generalPurpose;
+		for (w in gprs)
+			if (gprs.hasOwnProperty(w))
+				gprs[w].forEach(addAsEnumMember);
 
-            for (k in registerMaps)
-                if (registerMaps.hasOwnProperty(k) && k !== 'generalPurpose')
-                    registerMaps[k].forEach(addAsEnumMember);
+		for (k in registerMaps)
+			if (registerMaps.hasOwnProperty(k) && k !== 'generalPurpose')
+				registerMaps[k].forEach(addAsEnumMember);
 
-            cw.addEnumMember('FLAGS');
-            cw.addEnumMember('RIP');
-            
-            cw.closeEnumMembers();
-        }
+		cw.addEnumMember('FLAGS');
+		cw.addEnumMember('RIP');
 
-        function generateConstructor(cw, kind, registers) {
-            var i;
+		cw.closeEnumMembers();
+	}
 
-            cw.openFunction('public static RegisterName', kind, 'int i');
+	function generateConstructor(cw, kind, registers) {
+		var i;
 
-            cw.openSwitch('i');
+		cw.openFunction('public static RegisterName', kind, 'int i');
 
-            for (i = 0; i < registers.length; ++i) {
-                cw.openCase(i);
-                cw.addStatement('return ' + registers[i]);
-                cw.closeCase(i);
-            }
-            
-            cw.openDefault();
-            cw.addStatement('throw new IllegalArgumentException()');
-            cw.closeDefault();
+		cw.openSwitch('i');
 
-            cw.closeSwitch();
+		for (i = 0; i < registers.length; ++i) {
+			cw.openCase(i);
+			cw.addStatement('return ' + registers[i]);
+			cw.closeCase(i);
+		}
 
-            cw.closeFunction();
-        }
+		cw.openDefault();
+		cw.addStatement('throw new IllegalArgumentException()');
+		cw.closeDefault();
 
-        // Generate code accordingly
-        //
-        function generateCode(registerMaps) {
-            var cw, gprs;
+		cw.closeSwitch();
 
-            cw = new IO.CodeWriter();
+		cw.closeFunction();
+	}
 
-            cw.openDocument()
-                .openNamespace('org.whitehole.assembly.ia32_x64');
+	// Generate code accordingly
+	//
+	function generateCode(registerMaps) {
+		var cw, gprs;
 
-            cw.addImport('org.whitehole.infra.types.BinaryWidth');
+		cw = new IO.CodeWriter();
 
-            cw.openEnum('RegisterName', 'public');
+		cw.openDocument().openNamespace('org.whitehole.assembly.ia32_x64');
 
-            //
-            generateEnumMembers(cw, registerMaps);
-            
-            //
-            cw.openFunction("static RegisterName", "GPR", "BinaryWidth w, int i");
-            {
-                cw.openSwitch("w");
-                {
-                    // cw.open_case("UNKNOWN");
-                    // cw.add_statement("break");
-                    // cw.close_case();
-                    cw.openCase("_8BIT");
-                    cw.addStatement("return GPR8(i)");
-                    cw.closeCase();
-                    cw.openCase("_16BIT");
-                    cw.addStatement("return GPR16(i)");
-                    cw.closeCase();
-                    cw.openCase("_32BIT");
-                    cw.addStatement("return GPR32(i)");
-                    cw.closeCase();
-                    cw.openCase("_64BIT");
-                    cw.addStatement("return GPR64(i)");
-                    cw.closeCase();
-                    cw.openDefault();
-                    cw.addStatement("break");
-                    cw.closeDefault();
-                }
-                cw.closeSwitch();
-                cw.addStatement("throw new IllegalArgumentException()");
-            }
-            cw.closeFunction();
+		cw.addImport('org.whitehole.infra.types.BinaryWidth');
 
-            gprs = registerMaps.generalPurpose;
-            generateConstructor(cw, 'GPR8', gprs['8bit']);
-            generateConstructor(cw, 'GPR16', gprs['16bit']);
-            generateConstructor(cw, 'GPR32', gprs['32bit']);
-            generateConstructor(cw, 'GPR64', gprs['64bit']);
+		cw.openEnum('RegisterName', 'public');
 
-            generateConstructor(cw, 'Segment', registerMaps.segment);
-            generateConstructor(cw, 'Control', registerMaps.control);
-            generateConstructor(cw, 'Debug', registerMaps.debug);
-            generateConstructor(cw, 'MMX', registerMaps.mmx);
-            generateConstructor(cw, 'ST', registerMaps.x87);
-            generateConstructor(cw, 'XMM', registerMaps.xmm);
-            generateConstructor(cw, 'YMM', registerMaps.ymm);
+		//
+		generateEnumMembers(cw, registerMaps);
 
-            cw.closeEnum();
+		//
+		cw.openFunction("static RegisterName", "GPR", "BinaryWidth w, int i");
+		{
+			cw.openSwitch("w");
+			{
+				// cw.open_case("UNKNOWN");
+				// cw.add_statement("break");
+				// cw.close_case();
+				cw.openCase("_8BIT");
+				cw.addStatement("return GPR8(i)");
+				cw.closeCase();
+				cw.openCase("_16BIT");
+				cw.addStatement("return GPR16(i)");
+				cw.closeCase();
+				cw.openCase("_32BIT");
+				cw.addStatement("return GPR32(i)");
+				cw.closeCase();
+				cw.openCase("_64BIT");
+				cw.addStatement("return GPR64(i)");
+				cw.closeCase();
+				cw.openDefault();
+				cw.addStatement("break");
+				cw.closeDefault();
+			}
+			cw.closeSwitch();
+			cw.addStatement("throw new IllegalArgumentException()");
+		}
+		cw.closeFunction();
 
-            cw.closeNamespace().closeDocument();
+		gprs = registerMaps.generalPurpose;
+		generateConstructor(cw, 'GPR8', gprs['8bit']);
+		generateConstructor(cw, 'GPR16', gprs['16bit']);
+		generateConstructor(cw, 'GPR32', gprs['32bit']);
+		generateConstructor(cw, 'GPR64', gprs['64bit']);
 
-            return cw.toString();
-        }
+		generateConstructor(cw, 'Segment', registerMaps.segment);
+		generateConstructor(cw, 'Control', registerMaps.control);
+		generateConstructor(cw, 'Debug', registerMaps.debug);
+		generateConstructor(cw, 'MMX', registerMaps.mmx);
+		generateConstructor(cw, 'ST', registerMaps.x87);
+		generateConstructor(cw, 'XMM', registerMaps.xmm);
+		generateConstructor(cw, 'YMM', registerMaps.ymm);
 
-        return function (registerMapsPath, destPath) {
-            IO.writeFile(destPath,
-                         generateCode(IO.readJSONFile(registerMapsPath)));
-        };
-    });
+		cw.closeEnum();
+
+		cw.closeNamespace().closeDocument();
+
+		return cw.toString();
+	}
+
+	return function(registerMapsPath, destPath) {
+		IO.writeFile(destPath, generateCode(IO.readJSONFile(registerMapsPath)));
+	};
+});

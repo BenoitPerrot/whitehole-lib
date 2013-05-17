@@ -32,75 +32,68 @@
 // Build a Java enumeration for ia32/x64 mnemonics
 //
 
-define('org/whitehole/assembly/ia32_x64/generateMnemonic',
-    [
-        'org/whitehole/infra/IO'
-    ],
-    function (IO) {
-        'use strict';
+define('org/whitehole/assembly/ia32_x64/generateMnemonic', [ 'org/whitehole/infra/IO' ], function(IO) {
+	'use strict';
 
-        function isArray(o) {
-            return Object.prototype.toString.call(o) === '[object Array]';
-        }
+	function isArray(o) {
+		return Object.prototype.toString.call(o) === '[object Array]';
+	}
 
-        // Extract mnemonics from opcode maps
-        //
-        function extractMnemonics(opcodeMaps) {
-            var mnemonics = {};
+	// Extract mnemonics from opcode maps
+	//
+	function extractMnemonics(opcodeMaps) {
+		var mnemonics = {};
 
-            var x, maps, k, map, i, j, b;
+		var x, maps, k, map, i, j, b;
 
-            for (x in opcodeMaps)
-                if (opcodeMaps.hasOwnProperty(x)) {
-                    maps = opcodeMaps[x];
+		for (x in opcodeMaps)
+			if (opcodeMaps.hasOwnProperty(x)) {
+				maps = opcodeMaps[x];
 
-                    for (k in maps)
-                        if (maps.hasOwnProperty(k)) {
-                            map = maps[k];
+				for (k in maps)
+					if (maps.hasOwnProperty(k)) {
+						map = maps[k];
 
-                            for (i = 0; i < map.length; ++i) {
-                                b = map[i];
-                                if (b !== null) {
+						for (i = 0; i < map.length; ++i) {
+							b = map[i];
+							if (b !== null) {
 
-                                    if (b.hasOwnProperty('m'))
-                                        mnemonics[ b.m ] = true;
+								if (b.hasOwnProperty('m'))
+									mnemonics[b.m] = true;
 
-                                    else if (isArray(b))
-                                        for (j = 0; j < b.length; ++j)
-                                            mnemonics[ b[j].m ] = true;
-                                }
-                            }
-                        }
-                }
+								else if (isArray(b))
+									for (j = 0; j < b.length; ++j)
+										mnemonics[b[j].m] = true;
+							}
+						}
+					}
+			}
 
-            return mnemonics;
-        }
+		return mnemonics;
+	}
 
-        // Generate code accordingly
-        //
-        function generateCode(mnemonics) {
-            var m, cw;
+	// Generate code accordingly
+	//
+	function generateCode(mnemonics) {
+		var m, cw;
 
-            cw = new IO.CodeWriter();
+		cw = new IO.CodeWriter();
 
-            cw.openDocument().openNamespace('org.whitehole.assembly.ia32_x64');
+		cw.openDocument().openNamespace('org.whitehole.assembly.ia32_x64');
 
-            cw.openEnum('Mnemonic', 'public');
-            cw.addEnumMember('INVALID');
-            for (m in mnemonics)
-                if (mnemonics.hasOwnProperty(m))
-                    cw.addEnumMember(m);
-            cw.closeEnum();
+		cw.openEnum('Mnemonic', 'public');
+		cw.addEnumMember('INVALID');
+		for (m in mnemonics)
+			if (mnemonics.hasOwnProperty(m))
+				cw.addEnumMember(m);
+		cw.closeEnum();
 
-            cw.closeNamespace().closeDocument();
+		cw.closeNamespace().closeDocument();
 
-            return cw.toString();
-        }
+		return cw.toString();
+	}
 
-        return function (opcodeMapsPath, destPath) {
-            IO.writeFile(destPath,
-                         generateCode(
-                             extractMnemonics(
-                                 IO.readJSONFile(opcodeMapsPath))));
-        }
-    });
+	return function(opcodeMapsPath, destPath) {
+		IO.writeFile(destPath, generateCode(extractMnemonics(IO.readJSONFile(opcodeMapsPath))));
+	};
+});

@@ -32,30 +32,25 @@
 // Build a Java enumeration for commonly used binary widths.
 //
 
-define('org/whitehole/infra/types/generateBinaryWidth',
-    [
-        'org/whitehole/infra/IO'
-    ],
-    function (IO) {
-        'use strict';
+define('org/whitehole/infra/types/generateBinaryWidth', [ 'org/whitehole/infra/IO' ], function(IO) {
+	'use strict';
 
-        function generate() {
-        	var cw = new IO.CodeWriter(), i;
-        	
-        	cw.openDocument()
-                .openNamespace('org.whitehole.infra.types');
+	function generate() {
+		var cw = new IO.CodeWriter(), i;
 
-            cw.openEnum('BinaryWidth', 'public');
-            for (i = 8; i <= 128; i *= 2)
-            	cw.addEnumMember('_' + i + 'BIT');
-            cw.closeEnum();
-            
-            cw.closeNamespace().closeDocument();
-            
-            return cw.toString();
-        }
+		cw.openDocument().openNamespace('org.whitehole.infra.types');
 
-        return function (destPath) {
-            IO.writeFile(destPath, generate());
-        };
-    });
+		cw.openEnum('BinaryWidth', 'public');
+		for (i = 8; i <= 128; i *= 2)
+			cw.addEnumMember('_' + i + 'BIT');
+		cw.closeEnum();
+
+		cw.closeNamespace().closeDocument();
+
+		return cw.toString();
+	}
+
+	return function(destPath) {
+		IO.writeFile(destPath, generate());
+	};
+});

@@ -33,149 +33,145 @@
 // width
 //
 
-define('org/whitehole/infra/types/generateSIntN',
-    [
-        'org/whitehole/infra/IO'
-    ],
-    function (IO) {
-        'use strict';
+define('org/whitehole/infra/types/generateSIntN', [ 'org/whitehole/infra/IO' ], function(IO) {
+	'use strict';
 
-        function generate(isSigned, n) {
-            var cw, className = (isSigned ? '' : 'U') + 'Int' + (n * 8), i, j, first, s, l;
+	function generate(isSigned, n) {
+		var cw, className = (isSigned ? '' : 'U') + 'Int' + (n * 8), i, j, l;
 
-            cw = new IO.CodeWriter();
+		cw = new IO.CodeWriter();
 
-            cw.openDocument()
-                .openNamespace('org.whitehole.infra.types');
+		cw.openDocument().openNamespace('org.whitehole.infra.types');
 
-            cw.openClass(className, 'public', 'ByteArray' + n);
-            
-            // Generate constructors
-            //
+		cw.openClass(className, 'public', 'ByteArray' + n);
 
-            // Component per component
-            l = [];
-            for (i = n - 1; 0 <= i; --i)
-            	l.push('byte b' + i);
-            cw.openFunction('public', className, l.join(', '));
-            l = [];
-            for (i = n - 1; 0 <= i; --i)
-            	l.push('b' + i)
-            cw.addStatement('set(' + l.join(', ') + ')');
-            cw.closeFunction();
+		// Generate constructors
+		//
 
-            // All zero
-            cw.openFunction('public', className);
-            cw.closeFunction();
-            
-            // Generate converters
-            //
-            cw.openFunction('public', className, 'ByteArray' + n + ' i');
-            cw.addStatement('super(i)');
-            cw.closeFunction();
-            
-            if (isSigned) {
-	            for (i = 1; i < n; i *= 2) {
-	            	// Internal helper for sign extension
-	            	if (2 < n) { // do not conflict with previously defined Int16 constructor
-	            		l = ['byte sign'];
-	            		for (j = i - 1; 0 <= j; --j)
-	            			l.push('byte b' + j);
-	            		cw.openFunction('private', className, l.join(', '));
-	            		l = [];
-	            		for (j = n - 1; i <= j; --j)
-	            			l.push('sign');
-	            		for (j = i - 1; 0 <= j; --j)
-	            			l.push('b' + j);
-	            		cw.addStatement('super(' + l.join(', ') + ')');
-	            		cw.closeFunction();
-	            	}
-	            	
-	            	// From unsigned integers
-	            	cw.openFunction('public', className, 'UInt' + (i * 8) + ' i');
-	            	l = ['(byte) 0'];
-	            	for (j = i - 1; 0 <= j; --j)
-	            		l.push('i.getByte' + j + '()');
-	            	cw.addStatement('this(' + l.join(', ') + ')');
-	            	cw.closeFunction();
-	
-	            	// From signed integers
-	            	cw.openFunction('public', className, 'Int' + (i * 8) + ' i');
-	            	l = ['(byte) (i.getByte' + (i - 1) + '() < 0 ? 0xff : 0)'];
-	            	for (j = i - 1; 0 <= j; --j)
-	            		l.push('i.getByte' + j + '()');
-	            	cw.addStatement('this(' + l.join(', ') + ')');
-	            	cw.closeFunction();
-	            }
-	            
-	            // To BigInteger
-	            cw.addImport('java.math.BigInteger');
-	            cw.openFunction('public BigInteger', 'toBigInteger');
-	            cw.addStatement('return new BigInteger(toByteArray())');
-	            cw.closeFunction();
-            }
-            else {
-            	// From signed or unsigned integers (i.e. ByteArray)
-            	for (i = 1; i < n; i *= 2) {
-            		cw.openFunction('public', className, 'ByteArray' + i + ' b');
-            		cw.addStatement('super(b)');
-            		cw.closeFunction();
-            	}
+		// Component per component
+		l = [];
+		for (i = n - 1; 0 <= i; --i)
+			l.push('byte b' + i);
+		cw.openFunction('public', className, l.join(', '));
+		l = [];
+		for (i = n - 1; 0 <= i; --i)
+			l.push('b' + i);
+		cw.addStatement('set(' + l.join(', ') + ')');
+		cw.closeFunction();
 
-            	// From BigInteger
-            	cw.openFunction('public', className, 'BigInteger i');
-                cw.addStatement('final byte[] a = i.toByteArray()');
-                cw.openSwitch('a.length');
-                //
-            	cw.openCase(n + 1);
-                cw.addStatement('if (a[0] != 0) throw new IllegalArgumentException()'); // Accept non-sign extension 
-                cw.closeCase();
-                //
-                for (i = n; 0 < i; --i) {
-                	cw.openCase(i);
-                	l = [];
-                	for (j = i; j < n; ++j)
-                		l.push('(byte) 0');
-                	for (j = 0; j < i; ++j)
-                		l.push('a[' + j + ']');
-                	cw.addStatement('set(' + l.join(', ') + ')');
-                	cw.addStatement('break');
-                	cw.closeCase();
-                }
-                cw.openDefault();
-            	cw.addStatement('throw new IllegalArgumentException()');
-                cw.closeDefault();
-                //
-                cw.closeSwitch();
-            	cw.closeFunction();
-            	
-            	// To BigInteger, preventing sign extension
-            	cw.addImport('java.math.BigInteger');
-            	cw.openFunction('public BigInteger', 'toBigInteger');
-            	l = ['0'];
-            	for (i = n - 1; 0 <= i; --i)
-            		l.push('getByte' + i + '()');
-            	cw.addStatement('return new BigInteger(new byte[] { ' + l.join(', ') +' })');
-            	cw.closeFunction();
-            }
+		// All zero
+		cw.openFunction('public', className);
+		cw.closeFunction();
 
-            // Epilogue
-            //
-            cw.closeClass();
+		// Generate converters
+		//
+		cw.openFunction('public', className, 'ByteArray' + n + ' i');
+		cw.addStatement('super(i)');
+		cw.closeFunction();
 
-            cw.closeNamespace().closeDocument();
+		if (isSigned) {
+			for (i = 1; i < n; i *= 2) {
+				// Internal helper for sign extension
+				if (2 < n) { // do not conflict with previously defined Int16
+								// constructor
+					l = [ 'byte sign' ];
+					for (j = i - 1; 0 <= j; --j)
+						l.push('byte b' + j);
+					cw.openFunction('private', className, l.join(', '));
+					l = [];
+					for (j = n - 1; i <= j; --j)
+						l.push('sign');
+					for (j = i - 1; 0 <= j; --j)
+						l.push('b' + j);
+					cw.addStatement('super(' + l.join(', ') + ')');
+					cw.closeFunction();
+				}
 
-            return cw.toString();
-        }
-        
-        return function (destPath) {
-        	var i;
-        	
-        	for (i = 1; i <= 8; i *= 2) {
-                IO.writeFile(destPath + '/UInt' + (i * 8) + '.java',
-                		generate(false, i));
-        	    IO.writeFile(destPath + '/Int' + (i * 8) + '.java',
-                		generate(true, i));
-        	}
-        };
-    });
+				// From unsigned integers
+				cw.openFunction('public', className, 'UInt' + (i * 8) + ' i');
+				l = [ '(byte) 0' ];
+				for (j = i - 1; 0 <= j; --j)
+					l.push('i.getByte' + j + '()');
+				cw.addStatement('this(' + l.join(', ') + ')');
+				cw.closeFunction();
+
+				// From signed integers
+				cw.openFunction('public', className, 'Int' + (i * 8) + ' i');
+				l = [ '(byte) (i.getByte' + (i - 1) + '() < 0 ? 0xff : 0)' ];
+				for (j = i - 1; 0 <= j; --j)
+					l.push('i.getByte' + j + '()');
+				cw.addStatement('this(' + l.join(', ') + ')');
+				cw.closeFunction();
+			}
+
+			// To BigInteger
+			cw.addImport('java.math.BigInteger');
+			cw.openFunction('public BigInteger', 'toBigInteger');
+			cw.addStatement('return new BigInteger(toByteArray())');
+			cw.closeFunction();
+		}
+		else {
+			// From signed or unsigned integers (i.e. ByteArray)
+			for (i = 1; i < n; i *= 2) {
+				cw.openFunction('public', className, 'ByteArray' + i + ' b');
+				cw.addStatement('super(b)');
+				cw.closeFunction();
+			}
+
+			// From BigInteger
+			cw.openFunction('public', className, 'BigInteger i');
+			cw.addStatement('final byte[] a = i.toByteArray()');
+			cw.openSwitch('a.length');
+			//
+			cw.openCase(n + 1);
+			cw.addStatement('if (a[0] != 0) throw new IllegalArgumentException()'); // Accept
+																					// non-sign
+																					// extension
+			cw.closeCase();
+			//
+			for (i = n; 0 < i; --i) {
+				cw.openCase(i);
+				l = [];
+				for (j = i; j < n; ++j)
+					l.push('(byte) 0');
+				for (j = 0; j < i; ++j)
+					l.push('a[' + j + ']');
+				cw.addStatement('set(' + l.join(', ') + ')');
+				cw.addStatement('break');
+				cw.closeCase();
+			}
+			cw.openDefault();
+			cw.addStatement('throw new IllegalArgumentException()');
+			cw.closeDefault();
+			//
+			cw.closeSwitch();
+			cw.closeFunction();
+
+			// To BigInteger, preventing sign extension
+			cw.addImport('java.math.BigInteger');
+			cw.openFunction('public BigInteger', 'toBigInteger');
+			l = [ '0' ];
+			for (i = n - 1; 0 <= i; --i)
+				l.push('getByte' + i + '()');
+			cw.addStatement('return new BigInteger(new byte[] { ' + l.join(', ') + ' })');
+			cw.closeFunction();
+		}
+
+		// Epilogue
+		//
+		cw.closeClass();
+
+		cw.closeNamespace().closeDocument();
+
+		return cw.toString();
+	}
+
+	return function(destPath) {
+		var i;
+
+		for (i = 1; i <= 8; i *= 2) {
+			IO.writeFile(destPath + '/UInt' + (i * 8) + '.java', generate(false, i));
+			IO.writeFile(destPath + '/Int' + (i * 8) + '.java', generate(true, i));
+		}
+	};
+});
