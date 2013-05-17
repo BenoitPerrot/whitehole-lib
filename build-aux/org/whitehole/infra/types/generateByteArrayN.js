@@ -40,7 +40,7 @@ define('org/whitehole/infra/types/generateByteArrayN',
         'use strict';
 
         function generate(n) {
-            var cw, className = 'ByteArray' + n, i, j, first, s, l;
+            var cw, className = 'ByteArray' + n, i, j, l;
 
             cw = new IO.CodeWriter();
 
@@ -57,8 +57,10 @@ define('org/whitehole/infra/types/generateByteArrayN',
             for (i = n - 1; 0 <= i; --i)
             	l.push('byte b' + i);
             cw.openFunction('public', className, l.join(', '));
+            l = [];
             for (i = n - 1; 0 <= i; --i)
-            	cw.addStatement('_b' + i + ' = b' + i);
+            	l.push('b' + i);
+            cw.addStatement('set(' + l.join(', ') + ')');
             cw.closeFunction();
 
             // All zero
@@ -66,7 +68,7 @@ define('org/whitehole/infra/types/generateByteArrayN',
             l = [];
             for (i = 0; i < n; ++i)
             	l.push('(byte) 0');
-            cw.addStatement('this(' + l.join(', ') + ')');
+            cw.addStatement('set(' + l.join(', ') + ')');
             cw.closeFunction();
 
             // Compose
@@ -77,7 +79,7 @@ define('org/whitehole/infra/types/generateByteArrayN',
             		l.push('(byte) 0');
             	for (j = i - 1; 0 <= j; --j)
             		l.push('b.getByte' + j + '()');
-            	cw.addStatement('this(' + l.join(', ') + ')');
+            	cw.addStatement('set(' + l.join(', ') + ')');
             	cw.closeFunction();
             }
 
@@ -89,7 +91,7 @@ define('org/whitehole/infra/types/generateByteArrayN',
             	cw.closeFunction();
             }
             
-            cw.openFunction('boolean', 'testBit', 'int b');
+            cw.openFunction('public boolean', 'testBit', 'int b');
             for (i = 0; i < n; ++i) {
             	cw.openIf(i * 8 + ' <= b && b < ' + (i + 1) * 8);
             	cw.addStatement('return (getByte' + i + '() & (0x01 << (b - ' + (i * 8) + '))) != 0');
@@ -146,6 +148,15 @@ define('org/whitehole/infra/types/generateByteArrayN',
             for (i = 0; i < n; ++i)
             	l.push('getByte' + i + '() == rhs.getByte' + i + '()');
             cw.addStatement('return ' + l.join(' && '));
+            cw.closeFunction();
+            
+            // Internal setter
+            l = [];
+            for (i = n - 1; 0 <= i; --i)
+            	l.push('byte b' + i);
+            cw.openFunction('protected void', 'set', l.join(', '));
+            for (i = n - 1; 0 <= i; --i)
+            	cw.addStatement('_b' + i + ' = b' + i);
             cw.closeFunction();
             
             // Generate attributes
