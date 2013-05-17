@@ -58,6 +58,7 @@ require(['@{generator}'],
 		<generate generator="org/whitehole/infra/types/generateBinaryWidth" output="src/org/whitehole/infra/types/BinaryWidth.java" />
 		<generate generator="org/whitehole/infra/types/generateByteArrayN" output="src/org/whitehole/infra/types" />
 		<generate generator="org/whitehole/infra/types/generateSIntN" output="src/org/whitehole/infra/types" />
+		<generate generator="org/whitehole/infra/types/generateLittleEndianReader" output="src/org/whitehole/infra/types/LittleEndianReader.java" />
 	</target>
 
 	<target name="build-assembly.ia32_x64-sources">
