@@ -40,7 +40,7 @@ define('org/whitehole/infra/types/generateBinaryWidth', [ 'org/whitehole/infra/I
 
 		cw.openDocument().openNamespace('org.whitehole.infra.types');
 
-		cw.openEnum('BinaryWidth', 'public');
+		cw.openEnum('public', 'BinaryWidth');
 		for (i = 8; i <= 128; i *= 2)
 			cw.addEnumMember('_' + i + 'BIT');
 		cw.closeEnum();

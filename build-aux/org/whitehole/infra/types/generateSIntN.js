@@ -43,7 +43,7 @@ define('org/whitehole/infra/types/generateSIntN', [ 'org/whitehole/infra/IO' ], 
 
 		cw.openDocument().openNamespace('org.whitehole.infra.types');
 
-		cw.openClass(className, 'public', 'ByteArray' + n);
+		cw.openClass('public', className, 'ByteArray' + n);
 
 		// Generate constructors
 		//

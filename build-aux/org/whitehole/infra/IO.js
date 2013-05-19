@@ -117,7 +117,7 @@ define('org/whitehole/infra/IO',
                        return this;
                    },
                    
-                   openClass: function (name, visibility, base) {
+                   openClass: function (visibility, name, base) {
                 	   this.body.startLine(visibility + ' class ' + name + ' ');
                        if (base)
                            this.body.append('extends ' + base + ' ');
@@ -127,7 +127,7 @@ define('org/whitehole/infra/IO',
                 	   return this.closeBlock();
                    },
 
-                   openEnum: function (name, visibility) {
+                   openEnum: function (visibility, name) {
                        this.body.startLine(visibility + ' enum ' + name + ' ');
                        this.isFirstEnumMember.push(false);
                        return this.openBlock();
@@ -135,7 +135,9 @@ define('org/whitehole/infra/IO',
                    closeEnum: function () {
                        this.body.endLine();
                        this.isFirstEnumMember.pop();
-                       return this.closeBlock();
+                       this.closeBlock();
+                       this.body.endLine();
+                       return this;
                    },
                    addEnumMember: function (name, value) {
                        var x = this.isFirstEnumMember.length - 1;
@@ -151,7 +153,7 @@ define('org/whitehole/infra/IO',
                        return this;
                    },
                    closeEnumMembers: function () {
-                       this.body.endLine(';');
+                       this.body.endLine(';').endLine();
                        return this;
                    },
 

@@ -42,7 +42,7 @@ define('org/whitehole/infra/types/generateByteArrayN', [ 'org/whitehole/infra/IO
 
 		cw.openDocument().openNamespace('org.whitehole.infra.types');
 
-		cw.openClass(className, 'public');
+		cw.openClass('public', className);
 
 		// Generate constructors
 		//

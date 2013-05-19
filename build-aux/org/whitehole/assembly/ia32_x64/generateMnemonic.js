@@ -81,7 +81,7 @@ define('org/whitehole/assembly/ia32_x64/generateMnemonic', [ 'org/whitehole/infr
 
 		cw.openDocument().openNamespace('org.whitehole.assembly.ia32_x64');
 
-		cw.openEnum('Mnemonic', 'public');
+		cw.openEnum('public', 'Mnemonic');
 		cw.addEnumMember('INVALID');
 		for (m in mnemonics)
 			if (mnemonics.hasOwnProperty(m))

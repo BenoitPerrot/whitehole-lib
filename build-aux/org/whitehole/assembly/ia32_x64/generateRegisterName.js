@@ -92,7 +92,7 @@ define('org/whitehole/assembly/ia32_x64/generateRegisterName', [ 'org/whitehole/
 
 		cw.addImport('org.whitehole.infra.types.BinaryWidth');
 
-		cw.openEnum('RegisterName', 'public');
+		cw.openEnum('public', 'RegisterName');
 
 		//
 		generateEnumMembers(cw, registerMaps);

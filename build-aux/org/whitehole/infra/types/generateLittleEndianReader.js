@@ -42,7 +42,7 @@ define('org/whitehole/infra/types/generateLittleEndianReader', [ 'org/whitehole/
 
 		cw.openDocument().openNamespace('org.whitehole.infra.types');
 
-		cw.openClass('LittleEndianReader', 'public');
+		cw.openClass('public', 'LittleEndianReader');
 
 		cw.addImport('java.nio.ByteBuffer');
 		for (i = 1; i <= 8; i *= 2) {
