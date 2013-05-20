@@ -38,7 +38,7 @@ define('org/whitehole/binary/generateEnumeration', [ 'org/whitehole/infra/IO' ],
 
 	function generateValidEnumeration(cw, e) {
 		var m;
-		
+
 		cw.openEnum('public', 'Valid');
 		for (m in e.members)
 			if (e.members.hasOwnProperty(m)) {
@@ -60,7 +60,7 @@ define('org/whitehole/binary/generateEnumeration', [ 'org/whitehole/infra/IO' ],
 	}
 
 	function generateModel(cw, name, e) {
-		var underlyingType = 'ByteArray' + e.byteWidth, l, i;
+		var underlyingType = 'ByteArray' + e.byteWidth, l, i, m, masking;
 
 		cw.addImport('org.whitehole.infra.types.' + underlyingType);
 
@@ -68,8 +68,8 @@ define('org/whitehole/binary/generateEnumeration', [ 'org/whitehole/infra/IO' ],
 		//
 
 		// Primitive
-		cw.openFunction('public', name, underlyingType + ' code');
-		cw.addStatement('_code = code');
+		cw.openFunction('public', name, underlyingType + ' c');
+		cw.addStatement('code = c');
 		cw.closeFunction();
 
 		// Enumeration
@@ -93,19 +93,32 @@ define('org/whitehole/binary/generateEnumeration', [ 'org/whitehole/infra/IO' ],
 		cw.addStatement('this(LittleEndianReader.read' + underlyingType + "(buffer, offset))");
 		cw.closeFunction();
 
-		// Tester
+		// Converter
 		//
-		cw.openFunction('public boolean', 'is', 'Valid v');
+		cw.openFunction('public Valid', 'toValid');
 		l = [];
-		for (i = 0; i < e.byteWidth; ++i)
-			l.push('(byte) ((v.code >> ' + (i * 8) + ') & 0x0ff) == _code.getByte' + i + '()');
-		cw.addStatement('return ' + l.join(' && '));
+		masking = ' & 0x0ff';
+		for (i = e.byteWidth - 1; 0 < i; --i) {
+			l.push('(code.getByte' + i + '() << ' + (i * 8) + ')');
+			masking += 'ff';
+		}
+		l.push('code.getByte0()');
+		cw.openSwitch('(' + l.join(' | ') + ')' + masking);
+		for (m in e.members)
+			if (e.members.hasOwnProperty(m)) {
+				if (!m[0].match(/[a-zA-Z_]/))
+					m = '_';
+				cw.addStatement('case ' + e.members[m].v + ': return Valid.' + m);
+			}
+		cw.openDefault().addStatement('return null').closeDefault();
+		cw.closeSwitch();
 		cw.closeFunction();
 
-		//
 		cw.addStatement('static public final int byteSize = ' + e.byteWidth);
 
-		cw.addStatement('private final ' + underlyingType + ' _code');
+		// Attributes
+		//
+		cw.addStatement('public final ' + underlyingType + ' code');
 	}
 
 	return function(ns, name, e) {

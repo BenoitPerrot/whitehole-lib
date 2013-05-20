@@ -12,16 +12,21 @@ public class OptionalHeader {
 		offset += OptionalHeaderStandardFields.byteSize;
 		
 		// Read windows specific fields
-		if (_standardFields.getMagic().is(MagicNumber.Valid.PE32)) {
-			// Read PE fields
+		MagicNumber.Valid mn = _standardFields.getMagic().toValid();
+		switch (mn) {
+		case PE32: 
 			_windowsSpecificFields = new OptionalHeaderPE32Fields(buffer, offset);
 			offset += OptionalHeaderPE32Fields.byteSize;
-		} else if (_standardFields.getMagic().is(MagicNumber.Valid.PE32x)) {
-			// Read PE32+ fields
+			break;
+		case PE32x:
 			_windowsSpecificFields = new OptionalHeaderPE32xFields(buffer, offset);
 			offset += OptionalHeaderPE32xFields.byteSize;
-		} else
-			_windowsSpecificFields = null; // error?
+			break;
+		default:
+			// TODO: raise an error.
+			_windowsSpecificFields = null;
+			break;
+		}
 
 		if (_windowsSpecificFields != null) {
 			// Read data directories
@@ -46,7 +51,7 @@ public class OptionalHeader {
 			offset += dataDirectoryCount * DataDirectory.byteSize;
 			
 			if (16 < dataDirectoryCount)
-				; // error?
+				; // TODO: raise an error.
 		}
 		else {
 			_exportTable = null;
