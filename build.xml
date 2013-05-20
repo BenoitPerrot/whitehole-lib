@@ -61,11 +61,15 @@ require(['@{generator}'],
 		<generate generator="org/whitehole/infra/types/generateLittleEndianReader" output="src/org/whitehole/infra/types/LittleEndianReader.java" />
 	</target>
 
+	<target name="build-binary-sources">
+		<generate generator="org/whitehole/binary/generateSchemeModel" input="${commonDir}/resources/org/whitehole/binary/pe/pe.json" output="org.whitehole.binary.pe" />
+	</target>
+
 	<target name="build-assembly.ia32_x64-sources">
 		<generate generator="org/whitehole/assembly/ia32_x64/generateMnemonic" input="${commonDir}/resources/org/whitehole/assembly/ia32_x64/opcodeMaps.json" output="src/org/whitehole/assembly/ia32_x64/Mnemonic.java" />
 		<generate generator="org/whitehole/assembly/ia32_x64/generateRegisterName" input="${commonDir}/resources/org/whitehole/assembly/ia32_x64/registerMaps.json" output="src/org/whitehole/assembly/ia32_x64/RegisterName.java" />
 	</target>
 
-	<target name="build-sources" depends="build-infra.types-sources, build-assembly.ia32_x64-sources" />
+	<target name="build-sources" depends="build-infra.types-sources, build-binary-sources, build-assembly.ia32_x64-sources" />
 
 </project>

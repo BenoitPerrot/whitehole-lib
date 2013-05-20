@@ -239,6 +239,35 @@ define('org/whitehole/infra/IO',
                        return this.head.toString() + '\n' +
                            this.body.toString();
                    }
+               },
+               {
+            	   capitalizeFirstLetter: function(s) {
+            		   return s.charAt(0).toUpperCase() + s.slice(1);
+            	   },
+
+            	   capitalizeAllFirst: function(name, capitalizeFirst) {
+            		   var l = name.replace(/_/g, ' ').toLowerCase().split(' '), r = [], i, s;
+            			
+            		   if (2 <= l.length && l[0].length === 1 && l[1].length === 1)
+            			   capitalizeFirst = true;
+            			
+            		   i = 0;
+            		   if (!capitalizeFirst) {
+            			   r.push(l[0])
+            			   ++i;
+            		   }
+            		   for (; i < l.length; ++i)
+            			   r.push((0 < l[i].length) ? this.capitalizeFirstLetter(l[i]) : '_');
+            			
+            		   return r.join('');
+            	   },
+            		
+            	   makeMethodName: function(prefix, name) {
+            		   return prefix + this.capitalizeAllFirst(name, true);
+            	   },
+            	   makeMemberName: function(name) {
+            		   return '_' + this.capitalizeAllFirst(name, false);
+            	   }
                }
            );
 
