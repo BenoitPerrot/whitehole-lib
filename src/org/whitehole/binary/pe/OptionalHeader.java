@@ -59,7 +59,7 @@ public class OptionalHeader {
 
 		if (_windowsSpecificFields != null) {
 			// Read data directories
-			long dataDirectoryCount = _windowsSpecificFields.getRvaAndSizeCount().toBigInteger().longValue();
+			long dataDirectoryCount = _windowsSpecificFields.getNumberOfRvaAndSize().toBigInteger().longValue();
 
 			_exportTable = (1 <= dataDirectoryCount) ? new DataDirectory(buffer, offset) : null;
 			_importTable = (2 <= dataDirectoryCount) ? new DataDirectory(buffer, offset + DataDirectory.byteSize) : null;

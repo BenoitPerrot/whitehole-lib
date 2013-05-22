@@ -59,7 +59,7 @@ public class ImageFile {
 		n += COFFHeader.byteSize;
 
 		// Read optional header (actually required for image files)
-		if (_coffHeader.getOptionalHeaderSize().toBigInteger().intValue() == 0)
+		if (_coffHeader.getSizeOfOptionalHeader().toBigInteger().intValue() == 0)
 			throw new IOException();
 
 		_optionalHeader = new OptionalHeader(buffer, offset + n);
@@ -67,7 +67,7 @@ public class ImageFile {
 
 		// Read section table, if any
 		_sectionHeaders = new ArrayList<SectionHeader>();
-		for (int i = _coffHeader.getSectionCount().toBigInteger().intValue(); 0 < i; --i) {
+		for (int i = _coffHeader.getNumberOfSections().toBigInteger().intValue(); 0 < i; --i) {
 			SectionHeader sh = new SectionHeader(buffer, offset + n);
 			n += SectionHeader.byteSize;
 			_sectionHeaders.add(sh);
