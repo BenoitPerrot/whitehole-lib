@@ -31,17 +31,17 @@
 package org.whitehole.binary.pe;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
+import org.whitehole.infra.io.LargeByteBuffer;
 import org.whitehole.infra.types.LittleEndianReader;
 import org.whitehole.infra.types.UInt32;
 
 public class ImageFile {
-	public ImageFile(ByteBuffer buffer, int offset) throws IOException {
+	public ImageFile(LargeByteBuffer buffer, long offset) throws IOException {
 
 		// Signature offset is at 0x3c
-		int n = 0x3c;
+		long n = 0x3c;
 		final UInt32 signatureOffset = LittleEndianReader.readUInt32(buffer,
 				offset + n);
 

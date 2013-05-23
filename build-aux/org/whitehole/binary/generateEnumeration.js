@@ -86,10 +86,10 @@ define('org/whitehole/binary/generateEnumeration', [ 'org/whitehole/infra/IO' ],
 		cw.closeFunction();
 
 		// Reader
-		cw.addImport('java.nio.ByteBuffer');
+		cw.addImport('org.whitehole.infra.io.LargeByteBuffer');
 		cw.addImport('org.whitehole.infra.types.LittleEndianReader');
 
-		cw.openFunction('public', name, 'ByteBuffer buffer, int offset');
+		cw.openFunction('public', name, 'LargeByteBuffer buffer, long offset');
 		cw.addStatement('this(LittleEndianReader.read' + underlyingType + "(buffer, offset))");
 		cw.closeFunction();
 

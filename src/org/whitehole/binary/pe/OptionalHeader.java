@@ -30,11 +30,11 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.whitehole.binary.pe;
 
-import java.nio.ByteBuffer;
+import org.whitehole.infra.io.LargeByteBuffer;
 
 public class OptionalHeader {
-	public OptionalHeader(ByteBuffer buffer, int start) {
-		int offset = start;
+	public OptionalHeader(LargeByteBuffer buffer, long start) {
+		long offset = start;
 		
 		// Read standard fields
 		_standardFields = new OptionalHeaderStandardFields(buffer, offset);
@@ -101,7 +101,8 @@ public class OptionalHeader {
 			_reserved = null;
 		}
 		
-		byteSize = offset - start;
+		assert (offset - start) < Integer.MAX_VALUE;
+		byteSize = (int) (offset - start);
 	}
 
 	public OptionalHeaderStandardFields getStandardFields() {

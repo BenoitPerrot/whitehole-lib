@@ -29,51 +29,34 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// Build a Java class for reading signed or unsigned fixed-size integers
-// when stored least significant byte first. 
+package org.whitehole.infra.io;
 
-define('org/whitehole/infra/types/generateLittleEndianReader', [ 'org/whitehole/infra/IO' ], function(IO) {
-	'use strict';
+import java.nio.ByteBuffer;
 
-	function generate() {
-		var cw, l, i, j;
+// Fake large byte buffer, i.e. larger than 2GB and which can be accessed
+// using long offsets
 
-		cw = new IO.CodeWriter();
+public class LargeByteBuffer {
+	public LargeByteBuffer(ByteBuffer b) {
+		_b = b;
+	}
+	
+	public byte get(long offset) {
+		return _b.get((int) offset);
+	}
+	
+	public String getStringASCIIZ(long offset) {
+		StringBuilder sb = new StringBuilder();
 
-		cw.openDocument().openNamespace('org.whitehole.infra.types');
-
-		cw.openClass('public', 'LittleEndianReader');
-
-		cw.addImport('org.whitehole.infra.io.LargeByteBuffer');
-		for (i = 1; i <= 8; i *= 2) {
-			l = [];
-			for (j = i - 1; 0 <= j; --j)
-				l.push('buffer.get(offset + ' + j + ')');
-
-			// Read ByteArrays
-			cw.openFunction('public static ByteArray' + i, 'readByteArray' + i, 'LargeByteBuffer buffer, long offset');
-			cw.addStatement('return new ByteArray' + i + '(' + l.join(', ') + ')');
-			cw.closeFunction();
-
-			// Read unsigned integers
-			cw.openFunction('public static UInt' + (i * 8), 'readUInt' + (i * 8), 'LargeByteBuffer buffer, long offset');
-			cw.addStatement('return new UInt' + (i * 8) + '(' + l.join(', ') + ')');
-			cw.closeFunction();
-
-			// Read signed integers
-			cw.openFunction('public static Int' + (i * 8), 'readInt' + (i * 8), 'LargeByteBuffer buffer, long offset');
-			cw.addStatement('return new Int' + (i * 8) + '(' + l.join(', ') + ')');
-			cw.closeFunction();
+		// Search for null termination
+		while (get(offset) != 0) {
+			sb.append((char) get(offset));
+			++offset;
 		}
 
-		cw.closeClass();
-
-		cw.closeNamespace().closeDocument();
-
-		return cw.toString();
+		// Build string
+		return sb.toString();
 	}
-
-	return function(destPath) {
-		IO.writeFile(destPath, generate());
-	};
-});
+		
+	private final ByteBuffer _b;
+}

@@ -60,7 +60,7 @@ define('org/whitehole/binary/generateStructure', [ 'org/whitehole/infra/IO' ], f
 		//
 
 		// Reader
-		cw.addImport('java.nio.ByteBuffer');
+		cw.addImport('org.whitehole.infra.io.LargeByteBuffer');
 
 		offset = 0;
 		byteSize = {
@@ -68,7 +68,7 @@ define('org/whitehole/binary/generateStructure', [ 'org/whitehole/infra/IO' ], f
 		    sum : []
 		};
 
-		cw.openFunction('public', name, 'ByteBuffer buffer, int offset');
+		cw.openFunction('public', name, 'LargeByteBuffer buffer, long offset');
 		for (k in s.fields)
 			if (s.fields.hasOwnProperty(k)) {
 				f = s.fields[k];
