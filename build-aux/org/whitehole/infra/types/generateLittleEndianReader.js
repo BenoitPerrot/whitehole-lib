@@ -45,7 +45,7 @@ define('org/whitehole/infra/types/generateLittleEndianReader', [ 'org/whitehole/
 		cw.openClass('public', 'LittleEndianReader');
 
 		cw.addImport('org.whitehole.infra.io.LargeByteBuffer');
-		for (i = 1; i <= 8; i *= 2) {
+		for (i = 1; i <= 16; i *= 2) {
 			l = [];
 			for (j = i - 1; 0 <= j; --j)
 				l.push('buffer.get(offset + ' + j + ')');

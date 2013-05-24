@@ -171,7 +171,7 @@ define('org/whitehole/infra/types/generateByteArrayN', [ 'org/whitehole/infra/IO
 	return function(destPath) {
 		var i;
 
-		for (i = 1; i <= 8; i *= 2)
+		for (i = 1; i <= 16; i *= 2)
 			IO.writeFile(destPath + '/ByteArray' + i + '.java', generate(i));
 	};
 });
