@@ -106,9 +106,7 @@ define('org/whitehole/binary/generateEnumeration', [ 'org/whitehole/infra/IO' ],
 		cw.openSwitch('(' + l.join(' | ') + ')' + masking);
 		for (m in e.members)
 			if (e.members.hasOwnProperty(m)) {
-				if (!m[0].match(/[a-zA-Z_]/))
-					m = '_';
-				cw.addStatement('case ' + e.members[m].v + ': return Valid.' + m);
+				cw.addStatement('case ' + e.members[m].v + ': return Valid.' + (m[0].match(/[a-zA-Z_]/) ? '' : '_') + m);
 			}
 		cw.openDefault().addStatement('return null').closeDefault();
 		cw.closeSwitch();
