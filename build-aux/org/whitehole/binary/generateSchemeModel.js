@@ -65,7 +65,7 @@ define('org/whitehole/binary/generateSchemeModel',
 		
 		for (k in schema.structures)
 			if (schema.structures.hasOwnProperty(k))
-				if (k !== 'ImageFile' && k !== 'OptionalHeader' && k !== 'WindowsSpecificPEFields') {
+				if (k !== 'PEHeader' && k !== 'OptionalHeader' && k !== 'WindowsSpecificPEFields') {
 					print("Generating " + destPath + '/' + k + '.java' + "...");
 					IO.writeFile(destPath + '/' + k + '.java',
 					             generateStructure(destNS, schema, k));

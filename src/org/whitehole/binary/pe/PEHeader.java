@@ -37,8 +37,8 @@ import org.whitehole.infra.io.LargeByteBuffer;
 import org.whitehole.infra.types.LittleEndianReader;
 import org.whitehole.infra.types.UInt32;
 
-public class ImageFile {
-	public ImageFile(LargeByteBuffer buffer, long offset) throws IOException {
+public class PEHeader {
+	public PEHeader(LargeByteBuffer buffer, long offset) throws IOException {
 
 		// Signature offset is at 0x3c
 		long n = 0x3c;
