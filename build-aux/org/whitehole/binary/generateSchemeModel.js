@@ -46,23 +46,29 @@ define('org/whitehole/binary/generateSchemeModel',
 	
 	return function(schemaPath, destNS) {
 		var schema = IO.readJSONFile(schemaPath);
-
+		
 		var destPath = 'src/' + destNS.replace(/\./g, '/');
 
 		for (k in schema.enumerations)
-			if (schema.enumerations.hasOwnProperty(k))
+			if (schema.enumerations.hasOwnProperty(k)) {
+				print("Generating " + destPath + '/' + k + '.java' + "...");
 				IO.writeFile(destPath + '/' + k + '.java',
 				             generateEnumeration(destNS, k, schema.enumerations[k]));
-
+			}
+		
 		for (k in schema.flagSets)
-			if (schema.flagSets.hasOwnProperty(k))
+			if (schema.flagSets.hasOwnProperty(k)) {
+				print("Generating " + destPath + '/' + k + '.java' + "...");
 				IO.writeFile(destPath + '/' + k + '.java',
 				             generateFlagSet(destNS, k, schema.flagSets[k]));
-
+			}
+		
 		for (k in schema.structures)
 			if (schema.structures.hasOwnProperty(k))
-				if (k !== 'ImageFile' && k !== 'OptionalHeader' && k !== 'WindowsSpecificPEFields')
+				if (k !== 'ImageFile' && k !== 'OptionalHeader' && k !== 'WindowsSpecificPEFields') {
+					print("Generating " + destPath + '/' + k + '.java' + "...");
 					IO.writeFile(destPath + '/' + k + '.java',
 					             generateStructure(destNS, k, schema.structures[k]));
+				}
 	}
 });
