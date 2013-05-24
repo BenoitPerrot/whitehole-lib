@@ -68,7 +68,7 @@ define('org/whitehole/binary/generateSchemeModel',
 				if (k !== 'ImageFile' && k !== 'OptionalHeader' && k !== 'WindowsSpecificPEFields') {
 					print("Generating " + destPath + '/' + k + '.java' + "...");
 					IO.writeFile(destPath + '/' + k + '.java',
-					             generateStructure(destNS, k, schema.structures[k]));
+					             generateStructure(destNS, schema, k));
 				}
 	}
 });

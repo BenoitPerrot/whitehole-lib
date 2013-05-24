@@ -36,10 +36,20 @@
 define('org/whitehole/binary/generateStructure', [ 'org/whitehole/infra/IO' ], function(IO) {
 	'use strict';
 
-	return function(ns, name, s) {
-		var cw, typeData = {}, i, k, f, t, offset, byteSize;
+	return function(ns, schema, name) {
+		var cw, typeData = {}, i, k, f, t, offset, byteSize,
+			s = schema.structures[name],
+			aliases = schema.aliases || {};
+		
+		function unaliasType(t) {
+			return aliases[t] || t;
+		}
 
-		for (i = 1; i <= 8; i *= 2) {
+		for (i = 1; i <= 16; i *= 2) {
+			typeData['ByteArray' + i] = {
+				    i : 'org.whitehole.infra.types.ByteArray' + i,
+				    bs : i
+			};
 			typeData['Int' + (i * 8)] = {
 			    i : 'org.whitehole.infra.types.Int' + (i * 8),
 			    bs : i
@@ -69,11 +79,17 @@ define('org/whitehole/binary/generateStructure', [ 'org/whitehole/infra/IO' ], f
 		};
 
 		cw.openFunction('public', name, 'LargeByteBuffer buffer, long offset');
+		
+		if (s.base && schema.structures[s.base] && (!schema.structures[s.base].fields || schema.structures[s.base].fields.length)) {
+			cw.addStatement('super(buffer, offset)');
+			cw.addStatement('offset += ' + s.base + '.byteSize');
+		}
+		
 		for (k in s.fields)
 			if (s.fields.hasOwnProperty(k)) {
 				f = s.fields[k];
 				if (f.keep !== false) {
-					t = f.type;
+					t = unaliasType(f.type);
 
 					offset = 'offset';
 					if (f.offset)
@@ -110,7 +126,7 @@ define('org/whitehole/binary/generateStructure', [ 'org/whitehole/infra/IO' ], f
 			if (s.fields.hasOwnProperty(k)) {
 				f = s.fields[k];
 				if (f.keep !== false) {
-					t = f.type;
+					t = unaliasType(f.type);
 
 					cw.openFunction('public ' + t, IO.CodeWriter.makeMethodName('get', f.name));
 					cw.addStatement('return ' + IO.CodeWriter.makeMemberName(f.name));
@@ -128,14 +144,14 @@ define('org/whitehole/binary/generateStructure', [ 'org/whitehole/infra/IO' ], f
 			if (s.fields.hasOwnProperty(k)) {
 				f = s.fields[k];
 				if (f.keep !== false) {
-					t = f.type;
+					t = unaliasType(f.type);
 
 					if (f.count) {
 						t = 'ArrayList<' + t + '>';
 						cw.addImport('java.util.ArrayList');
 					}
-					else if (typeData.hasOwnProperty(f.type))
-						cw.addImport(typeData[f.type].i);
+					else if (typeData.hasOwnProperty(t))
+						cw.addImport(typeData[t].i);
 
 					cw.addStatement('private final ' + t + ' ' + IO.CodeWriter.makeMemberName(f.name));
 				}
