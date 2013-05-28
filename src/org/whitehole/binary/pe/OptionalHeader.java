@@ -37,18 +37,18 @@ public class OptionalHeader {
 		long offset = start;
 		
 		// Read standard fields
-		_standardFields = new OptionalHeaderStandardFields(buffer, offset);
+		_standardFields = OptionalHeaderStandardFields.read(buffer, offset);
 		offset += OptionalHeaderStandardFields.byteSize;
 		
 		// Read windows specific fields
 		MagicNumber.Valid mn = _standardFields.getMagic().toValid();
 		switch (mn) {
 		case PE32: 
-			_windowsSpecificFields = new OptionalHeaderPE32Fields(buffer, offset);
+			_windowsSpecificFields = OptionalHeaderPE32Fields.read(buffer, offset);
 			offset += OptionalHeaderPE32Fields.byteSize;
 			break;
 		case PE32x:
-			_windowsSpecificFields = new OptionalHeaderPE32xFields(buffer, offset);
+			_windowsSpecificFields = OptionalHeaderPE32xFields.read(buffer, offset);
 			offset += OptionalHeaderPE32xFields.byteSize;
 			break;
 		default:
@@ -61,22 +61,22 @@ public class OptionalHeader {
 			// Read data directories
 			long dataDirectoryCount = _windowsSpecificFields.getNumberOfRvaAndSize().toBigInteger().longValue();
 
-			_exportTable = (1 <= dataDirectoryCount) ? new DataDirectory(buffer, offset) : null;
-			_importTable = (2 <= dataDirectoryCount) ? new DataDirectory(buffer, offset + DataDirectory.byteSize) : null;
-			_resourceTable = (3 <= dataDirectoryCount) ? new DataDirectory(buffer, offset + 2 * DataDirectory.byteSize) : null;
-			_exceptionTable = (4 <= dataDirectoryCount) ? new DataDirectory(buffer, offset + 3 * DataDirectory.byteSize) : null;
-			_certificateTable = (5 <= dataDirectoryCount) ? new DataDirectory(buffer, offset + 4 * DataDirectory.byteSize) : null;
-			_baseRelocationTable = (6 <= dataDirectoryCount) ? new DataDirectory(buffer, offset + 5 * DataDirectory.byteSize) : null;
-			_debug = (7 <= dataDirectoryCount) ? new DataDirectory(buffer, offset + 6 * DataDirectory.byteSize) : null;
-			_architecture = (8 <= dataDirectoryCount) ? new DataDirectory(buffer, offset + 7 * DataDirectory.byteSize) : null;
-			_globalPtr = (9 <= dataDirectoryCount) ? new DataDirectory(buffer, offset + 8 * DataDirectory.byteSize) : null;
-			_TLSTable = (10 <= dataDirectoryCount) ? new DataDirectory(buffer, offset + 9 * DataDirectory.byteSize) : null;
-			_loadConfigTable = (11 <= dataDirectoryCount) ? new DataDirectory(buffer, offset + 10 * DataDirectory.byteSize) : null;
-			_boundImport = (12 <= dataDirectoryCount) ? new DataDirectory(buffer, offset + 11 * DataDirectory.byteSize) : null;
-			_IAT = (13 <= dataDirectoryCount) ? new DataDirectory(buffer, offset + 12 * DataDirectory.byteSize) : null;
-			_delayImportDescriptor = (14 <= dataDirectoryCount) ? new DataDirectory(buffer, offset + 13 * DataDirectory.byteSize) : null;
-			_CLRRuntimeHeader = (15 <= dataDirectoryCount) ? new DataDirectory(buffer, offset + 14 * DataDirectory.byteSize) : null;
-			_reserved = (16 <= dataDirectoryCount) ? new DataDirectory(buffer, offset + 15 * DataDirectory.byteSize) : null;
+			_exportTable = (1 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset) : null;
+			_importTable = (2 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset + DataDirectory.byteSize) : null;
+			_resourceTable = (3 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset + 2 * DataDirectory.byteSize) : null;
+			_exceptionTable = (4 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset + 3 * DataDirectory.byteSize) : null;
+			_certificateTable = (5 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset + 4 * DataDirectory.byteSize) : null;
+			_baseRelocationTable = (6 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset + 5 * DataDirectory.byteSize) : null;
+			_debug = (7 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset + 6 * DataDirectory.byteSize) : null;
+			_architecture = (8 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset + 7 * DataDirectory.byteSize) : null;
+			_globalPtr = (9 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset + 8 * DataDirectory.byteSize) : null;
+			_TLSTable = (10 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset + 9 * DataDirectory.byteSize) : null;
+			_loadConfigTable = (11 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset + 10 * DataDirectory.byteSize) : null;
+			_boundImport = (12 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset + 11 * DataDirectory.byteSize) : null;
+			_IAT = (13 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset + 12 * DataDirectory.byteSize) : null;
+			_delayImportDescriptor = (14 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset + 13 * DataDirectory.byteSize) : null;
+			_CLRRuntimeHeader = (15 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset + 14 * DataDirectory.byteSize) : null;
+			_reserved = (16 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset + 15 * DataDirectory.byteSize) : null;
 			offset += dataDirectoryCount * DataDirectory.byteSize;
 			
 			if (16 < dataDirectoryCount)

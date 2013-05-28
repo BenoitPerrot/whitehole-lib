@@ -55,7 +55,7 @@ public class PEHeader {
 			throw new IOException(); // TODO: call buffer.get() directly
 
 		// Read COFF header
-		_coffHeader = new COFFHeader(buffer, offset + n);
+		_coffHeader = COFFHeader.read(buffer, offset + n);
 		n += COFFHeader.byteSize;
 
 		// Read optional header (actually required for image files)
@@ -68,7 +68,7 @@ public class PEHeader {
 		// Read section table, if any
 		_sectionHeaders = new ArrayList<SectionHeader>();
 		for (int i = _coffHeader.getNumberOfSections().toBigInteger().intValue(); 0 < i; --i) {
-			SectionHeader sh = new SectionHeader(buffer, offset + n);
+			SectionHeader sh = SectionHeader.read(buffer, offset + n);
 			n += SectionHeader.byteSize;
 			_sectionHeaders.add(sh);
 		}

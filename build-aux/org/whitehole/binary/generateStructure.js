@@ -78,11 +78,13 @@ define('org/whitehole/binary/generateStructure', [ 'org/whitehole/infra/IO' ], f
 		    sum : []
 		};
 
-		cw.openFunction('public', name, 'LargeByteBuffer buffer, long offset');
+		cw.openFunction('public static ' + name, 'read', 'LargeByteBuffer buffer, long offset');
+		cw.addStatement('final ' + name + ' x = new ' + name + '()');
 		
 		if (s.base && schema.structures[s.base] && (!schema.structures[s.base].fields || schema.structures[s.base].fields.length)) {
-			cw.addStatement('super(buffer, offset)');
-			cw.addStatement('offset += ' + s.base + '.byteSize');
+			throw "FIXME: Not implemented yet";
+			// cw.addStatement(s.base + '.read(buffer, offset, x)');
+			// cw.addStatement('offset += ' + s.base + '.byteSize');
 		}
 		
 		for (k in s.fields)
@@ -106,17 +108,18 @@ define('org/whitehole/binary/generateStructure', [ 'org/whitehole/infra/IO' ], f
 							if (byteSize !== undefined)
 								byteSize.imm += typeData[t].bs;
 
-							cw.addStatement(IO.CodeWriter.makeMemberName(f.name) + ' = LittleEndianReader.read' + t + '(buffer, ' + offset + ')');
+							cw.addStatement('x.' + IO.CodeWriter.makeMethodName('set', f.name) + '(LittleEndianReader.read' + t + '(buffer, ' + offset + '))');
 						}
 						else {
 							if (byteSize !== undefined)
 								byteSize.sum.push(t + '.byteSize');
 
-							cw.addStatement(IO.CodeWriter.makeMemberName(f.name) + ' = new ' + t + '(buffer, ' + offset + ')');
+							cw.addStatement('x.' + IO.CodeWriter.makeMethodName('set', f.name) + '(' + t + '.read(buffer, ' + offset + '))');
 						}
 					}
 				}
 			}
+		cw.addStatement('return x');
 		cw.closeFunction();
 
 		// Accessors
@@ -130,6 +133,11 @@ define('org/whitehole/binary/generateStructure', [ 'org/whitehole/infra/IO' ], f
 
 					cw.openFunction('public ' + t, IO.CodeWriter.makeMethodName('get', f.name));
 					cw.addStatement('return ' + IO.CodeWriter.makeMemberName(f.name));
+					cw.closeFunction();
+
+					cw.openFunction('public ' + name, IO.CodeWriter.makeMethodName('set', f.name), t + ' x');
+					cw.addStatement(IO.CodeWriter.makeMemberName(f.name) + ' = x');
+					cw.addStatement('return this');
 					cw.closeFunction();
 				}
 			}
@@ -153,7 +161,7 @@ define('org/whitehole/binary/generateStructure', [ 'org/whitehole/infra/IO' ], f
 					else if (typeData.hasOwnProperty(t))
 						cw.addImport(typeData[t].i);
 
-					cw.addStatement('private final ' + t + ' ' + IO.CodeWriter.makeMemberName(f.name));
+					cw.addStatement('private ' + t + ' ' + IO.CodeWriter.makeMemberName(f.name));
 				}
 			}
 
