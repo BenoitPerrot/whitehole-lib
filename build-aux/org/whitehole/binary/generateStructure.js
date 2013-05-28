@@ -79,12 +79,14 @@ define('org/whitehole/binary/generateStructure', [ 'org/whitehole/infra/IO' ], f
 		};
 
 		cw.openFunction('public static ' + name, 'read', 'LargeByteBuffer buffer, long offset');
-		cw.addStatement('final ' + name + ' x = new ' + name + '()');
+		cw.addStatement('return read(buffer, offset, new ' + name + '())');
+		cw.closeFunction();
+
+		cw.openFunction('public static ' + name, 'read', 'LargeByteBuffer buffer, long offset, '+ name + ' x');
 		
 		if (s.base && schema.structures[s.base] && (!schema.structures[s.base].fields || schema.structures[s.base].fields.length)) {
-			throw "FIXME: Not implemented yet";
-			// cw.addStatement(s.base + '.read(buffer, offset, x)');
-			// cw.addStatement('offset += ' + s.base + '.byteSize');
+			cw.addStatement(s.base + '.read(buffer, offset, x)');
+			cw.addStatement('offset += ' + s.base + '.byteSize');
 		}
 		
 		for (k in s.fields)
