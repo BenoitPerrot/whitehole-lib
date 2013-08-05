@@ -29,7 +29,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// Build a Java enumeration for ia32/x64 mnemonics
+// Build an HTML page showing all ia32/x64 opcode maps
 //
 
 define('org/whitehole/assembly/ia32_x64/generateHTML', [ 'org/whitehole/infra/IO' ], function(IO) {
