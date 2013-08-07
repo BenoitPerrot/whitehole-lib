@@ -41,33 +41,38 @@ define('org/whitehole/assembly/ia32_x64/generateMnemonic', [ 'org/whitehole/infr
 
 	// Extract mnemonics from opcode maps
 	//
-	function extractMnemonics(opcodeMaps) {
+	function extractMnemonics(allMaps) {
+		
 		var mnemonics = {};
 
-		var x, maps, k, map, i, j, b;
+		function extract(maps) {
+			var name, map, i, j, b;
+			
+			for (name in maps)
+				if (maps.hasOwnProperty(name)) {
+					map = maps[name];
 
-		for (x in opcodeMaps)
-			if (opcodeMaps.hasOwnProperty(x)) {
-				maps = opcodeMaps[x];
+					for (i = 0; i < map.length; ++i) {
+						b = map[i];
+						if (b !== null) {
 
-				for (k in maps)
-					if (maps.hasOwnProperty(k)) {
-						map = maps[k];
+							if (b.hasOwnProperty('m'))
+								mnemonics[b.m] = true;
 
-						for (i = 0; i < map.length; ++i) {
-							b = map[i];
-							if (b !== null) {
-
-								if (b.hasOwnProperty('m'))
-									mnemonics[b.m] = true;
-
-								else if (isArray(b))
-									for (j = 0; j < b.length; ++j)
-										mnemonics[b[j].m] = true;
-							}
+							else if (isArray(b))
+								for (j = 0; j < b.length; ++j)
+									mnemonics[b[j].m] = true;
 						}
 					}
-			}
+				}
+		}
+
+		extract(allMaps.maps);
+		extract(allMaps.groups);
+		
+		for (var k in allMaps.x87_maps)
+			if (allMaps.x87_maps.hasOwnProperty(k))
+				extract(allMaps.x87_maps[k]);
 
 		return mnemonics;
 	}
