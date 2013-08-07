@@ -157,7 +157,7 @@ define('org/whitehole/infra/IO',
                        return this;
                    },
 
-                   openFunction: function (prefix, name, args) {
+                   openFunction: function (prefix, name, args, exs) {
                 	   this.body.startLine();
                 	   if (prefix)
                 		   this.body.append(prefix + ' ');
@@ -165,6 +165,8 @@ define('org/whitehole/infra/IO',
                        if (args)
                            this.body.append(args);
                        this.body.append(') ');
+                       if (exs)
+                    	   this.body.append(exs).append(' ');
                        return this.openBlock();
                    },
                    closeFunction: function () {

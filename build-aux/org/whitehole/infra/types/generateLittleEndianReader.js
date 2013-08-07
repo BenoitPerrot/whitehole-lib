@@ -65,6 +65,28 @@ define('org/whitehole/infra/types/generateLittleEndianReader', [ 'org/whitehole/
 			cw.addStatement('return new Int' + (i * 8) + '(' + l.join(', ') + ')');
 			cw.closeFunction();
 		}
+		
+		cw.addImport('java.io.InputStream');
+		cw.addImport('java.io.IOException');
+		for (i = 1; i <= 16; i *= 2) {
+			l = [];
+			for (j = i - 1; 0 <= j; --j)
+				l.push('buffer[' + j + ']');
+
+			// Read unsigned integers
+			cw.openFunction('public static UInt' + (i * 8), 'readUInt' + (i * 8), 'InputStream i', 'throws IOException');
+			cw.addStatement('final byte[] buffer = new byte[' + i + ']');
+			cw.addStatement('i.read(buffer)');
+			cw.addStatement('return new UInt' + (i * 8) + '(' + l.join(', ') + ')');
+			cw.closeFunction();
+
+			// Read signed integers
+			cw.openFunction('public static Int' + (i * 8), 'readInt' + (i * 8), 'InputStream i', 'throws IOException');
+			cw.addStatement('final byte[] buffer = new byte[' + i + ']');
+			cw.addStatement('i.read(buffer)');
+			cw.addStatement('return new Int' + (i * 8) + '(' + l.join(', ') + ')');
+			cw.closeFunction();
+		}
 
 		cw.closeClass();
 
