@@ -35,8 +35,6 @@
 define('org/whitehole/assembly/ia32_x64/generateHTML', [ 'org/whitehole/infra/IO' ], function(IO) {
 	'use strict';
 
-	// Extract mnemonics from opcode maps
-	//
 	function generate(om) {
 		
 		function instToHTML(inst) {
