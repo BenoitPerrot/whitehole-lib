@@ -53,6 +53,11 @@ define('org/whitehole/assembly/ia32_x64/generateHTML', [ 'org/whitehole/infra/IO
 				else
 					s += inst.o;
 			}
+			
+			if (inst.hasOwnProperty('precond')) {
+				s += '<sup>' + inst.precond + '</sup>';
+			}
+			
 			return s;
 		}
 		
@@ -123,7 +128,7 @@ define('org/whitehole/assembly/ia32_x64/generateHTML', [ 'org/whitehole/infra/IO
 
 					s += '<tr><td class="h" style="width:2em;">&nbsp;</td>';
 					for (j = 0; j < 8; ++j)
-						s += '<td class="h">' + ((k < 128 ? 0 : 8) + j).toString(16) + '</td>';
+						s += '<td class="h">' + ((k % 128) + j).toString(16) + '</td>';
 					s += '</tr>';
 					
 					for (i = 0; i < 8; ++i) {
