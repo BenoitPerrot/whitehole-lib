@@ -88,7 +88,7 @@ define('org/whitehole/assembly/ia32_x64/generateRegisterName', [ 'org/whitehole/
 
 		cw = new IO.CodeWriter();
 
-		cw.openDocument().openNamespace('org.whitehole.assembly.ia32_x64');
+		cw.openDocument().openNamespace('org.whitehole.assembly.ia32_x64.dom');
 
 		cw.addImport('org.whitehole.infra.types.BinaryWidth');
 
@@ -98,7 +98,7 @@ define('org/whitehole/assembly/ia32_x64/generateRegisterName', [ 'org/whitehole/
 		generateEnumMembers(cw, registerMaps);
 
 		//
-		cw.openFunction("static RegisterName", "GPR", "BinaryWidth w, int i");
+		cw.openFunction("public static RegisterName", "GPR", "BinaryWidth w, int i");
 		{
 			cw.openSwitch("w");
 			{

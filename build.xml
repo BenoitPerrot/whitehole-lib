@@ -67,8 +67,8 @@ require(['@{generator}'],
 
 	<target name="build-assembly.ia32_x64-sources">
 		<generate generator="org/whitehole/assembly/ia32_x64/generateHTML" input="${commonDir}/resources/org/whitehole/assembly/ia32_x64/opcodeMaps.json" output="build-aux/org/whitehole/assembly/ia32_x64/opcodeMaps.html" />
-		<generate generator="org/whitehole/assembly/ia32_x64/generateMnemonic" input="${commonDir}/resources/org/whitehole/assembly/ia32_x64/opcodeMaps.json" output="src/org/whitehole/assembly/ia32_x64/Mnemonic.java" />
-		<generate generator="org/whitehole/assembly/ia32_x64/generateRegisterName" input="${commonDir}/resources/org/whitehole/assembly/ia32_x64/registerMaps.json" output="src/org/whitehole/assembly/ia32_x64/RegisterName.java" />
+		<generate generator="org/whitehole/assembly/ia32_x64/dom/generateMnemonic" input="${commonDir}/resources/org/whitehole/assembly/ia32_x64/opcodeMaps.json" output="src/org/whitehole/assembly/ia32_x64/dom/Mnemonic.java" />
+		<generate generator="org/whitehole/assembly/ia32_x64/dom/generateRegisterName" input="${commonDir}/resources/org/whitehole/assembly/ia32_x64/registerMaps.json" output="src/org/whitehole/assembly/ia32_x64/dom/RegisterName.java" />
 	</target>
 
 	<target name="build-sources" depends="build-infra.types-sources, build-binary-sources, build-assembly.ia32_x64-sources" />
