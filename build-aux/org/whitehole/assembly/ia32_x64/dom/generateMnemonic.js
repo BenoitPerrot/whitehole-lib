@@ -32,7 +32,7 @@
 // Build a Java enumeration for ia32/x64 mnemonics
 //
 
-define('org/whitehole/assembly/ia32_x64/generateMnemonic', [ 'org/whitehole/infra/IO' ], function(IO) {
+define('org/whitehole/assembly/ia32_x64/dom/generateMnemonic', [ 'org/whitehole/infra/IO' ], function(IO) {
 	'use strict';
 
 	function isArray(o) {

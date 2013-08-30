@@ -32,7 +32,7 @@
 // Build a Java enumeration for ia32/x64 register names
 //
 
-define('org/whitehole/assembly/ia32_x64/generateRegisterName', [ 'org/whitehole/infra/IO' ], function(IO) {
+define('org/whitehole/assembly/ia32_x64/dom/generateRegisterName', [ 'org/whitehole/infra/IO' ], function(IO) {
 	'use strict';
 
 	// Add an enum member for each register name in maps
