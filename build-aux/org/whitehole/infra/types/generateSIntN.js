@@ -128,34 +128,6 @@ define('org/whitehole/infra/types/generateSIntN', [ 'org/whitehole/infra/IO' ], 
 			cw.closeFunction();
 		}
 		
-		// From BigInteger
-		cw.openFunction('public', className, 'BigInteger i');
-		cw.addStatement('final byte[] a = i.toByteArray()');
-		cw.openSwitch('a.length');
-		if (isSigned) {
-			cw.openCase(n + 1);
-			cw.addStatement('if (a[0] != 0) throw new IllegalArgumentException()'); // Accept 0-prefix (used for preventing sign extension)
-			cw.closeCase();
-		}
-		for (i = n; 0 < i; --i) {
-			cw.openCase(i);
-			l = [];
-			for (j = i; j < n; ++j)
-				l.push('(byte) 0');
-			for (j = 0; j < i; ++j)
-				l.push('a[' + j + ']');
-			cw.addStatement('set(' + l.join(', ') + ')');
-			cw.addStatement('break');
-			cw.closeCase();
-		}
-		cw.openDefault();
-		cw.addStatement('throw new IllegalArgumentException()');
-		cw.closeDefault();
-		//
-		cw.closeSwitch();
-		cw.closeFunction();
-
-		
 		// Epilogue
 		//
 		cw.closeClass();
