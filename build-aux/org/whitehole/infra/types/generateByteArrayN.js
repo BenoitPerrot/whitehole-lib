@@ -53,28 +53,25 @@ define('org/whitehole/infra/types/generateByteArrayN', [ 'org/whitehole/infra/IO
 			l.push('byte b' + i);
 		cw.openFunction('public', className, l.join(', '));
 		l = [];
-		for (i = n - 1; 0 <= i; --i)
-			l.push('b' + i);
-		cw.addStatement('set(' + l.join(', ') + ')');
+		for (i = 0; i < n; ++i)
+			cw.addStatement('_b' + i + ' = b' + i);
 		cw.closeFunction();
 
 		// All zero
 		cw.openFunction('public', className);
 		l = [];
 		for (i = 0; i < n; ++i)
-			l.push('(byte) 0');
-		cw.addStatement('set(' + l.join(', ') + ')');
+			cw.addStatement('_b' + i + ' = 0');
 		cw.closeFunction();
 
 		// Compose
 		for (i = 1; i <= n; i *= 2) {
-			cw.openFunction('public', className, 'ByteArray' + i + ' b');
+			cw.openFunction('public', className, 'ByteArray' + i + ' a');
 			l = [];
 			for (j = n - 1; i <= j; --j)
-				l.push('(byte) 0');
+				cw.addStatement('_b' + j + ' = 0');
 			for (j = i - 1; 0 <= j; --j)
-				l.push('b.getByte' + j + '()');
-			cw.addStatement('set(' + l.join(', ') + ')');
+				cw.addStatement('_b' + j + ' = a._b' + j);
 			cw.closeFunction();
 		}
 
@@ -89,7 +86,7 @@ define('org/whitehole/infra/types/generateByteArrayN', [ 'org/whitehole/infra/IO
 		cw.openFunction('public boolean', 'testBit', 'int b');
 		for (i = 0; i < n; ++i) {
 			cw.openIf(i * 8 + ' <= b && b < ' + (i + 1) * 8);
-			cw.addStatement('return (getByte' + i + '() & (0x01 << (b - ' + (i * 8) + '))) != 0');
+			cw.addStatement('return (_b' + i + ' & (0x01 << (b - ' + (i * 8) + '))) != 0');
 			cw.closeIf();
 		}
 		cw.addStatement('throw new IllegalArgumentException()');
@@ -141,23 +138,14 @@ define('org/whitehole/infra/types/generateByteArrayN', [ 'org/whitehole/infra/IO
 		cw.openFunction('public boolean', 'equals', className + ' rhs');
 		l = [];
 		for (i = 0; i < n; ++i)
-			l.push('getByte' + i + '() == rhs.getByte' + i + '()');
+			l.push('_b' + i + ' == rhs._b' + i);
 		cw.addStatement('return ' + l.join(' && '));
-		cw.closeFunction();
-
-		// Internal setter
-		l = [];
-		for (i = n - 1; 0 <= i; --i)
-			l.push('byte b' + i);
-		cw.openFunction('protected void', 'set', l.join(', '));
-		for (i = n - 1; 0 <= i; --i)
-			cw.addStatement('_b' + i + ' = b' + i);
 		cw.closeFunction();
 
 		// Generate attributes
 		//
 		for (i = n - 1; 0 <= i; --i)
-			cw.addStatement('private byte _b' + i);
+			cw.addStatement('final byte _b' + i);
 
 		// Epilogue
 		//

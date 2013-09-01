@@ -56,7 +56,7 @@ define('org/whitehole/infra/types/generateSIntN', [ 'org/whitehole/infra/IO' ], 
 		l = [];
 		for (i = n - 1; 0 <= i; --i)
 			l.push('b' + i);
-		cw.addStatement('set(' + l.join(', ') + ')');
+		cw.addStatement('super(' + l.join(', ') + ')');
 		cw.closeFunction();
 
 		// All zero
