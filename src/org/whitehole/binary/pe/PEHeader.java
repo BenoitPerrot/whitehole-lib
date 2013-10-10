@@ -38,33 +38,25 @@ import org.whitehole.infra.types.LittleEndianReader;
 import org.whitehole.infra.types.UInt32;
 
 public class PEHeader {
-	public PEHeader(LargeByteBuffer buffer, long offset) throws IOException {
 
+	public PEHeader(LargeByteBuffer buffer, long offset) throws IOException {
 		// Signature offset is at 0x3c
 		long n = 0x3c;
-		final UInt32 signatureOffset = LittleEndianReader.readUInt32(buffer,
-				offset + n);
-
+		final UInt32 signatureOffset = LittleEndianReader.readUInt32(buffer, offset + n);
 		// Check signature
 		n = signatureOffset.toBigInteger().intValue();
 		final UInt32 signature = LittleEndianReader.readUInt32(buffer, offset + n);
-
 		n += 4;
-		if (signature.getByte0() != 'P' || signature.getByte1() != 'E'
-				|| signature.getByte2() != 0 || signature.getByte3() != 0)
+		if (signature.getByte0() != 'P' || signature.getByte1() != 'E' || signature.getByte2() != 0 || signature.getByte3() != 0)
 			throw new IOException(); // TODO: call buffer.get() directly
-
 		// Read COFF header
 		_coffHeader = COFFHeader.read(buffer, offset + n);
 		n += COFFHeader.byteSize;
-
 		// Read optional header (actually required for image files)
 		if (_coffHeader.getSizeOfOptionalHeader().toBigInteger().intValue() == 0)
 			throw new IOException();
-
 		_optionalHeader = new OptionalHeader(buffer, offset + n);
 		n += _optionalHeader.byteSize;
-
 		// Read section table, if any
 		_sectionHeaders = new ArrayList<SectionHeader>();
 		for (int i = _coffHeader.getNumberOfSections().toBigInteger().intValue(); 0 < i; --i) {
@@ -73,15 +65,15 @@ public class PEHeader {
 			_sectionHeaders.add(sh);
 		}
 	}
-	
+
 	public COFFHeader getCOFFHeader() {
 		return _coffHeader;
 	}
-	
+
 	public OptionalHeader getOptionalHeader() {
 		return _optionalHeader;
 	}
-	
+
 	public ArrayList<SectionHeader> getSectionHeaders() {
 		return _sectionHeaders;
 	}

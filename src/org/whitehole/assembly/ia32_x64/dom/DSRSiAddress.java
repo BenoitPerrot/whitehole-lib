@@ -31,6 +31,7 @@
 package org.whitehole.assembly.ia32_x64.dom;
 
 public class DSRSiAddress extends TypedOperand {
+
 	public DSRSiAddress(OperandType t) {
 		super(t);
 	}

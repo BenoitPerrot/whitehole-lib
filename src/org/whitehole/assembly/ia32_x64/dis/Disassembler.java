@@ -52,23 +52,32 @@ public class Disassembler {
 
 		public void appendImmediate(Int8 i, OperandType t);
 		public void appendImmediate(UInt16 i, OperandType t);
+
 		public void appendImmediate(UInt32 i, OperandType t);
+
 		public void appendImmediate(UInt64 i, OperandType t);
 
 		public void appendSIBAddress(RegisterName base, RegisterName index, int scale, OperandType t);
+
 		public void appendSIBDAddress(RegisterName base, RegisterName index, int scale, Int8 displacement, OperandType t);
+
 		public void appendSIBDAddress(RegisterName base, RegisterName index, int scale, UInt16 displacement, OperandType t);
+
 		public void appendSIBDAddress(RegisterName base, RegisterName index, int scale, UInt32 displacement, OperandType t);
 
 		public void appendAbsoluteAddress(UInt16 offset, OperandType t);
-		public void appendAbsoluteAddress(UInt32 offset, OperandType t);
-		// public void appendAbsoluteAddress(UInt64 offset, OperandType t);
 
+		public void appendAbsoluteAddress(UInt32 offset, OperandType t);
+
+		// public void appendAbsoluteAddress(UInt64 offset, OperandType t);
 		public void appendSegmentOffset(UInt16 segmentSelector, UInt16 offset);
+
 		public void appendSegmentOffset(UInt16 segmentSelector, UInt32 offset);
+
 		public void appendSegmentOffset(UInt16 segmentSelector, UInt64 offset);
 
 		public void appendDSRSiAddress(OperandType t);
+
 		public void appendESRDiAddress(OperandType t);
 
 		public void endInstruction();
@@ -85,11 +94,9 @@ public class Disassembler {
 	}
 
 	public void disassemble(InputStream i, Listener l) throws IOException {
-
 		// Implement I.3.6
 		final Prefixes p = Prefixes.read(i, getWorkingMode());
 		final Mode m = new Mode(getWorkingMode(), p.getSwitchOperandSize(), p.getSwitchAddressSize(), p.getREXW());
-
 		// Consider AVX-implied leading byes
 		if (p.hasImplied0F())
 			InstructionDecoder.two_byte(m, p, i, l);

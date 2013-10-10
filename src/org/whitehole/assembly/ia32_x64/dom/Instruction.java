@@ -33,6 +33,7 @@ package org.whitehole.assembly.ia32_x64.dom;
 public class Instruction {
 
 	public interface Visitor {
+
 		public void visit(Instruction o);
 	}
 
@@ -68,26 +69,26 @@ public class Instruction {
 
 	public boolean isConditionalBranch() {
 		switch (_m) {
-		case JA:
-		case JAE:
-		case JB:
-		case JBE:
-		case JG:
-		case JGE:
-		case JL:
-		case JLE:
-		case JNO:
-		case JNP:
-		case JNS:
-		case JNZ:
-		case JO:
-		case JP:
-		case JRCXZ:
-		case JS:
-		case JZ:
-			return true;
-		default:
-			return false;
+			case JA:
+			case JAE:
+			case JB:
+			case JBE:
+			case JG:
+			case JGE:
+			case JL:
+			case JLE:
+			case JNO:
+			case JNP:
+			case JNS:
+			case JNZ:
+			case JO:
+			case JP:
+			case JRCXZ:
+			case JS:
+			case JZ:
+				return true;
+			default:
+				return false;
 		}
 	}
 

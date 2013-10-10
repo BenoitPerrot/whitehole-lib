@@ -58,5 +58,4 @@ class ScaleIndexBase {
 	public int getBase() {
 		return _base;
 	}
-
 }

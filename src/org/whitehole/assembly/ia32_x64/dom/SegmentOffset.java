@@ -35,6 +35,7 @@ import java.math.BigInteger;
 import org.whitehole.infra.types.UInt16;
 
 public class SegmentOffset extends Operand {
+
 	private final UInt16 _selector;
 	private final BigInteger _offset;
 

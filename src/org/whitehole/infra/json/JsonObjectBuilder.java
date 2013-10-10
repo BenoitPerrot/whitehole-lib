@@ -60,6 +60,7 @@ public interface JsonObjectBuilder {
 	public JsonObject build();
 
 	static class Impl implements JsonObjectBuilder {
+
 		public JsonObjectBuilder add(String name, JsonValue value) {
 			_o.put(name, value);
 			return this;

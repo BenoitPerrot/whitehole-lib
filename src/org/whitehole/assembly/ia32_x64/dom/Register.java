@@ -31,6 +31,7 @@
 package org.whitehole.assembly.ia32_x64.dom;
 
 public class Register extends TypedOperand {
+
 	private final RegisterName _n;
 
 	public Register(RegisterName n, OperandType t) {

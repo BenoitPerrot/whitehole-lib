@@ -57,36 +57,36 @@ public enum OperandType {
 
 	public static BinaryWidth toBinaryWidth(OperandType t) {
 		switch (t) {
-		case BYTE:
-			return BinaryWidth._8BIT;
-		case WORD:
-			return BinaryWidth._16BIT;
-		case DOUBLEWORD:
-			return BinaryWidth._32BIT;
-		case QUADWORD:
-			return BinaryWidth._64BIT;
-		case DOUBLE_QUADWORD:
-			return BinaryWidth._128BIT;
-		default:
-			break;
+			case BYTE:
+				return BinaryWidth._8BIT;
+			case WORD:
+				return BinaryWidth._16BIT;
+			case DOUBLEWORD:
+				return BinaryWidth._32BIT;
+			case QUADWORD:
+				return BinaryWidth._64BIT;
+			case DOUBLE_QUADWORD:
+				return BinaryWidth._128BIT;
+			default:
+				break;
 		}
 		return null;
 	}
 
 	public static OperandType fromBinaryWidth(BinaryWidth w) {
 		switch (w) {
-		case _8BIT:
-			return OperandType.BYTE;
-		case _16BIT:
-			return OperandType.WORD;
-		case _32BIT:
-			return OperandType.DOUBLEWORD;
-		case _64BIT:
-			return OperandType.QUADWORD;
-		case _128BIT:
-			return OperandType.DOUBLE_QUADWORD;
-		default:
-			break;
+			case _8BIT:
+				return OperandType.BYTE;
+			case _16BIT:
+				return OperandType.WORD;
+			case _32BIT:
+				return OperandType.DOUBLEWORD;
+			case _64BIT:
+				return OperandType.QUADWORD;
+			case _128BIT:
+				return OperandType.DOUBLE_QUADWORD;
+			default:
+				break;
 		}
 		return null;
 	}

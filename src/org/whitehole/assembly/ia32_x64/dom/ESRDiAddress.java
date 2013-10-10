@@ -31,6 +31,7 @@
 package org.whitehole.assembly.ia32_x64.dom;
 
 public class ESRDiAddress extends TypedOperand {
+
 	public ESRDiAddress(OperandType t) {
 		super(t);
 	}

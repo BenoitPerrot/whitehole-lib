@@ -33,6 +33,7 @@ package org.whitehole.assembly.ia32_x64.dom;
 import java.math.BigInteger;
 
 public class Immediate extends TypedOperand {
+
 	private final BigInteger _value;
 
 	public Immediate(BigInteger v, OperandType t) {

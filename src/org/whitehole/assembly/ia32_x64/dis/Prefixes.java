@@ -222,7 +222,7 @@ class Prefixes {
 
 	//
 	// Reader
-
+	
 	public static Prefixes read(InputStream i, Disassembler.WorkingMode workingMode) throws IOException {
 		final Prefixes p = new Prefixes();
 
@@ -232,62 +232,56 @@ class Prefixes {
 			i.mark(1);
 			final int c = i.read();
 			switch (c) {
-			// Group 1
-			case 0xF0:
-				p.setLOCK(true);
-				break;
-			case 0xF2:
-				p.setREPNE(true);
-				p._hasF2 = true;
-				break;
-			case 0xF3:
-				p.setREP(true);
-				p._hasF3 = true;
-				break;
-
-			// Group 2
-			case 0x2E:
-				p.setBranchHint(BranchHint.BRANCH_NOT_TAKEN);
-				p.setSegmentOverride(SegmentOverride.CS);
-				break;
-			case 0x36:
-				p.setSegmentOverride(SegmentOverride.SS);
-				break;
-			case 0x3E:
-				p.setBranchHint(BranchHint.BRANCH_TAKEN);
-				p.setSegmentOverride(SegmentOverride.DS);
-				break;
-			case 0x26:
-				p.setSegmentOverride(SegmentOverride.ES);
-				break;
-			case 0x64:
-				p.setSegmentOverride(SegmentOverride.FS);
-				break;
-			case 0x65:
-				p.setSegmentOverride(SegmentOverride.GS);
-				break;
-
-			// Group 3
-			case 0x66:
-				p.setSwitchOperandSize(true);
-				p._has66 = true;
-				break;
-
-			// Group 4
-			case 0x67:
-				p.setSwitchAddressSize(true);
-				break;
-
-			default:
-				isPrefix = false;
-				i.reset();
-				break;
+				// Group 1
+				case 0xF0:
+					p.setLOCK(true);
+					break;
+				case 0xF2:
+					p.setREPNE(true);
+					p._hasF2 = true;
+					break;
+				case 0xF3:
+					p.setREP(true);
+					p._hasF3 = true;
+					break;
+				// Group 2
+				case 0x2E:
+					p.setBranchHint(BranchHint.BRANCH_NOT_TAKEN);
+					p.setSegmentOverride(SegmentOverride.CS);
+					break;
+				case 0x36:
+					p.setSegmentOverride(SegmentOverride.SS);
+					break;
+				case 0x3E:
+					p.setBranchHint(BranchHint.BRANCH_TAKEN);
+					p.setSegmentOverride(SegmentOverride.DS);
+					break;
+				case 0x26:
+					p.setSegmentOverride(SegmentOverride.ES);
+					break;
+				case 0x64:
+					p.setSegmentOverride(SegmentOverride.FS);
+					break;
+				case 0x65:
+					p.setSegmentOverride(SegmentOverride.GS);
+					break;
+				// Group 3
+				case 0x66:
+					p.setSwitchOperandSize(true);
+					p._has66 = true;
+					break;
+				// Group 4
+				case 0x67:
+					p.setSwitchAddressSize(true);
+					break;
+				default:
+					isPrefix = false;
+					i.reset();
+					break;
 			}
 		}
-
 		if (workingMode == Disassembler.WorkingMode._64BIT) {
 			// Consider REX and VEX prefixes
-
 			i.mark(2);
 			final int b0 = i.read();
 			if (b0 == 0xC5) {
@@ -296,11 +290,8 @@ class Prefixes {
 					p.setREXR((b1 & 0x080) != 0x080); // b1.7 is REX.R in 1's
 														// complement (inverted)
 														// form
-
 					p._VEXvvvv = (byte) ~(b1 & 0x078); // [b1.6:b1.3]
-
 					p._VEXL = (b1 & 0x4) == 0x04;
-
 					final byte pp = (byte) (b1 & 0x3); // [b2.1:b2.0]
 					if (pp == 3)
 						p._hasF3 = true;
@@ -308,11 +299,11 @@ class Prefixes {
 						p._hasF2 = true;
 					else if (pp == 1)
 						p._has66 = true;
-
 					// FIXME: LOCK, 66, F2, F3 as well as subsequent REX must
 					// #UD
 				}
-			} else if (b0 == 0xC4) {
+			}
+			else if (b0 == 0xC4) {
 				final int b1 = i.read();
 				final int b2 = i.read();
 				if (0 <= b1 && 0 <= b2) {
@@ -325,7 +316,6 @@ class Prefixes {
 					p.setREXB((b1 & 0x020) != 0x020); // b1.5 is REX.B in 1's
 														// complement (inverted)
 														// form
-
 					final byte mmmmm = (byte) (b1 & 0x1F); // [b1.4:b1.0]
 					if (mmmmm == 1)
 						p._hasImplied0F = true;
@@ -334,13 +324,9 @@ class Prefixes {
 					else if (mmmmm == 3)
 						p._hasImplied0F3A = true;
 					// FIXME: else #UD
-
 					// p._VEXW = ((b1 & 0x080) == 0x080); // b2.7
-
 					p._VEXvvvv = (byte) ~(b2 & 0x078); // [b2.6:b2.3]
-
 					p._VEXL = (b2 & 0x4) == 0x04;
-
 					final byte pp = (byte) (b2 & 0x3); // [b2.1:b2.0]
 					if (pp == 3)
 						p._hasF3 = true;
@@ -348,25 +334,25 @@ class Prefixes {
 						p._hasF2 = true;
 					else if (pp == 1)
 						p._has66 = true;
-
 					// FIXME: LOCK, 66, F2, F3 as well as subsequent REX must
 					// #UD
 				}
-			} else if ((b0 & 0xF0) == 0x40) {
+			}
+			else if ((b0 & 0xF0) == 0x40) {
 				p.setREXW((b0 & 0x08) == 0x08);
 				p.setREXR((b0 & 0x04) == 0x04);
 				p.setREXX((b0 & 0x02) == 0x02);
 				p.setREXB((b0 & 0x01) == 0x01);
-			} else
+			}
+			else
 				i.reset();
 		}
-
 		return p;
 	}
 
 	//
 	// Converters
-	
+
 	public Modifier toModifier() {
 		return new Modifier(_lock, _rep, _repne);
 	}

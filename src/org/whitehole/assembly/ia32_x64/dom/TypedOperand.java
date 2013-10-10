@@ -31,6 +31,7 @@
 package org.whitehole.assembly.ia32_x64.dom;
 
 public abstract class TypedOperand extends Operand {
+
 	final private OperandType _t;
 
 	protected TypedOperand(OperandType t) {

@@ -33,14 +33,15 @@ package org.whitehole.assembly.ia32_x64.dis;
 import org.whitehole.infra.types.BinaryWidth;
 
 class Mode {
-	
+
 	public boolean is32BIT() {
 		return _workingMode == Disassembler.WorkingMode._32BIT;
 	}
+
 	public boolean is64BIT() {
 		return _workingMode == Disassembler.WorkingMode._64BIT;
 	}
-	
+
 	private final BinaryWidth _operandSize;
 
 	public BinaryWidth getOperandSize() {
@@ -58,29 +59,27 @@ class Mode {
 	public Mode(Disassembler.WorkingMode workingMode, boolean switchOperandSize, boolean switchAddressSize, boolean hasREXW) {
 		_workingMode = workingMode;
 		switch (workingMode) {
-		case _16BIT:
-			_operandSize = switchOperandSize ? BinaryWidth._32BIT : BinaryWidth._16BIT;
-			_addressSize = switchAddressSize ? BinaryWidth._32BIT : BinaryWidth._16BIT;
-			break;
-
-		case _32BIT:
-			_operandSize = switchOperandSize ? BinaryWidth._16BIT : BinaryWidth._32BIT;
-			_addressSize = switchAddressSize ? BinaryWidth._16BIT : BinaryWidth._32BIT;
-			break;
-
-		case _64BIT:
-			if (hasREXW) {
-				// Ignore switchOperandSize
-				_operandSize = BinaryWidth._64BIT;
-				_addressSize = switchAddressSize ? BinaryWidth._32BIT : BinaryWidth._64BIT;
-			} else {
+			case _16BIT:
+				_operandSize = switchOperandSize ? BinaryWidth._32BIT : BinaryWidth._16BIT;
+				_addressSize = switchAddressSize ? BinaryWidth._32BIT : BinaryWidth._16BIT;
+				break;
+			case _32BIT:
 				_operandSize = switchOperandSize ? BinaryWidth._16BIT : BinaryWidth._32BIT;
-				_addressSize = switchAddressSize ? BinaryWidth._32BIT : BinaryWidth._64BIT;
-			}
-			break;
-
-		default:
-			throw new AssertionError(); // Cannot be there, all cases are covered by the "switch" statement
+				_addressSize = switchAddressSize ? BinaryWidth._16BIT : BinaryWidth._32BIT;
+				break;
+			case _64BIT:
+				if (hasREXW) {
+					// Ignore switchOperandSize
+					_operandSize = BinaryWidth._64BIT;
+					_addressSize = switchAddressSize ? BinaryWidth._32BIT : BinaryWidth._64BIT;
+				}
+				else {
+					_operandSize = switchOperandSize ? BinaryWidth._16BIT : BinaryWidth._32BIT;
+					_addressSize = switchAddressSize ? BinaryWidth._32BIT : BinaryWidth._64BIT;
+				}
+				break;
+			default:
+				throw new AssertionError(); // Cannot be there, all cases are covered by the "switch" statement
 		}
 	}
 }

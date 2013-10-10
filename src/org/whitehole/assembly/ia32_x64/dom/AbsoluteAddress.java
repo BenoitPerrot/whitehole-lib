@@ -33,6 +33,7 @@ package org.whitehole.assembly.ia32_x64.dom;
 import java.math.BigInteger;
 
 public class AbsoluteAddress extends TypedOperand {
+
 	private final BigInteger _offset;
 
 	public AbsoluteAddress(BigInteger offset, OperandType t) {

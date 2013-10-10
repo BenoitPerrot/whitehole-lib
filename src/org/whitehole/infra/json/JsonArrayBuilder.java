@@ -60,6 +60,7 @@ public interface JsonArrayBuilder {
 	public JsonArray build();
 
 	static class Impl implements JsonArrayBuilder {
+
 		public JsonArrayBuilder add(JsonValue value) {
 			_a.add(value);
 			return this;

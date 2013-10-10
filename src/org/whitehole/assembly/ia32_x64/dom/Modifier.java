@@ -31,6 +31,7 @@
 package org.whitehole.assembly.ia32_x64.dom;
 
 public class Modifier {
+
 	private final boolean _LOCK;
 	private final boolean _REP;
 	private final boolean _REPNE;

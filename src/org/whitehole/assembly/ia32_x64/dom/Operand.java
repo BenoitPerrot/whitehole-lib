@@ -31,7 +31,9 @@
 package org.whitehole.assembly.ia32_x64.dom;
 
 public abstract class Operand {
+
 	public interface Visitor {
+
 		public void visit(Register r);
 
 		public void visit(Immediate i);

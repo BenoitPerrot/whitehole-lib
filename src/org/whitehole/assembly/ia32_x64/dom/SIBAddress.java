@@ -31,6 +31,7 @@
 package org.whitehole.assembly.ia32_x64.dom;
 
 public class SIBAddress extends TypedOperand {
+
 	private final int _scale;
 	private final RegisterName _index;
 	private final RegisterName _base;

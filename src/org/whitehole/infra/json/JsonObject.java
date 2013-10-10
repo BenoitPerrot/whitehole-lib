@@ -39,6 +39,7 @@ import java.util.TreeMap;
 public interface JsonObject extends JsonValue, Map<String, JsonValue> {
 
 	static class Impl extends JsonValue.Impl implements JsonObject {
+
 		private final SortedMap<String, JsonValue> _data = new TreeMap<String, JsonValue>();
 
 		public Impl() {

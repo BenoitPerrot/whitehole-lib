@@ -54,6 +54,7 @@ public interface JsonNumber extends JsonValue {
 	public String toString();
 
 	static class Impl extends JsonValue.Impl implements JsonNumber {
+
 		public Impl(BigDecimal value) {
 			super(ValueType.NUMBER);
 			_value = value;

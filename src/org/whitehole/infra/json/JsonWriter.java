@@ -38,6 +38,7 @@ import java.util.Map.Entry;
 import org.whitehole.infra.io.IndentingWriter;
 
 public interface JsonWriter extends Closeable {
+
 	public void writeArray(JsonArray array) throws IOException;
 
 	public void writeObject(JsonObject object) throws IOException;
@@ -55,27 +56,27 @@ public interface JsonWriter extends Closeable {
 
 		private void write(JsonValue v) throws IOException {
 			switch (v.getValueType()) {
-			case NULL:
-				_w.print("null");
-				break;
-			case FALSE:
-				_w.print("false");
-				break;
-			case TRUE:
-				_w.print("true");
-				break;
-			case NUMBER:
-				_w.print(((JsonNumber) v).toString());
-				break;
-			case STRING:
-				_w.print("\"" + ((JsonString) v).getString() + "\"");
-				break;
-			case ARRAY:
-				writeArray((JsonArray) v);
-				break;
-			case OBJECT:
-				writeObject((JsonObject) v);
-				break;
+				case NULL:
+					_w.print("null");
+					break;
+				case FALSE:
+					_w.print("false");
+					break;
+				case TRUE:
+					_w.print("true");
+					break;
+				case NUMBER:
+					_w.print(((JsonNumber) v).toString());
+					break;
+				case STRING:
+					_w.print("\"" + ((JsonString) v).getString() + "\"");
+					break;
+				case ARRAY:
+					writeArray((JsonArray) v);
+					break;
+				case OBJECT:
+					writeObject((JsonObject) v);
+					break;
 			}
 		}
 

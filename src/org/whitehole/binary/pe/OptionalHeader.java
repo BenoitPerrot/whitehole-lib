@@ -33,6 +33,7 @@ package org.whitehole.binary.pe;
 import org.whitehole.infra.io.LargeByteBuffer;
 
 public class OptionalHeader {
+
 	public OptionalHeader(LargeByteBuffer buffer, long start) {
 		long offset = start;
 		
@@ -43,24 +44,22 @@ public class OptionalHeader {
 		// Read windows specific fields
 		MagicNumber.Valid mn = _standardFields.getMagic().toValid();
 		switch (mn) {
-		case PE32: 
-			_windowsSpecificFields = OptionalHeaderPE32Fields.read(buffer, offset);
-			offset += OptionalHeaderPE32Fields.byteSize;
-			break;
-		case PE32x:
-			_windowsSpecificFields = OptionalHeaderPE32xFields.read(buffer, offset);
-			offset += OptionalHeaderPE32xFields.byteSize;
-			break;
-		default:
-			// TODO: raise an error.
-			_windowsSpecificFields = null;
-			break;
+			case PE32:
+				_windowsSpecificFields = OptionalHeaderPE32Fields.read(buffer, offset);
+				offset += OptionalHeaderPE32Fields.byteSize;
+				break;
+			case PE32x:
+				_windowsSpecificFields = OptionalHeaderPE32xFields.read(buffer, offset);
+				offset += OptionalHeaderPE32xFields.byteSize;
+				break;
+			default:
+				// TODO: raise an error.
+				_windowsSpecificFields = null;
+				break;
 		}
-
 		if (_windowsSpecificFields != null) {
 			// Read data directories
-			long dataDirectoryCount = _windowsSpecificFields.getNumberOfRvaAndSize().toBigInteger().longValue();
-
+			final long dataDirectoryCount = _windowsSpecificFields.getNumberOfRvaAndSize().toBigInteger().longValue();
 			_exportTable = (1 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset) : null;
 			_importTable = (2 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset + DataDirectory.byteSize) : null;
 			_resourceTable = (3 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset + 2 * DataDirectory.byteSize) : null;
@@ -78,7 +77,6 @@ public class OptionalHeader {
 			_CLRRuntimeHeader = (15 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset + 14 * DataDirectory.byteSize) : null;
 			_reserved = (16 <= dataDirectoryCount) ? DataDirectory.read(buffer, offset + 15 * DataDirectory.byteSize) : null;
 			offset += dataDirectoryCount * DataDirectory.byteSize;
-			
 			if (16 < dataDirectoryCount)
 				; // TODO: raise an error.
 		}
@@ -100,7 +98,6 @@ public class OptionalHeader {
 			_CLRRuntimeHeader = null;
 			_reserved = null;
 		}
-		
 		assert (offset - start) < Integer.MAX_VALUE;
 		byteSize = (int) (offset - start);
 	}
@@ -176,9 +173,8 @@ public class OptionalHeader {
 	public DataDirectory getReserved() {
 		return _reserved;
 	}
-	
-	public final int byteSize;
 
+	public final int byteSize;
 	private final OptionalHeaderStandardFields _standardFields;
 	private final WindowsSpecificPEFields _windowsSpecificFields;
 	private final DataDirectory _exportTable;

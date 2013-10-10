@@ -31,12 +31,12 @@
 package org.whitehole.infra.json;
 
 public interface JsonValue {
+
 	public enum ValueType {
 		NULL, FALSE, TRUE, NUMBER, STRING, ARRAY, OBJECT
 	}
 
 	public static JsonValue NULL = new Impl(ValueType.NULL);
-
 	public static JsonValue FALSE = new Impl(ValueType.FALSE);
 	public static JsonValue TRUE = new Impl(ValueType.TRUE);
 

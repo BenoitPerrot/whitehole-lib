@@ -44,7 +44,6 @@ import org.whitehole.infra.types.UInt64;
 class OperandDecoder {
 
 	// Operand types
-
 	static OperandType a(BinaryWidth w) {
 		return w == BinaryWidth._16BIT ? OperandType.TWO_ONE_WORD : OperandType.TWO_DOUBLEWORD;
 	}
@@ -67,14 +66,14 @@ class OperandDecoder {
 
 	static OperandType v(BinaryWidth w) {
 		switch (w) {
-		case _16BIT:
-			return OperandType.WORD;
-		case _32BIT:
-			return OperandType.DOUBLEWORD;
-		case _64BIT:
-			return OperandType.QUADWORD;
-		default:
-			return null; // Should not be there
+			case _16BIT:
+				return OperandType.WORD;
+			case _32BIT:
+				return OperandType.DOUBLEWORD;
+			case _64BIT:
+				return OperandType.QUADWORD;
+			default:
+				return null; // Should not be there
 		}
 	}
 
@@ -84,7 +83,7 @@ class OperandDecoder {
 		else
 			return OperandType.QUAD_QUADWORD;
 	}
-	
+
 	static OperandType y(BinaryWidth w) {
 		if (w == BinaryWidth._64BIT)
 			return OperandType.QUADWORD;
@@ -94,44 +93,39 @@ class OperandDecoder {
 
 	static OperandType z(BinaryWidth w) {
 		switch (w) {
-		case _16BIT:
-			return OperandType.WORD;
-		case _32BIT:
-		case _64BIT:
-			return OperandType.DOUBLEWORD;
-		default:
-			return null; // Should not be there
+			case _16BIT:
+				return OperandType.WORD;
+			case _32BIT:
+			case _64BIT:
+				return OperandType.DOUBLEWORD;
+			default:
+				return null; // Should not be there
 		}
 	}
 
 	// ------------------------------------------------------------------------
-
 	// TODO: have an immediate union composing a large integer and a width
 	static void appendImmediate(Disassembler.Listener b, OperandType t, InputStream i) throws IOException {
 		final BinaryWidth w = OperandType.toBinaryWidth(t);
 		switch (w) {
-		case _8BIT: {
-			b.appendImmediate(LittleEndianReader.readInt8(i), t);
-			break;
-		}
-
-		case _16BIT: {
-			b.appendImmediate(LittleEndianReader.readUInt16(i), t);
-			break;
-		}
-
-		case _32BIT: {
-			b.appendImmediate(LittleEndianReader.readUInt32(i), t);
-			break;
-		}
-
-		case _64BIT: {
-			b.appendImmediate(LittleEndianReader.readUInt64(i), t);
-			break;
-		}
-
-		case _128BIT:
-			break;
+			case _8BIT: {
+				b.appendImmediate(LittleEndianReader.readInt8(i), t);
+				break;
+			}
+			case _16BIT: {
+				b.appendImmediate(LittleEndianReader.readUInt16(i), t);
+				break;
+			}
+			case _32BIT: {
+				b.appendImmediate(LittleEndianReader.readUInt32(i), t);
+				break;
+			}
+			case _64BIT: {
+				b.appendImmediate(LittleEndianReader.readUInt64(i), t);
+				break;
+			}
+			case _128BIT:
+				break;
 		}
 	}
 
@@ -139,159 +133,138 @@ class OperandDecoder {
 		RegisterName base = null;
 		RegisterName index = null;
 		BinaryWidth displacementWidth = null;
-
 		int scale = 0;
-
 		switch (m.getAddressSize()) {
-		case _16BIT: { // 16 bit addressing forms with the ModR/M byte
-
-			assert (mrm.mod() != 3);
-
-			if (mrm.mod() == 1)
-				displacementWidth = BinaryWidth._8BIT;
-			else if (mrm.mod() == 2)
-				displacementWidth = BinaryWidth._16BIT;
-
-			switch (mrm.rm()) {
-			case 0:
-				base = RegisterName.BX;
-				index = RegisterName.SI;
-				break;
-			case 1:
-				base = RegisterName.BX;
-				index = RegisterName.DI;
-				break;
-			case 2:
-				base = RegisterName.BP;
-				index = RegisterName.SI;
-				break;
-			case 3:
-				base = RegisterName.BP;
-				index = RegisterName.DI;
-				break;
-			case 4:
-				base = RegisterName.SI;
-				break;
-			case 5:
-				base = RegisterName.DI;
-				break;
-			case 6: // disp16
-				if (mrm.mod() == 0)
-					displacementWidth = BinaryWidth._16BIT;
-				else
-					base = RegisterName.BP;
-				break;
-			case 7:
-				base = RegisterName.BX;
-				break;
-			}
-
-			break;
-		}
-
-		case _32BIT:
-		case _64BIT: {
-			assert (mrm.mod() != 3);
-
-			if (mrm.mod() == 0 && mrm.rm() == 5)
-				displacementWidth = BinaryWidth._32BIT;
-			else {
+			case _16BIT: { // 16 bit addressing forms with the ModR/M byte
+				assert (mrm.mod() != 3);
 				if (mrm.mod() == 1)
 					displacementWidth = BinaryWidth._8BIT;
 				else if (mrm.mod() == 2)
-					displacementWidth = BinaryWidth._32BIT;
-
-				//
-				if (mrm.rm() == 4) { // SIB follows
-					final ScaleIndexBase sib = new ScaleIndexBase(LittleEndianReader.readUInt8(i));
-
-					// Scaled index
-					if (sib.getIndex() != 4) {
-						scale = (1 << sib.getScale()) & ~1;
-
-						final int Xxxx = sib.getIndex() | (p.getREXX() ? 0x08 : 0x0);
-						index = RegisterName.GPR32(Xxxx);
-					}
-
-					// Base
-					if (sib.getBase() == 5) {
+					displacementWidth = BinaryWidth._16BIT;
+				switch (mrm.rm()) {
+					case 0:
+						base = RegisterName.BX;
+						index = RegisterName.SI;
+						break;
+					case 1:
+						base = RegisterName.BX;
+						index = RegisterName.DI;
+						break;
+					case 2:
+						base = RegisterName.BP;
+						index = RegisterName.SI;
+						break;
+					case 3:
+						base = RegisterName.BP;
+						index = RegisterName.DI;
+						break;
+					case 4:
+						base = RegisterName.SI;
+						break;
+					case 5:
+						base = RegisterName.DI;
+						break;
+					case 6: // disp16
 						if (mrm.mod() == 0)
-							displacementWidth = BinaryWidth._32BIT;
+							displacementWidth = BinaryWidth._16BIT;
 						else
-							base = m.is32BIT() ? RegisterName.EBP : RegisterName.RBP;
-					} else {
-						final int Bbbb = sib.getBase() | (p.getREXB() ? 0x08 : 0x0);
+							base = RegisterName.BP;
+						break;
+					case 7:
+						base = RegisterName.BX;
+						break;
+				}
+				break;
+			}
+			case _32BIT:
+			case _64BIT: {
+				assert (mrm.mod() != 3);
+				if (mrm.mod() == 0 && mrm.rm() == 5)
+					displacementWidth = BinaryWidth._32BIT;
+				else {
+					if (mrm.mod() == 1)
+						displacementWidth = BinaryWidth._8BIT;
+					else if (mrm.mod() == 2)
+						displacementWidth = BinaryWidth._32BIT;
+					//
+					if (mrm.rm() == 4) { // SIB follows
+						final ScaleIndexBase sib = new ScaleIndexBase(LittleEndianReader.readUInt8(i));
+						// Scaled index
+						if (sib.getIndex() != 4) {
+							scale = (1 << sib.getScale()) & ~1;
+							final int Xxxx = sib.getIndex() | (p.getREXX() ? 0x08 : 0x0);
+							index = RegisterName.GPR32(Xxxx);
+						}
+						// Base
+						if (sib.getBase() == 5) {
+							if (mrm.mod() == 0)
+								displacementWidth = BinaryWidth._32BIT;
+							else
+								base = m.is32BIT() ? RegisterName.EBP : RegisterName.RBP;
+						}
+						else {
+							final int Bbbb = sib.getBase() | (p.getREXB() ? 0x08 : 0x0);
+							base = m.is32BIT() ? RegisterName.GPR32(Bbbb) : RegisterName.GPR64(Bbbb);
+						}
+					}
+					else { // No SIB byte
+						final int Bbbb = mrm.rm() | (p.getREXB() ? 0x08 : 0x0);
 						base = m.is32BIT() ? RegisterName.GPR32(Bbbb) : RegisterName.GPR64(Bbbb);
 					}
-				} else { // No SIB byte
-					final int Bbbb = mrm.rm() | (p.getREXB() ? 0x08 : 0x0);
-					base = m.is32BIT() ? RegisterName.GPR32(Bbbb) : RegisterName.GPR64(Bbbb);
 				}
+				break;
 			}
-
-			break;
+			default:
+				assert (false); // Should not be there
+				break;
 		}
-
-		default:
-			assert (false); // Should not be there
-			break;
-		}
-
 		// FIXME: when in 64bit, sign-extend displacement
-
 		// Consider displacement if any, then commit
 		if (displacementWidth == null)
 			b.appendSIBAddress(base, index, scale, t);
 		else
 			switch (displacementWidth) {
-			case _8BIT: {
-				b.appendSIBDAddress(base, index, scale, LittleEndianReader.readInt8(i), t);
-				break;
-			}
-
-			case _16BIT: {
-				b.appendSIBDAddress(base, index, scale, LittleEndianReader.readUInt16(i), t);
-				break;
-			}
-
-			case _32BIT: {
-				b.appendSIBDAddress(base, index, scale, LittleEndianReader.readUInt32(i), t);
-				break;
-			}
-
-			default:
-				assert (false);
-				break;
+				case _8BIT: {
+					b.appendSIBDAddress(base, index, scale, LittleEndianReader.readInt8(i), t);
+					break;
+				}
+				case _16BIT: {
+					b.appendSIBDAddress(base, index, scale, LittleEndianReader.readUInt16(i), t);
+					break;
+				}
+				case _32BIT: {
+					b.appendSIBDAddress(base, index, scale, LittleEndianReader.readUInt32(i), t);
+					break;
+				}
+				default:
+					assert (false);
+					break;
 			}
 	}
 
 	// Addressing modes
-
 	static void Ap(Mode m, InputStream i, Disassembler.Listener b) throws IOException {
 		switch (m.getOperandSize()) {
-		case _16BIT: {
-			final UInt16 offset = LittleEndianReader.readUInt16(i);
-			final UInt16 segment = LittleEndianReader.readUInt16(i);
-			b.appendSegmentOffset(segment, offset);
-			break;
-		}
-
-		case _32BIT: {
-			final UInt32 offset = LittleEndianReader.readUInt32(i);
-			final UInt16 segment = LittleEndianReader.readUInt16(i);
-			b.appendSegmentOffset(segment, offset);
-			break;
-		}
-
-		case _64BIT: {
-			final UInt64 offset = LittleEndianReader.readUInt64(i);
-			final UInt16 segment = LittleEndianReader.readUInt16(i);
-			b.appendSegmentOffset(segment, offset);
-			break;
-		}
-
-		default:
-			throw new AssertionError(); // Should not be there
+			case _16BIT: {
+				final UInt16 offset = LittleEndianReader.readUInt16(i);
+				final UInt16 segment = LittleEndianReader.readUInt16(i);
+				b.appendSegmentOffset(segment, offset);
+				break;
+			}
+			case _32BIT: {
+				final UInt32 offset = LittleEndianReader.readUInt32(i);
+				final UInt16 segment = LittleEndianReader.readUInt16(i);
+				b.appendSegmentOffset(segment, offset);
+				break;
+			}
+			case _64BIT: {
+				final UInt64 offset = LittleEndianReader.readUInt64(i);
+				final UInt16 segment = LittleEndianReader.readUInt16(i);
+				b.appendSegmentOffset(segment, offset);
+				break;
+			}
+			default:
+				throw new AssertionError(); // Should not be there
 		}
 	}
 
@@ -317,35 +290,36 @@ class OperandDecoder {
 		if (mrm.mod() == 3) {
 			BinaryWidth w = null;
 			switch (t) {
-			case BYTE:
-				w = BinaryWidth._8BIT;
-				break;
-			case WORD:
-				w = BinaryWidth._16BIT;
-				break;
-			case DOUBLEWORD:
-				w = BinaryWidth._32BIT;
-				break;
-			case QUADWORD:
-				w = BinaryWidth._64BIT;
-				break;
-			case DOUBLE_QUADWORD:
-				w = BinaryWidth._128BIT;
-				break;
-			case POINTER_32BIT:
-				w = BinaryWidth._16BIT;
-				break;
-			case POINTER_48BIT:
-				w = BinaryWidth._32BIT;
-				break;
-			case POINTER_80BIT:
-				w = BinaryWidth._64BIT;
-				break;
-			default:
-				assert (false);
+				case BYTE:
+					w = BinaryWidth._8BIT;
+					break;
+				case WORD:
+					w = BinaryWidth._16BIT;
+					break;
+				case DOUBLEWORD:
+					w = BinaryWidth._32BIT;
+					break;
+				case QUADWORD:
+					w = BinaryWidth._64BIT;
+					break;
+				case DOUBLE_QUADWORD:
+					w = BinaryWidth._128BIT;
+					break;
+				case POINTER_32BIT:
+					w = BinaryWidth._16BIT;
+					break;
+				case POINTER_48BIT:
+					w = BinaryWidth._32BIT;
+					break;
+				case POINTER_80BIT:
+					w = BinaryWidth._64BIT;
+					break;
+				default:
+					assert (false);
 			}
 			b.appendRegister(RegisterName.GPR(w, (p.getREXB() ? 0x08 : 0) | mrm.rm()), t);
-		} else
+		}
+		else
 			appendSIBDAddress(m, p, mrm, b, t, i);
 	}
 
@@ -381,11 +355,10 @@ class OperandDecoder {
 		// 256-bit YMM register, determined by operand type. (the MSB is ignored in
 		// 32-bit mode)
 	}
-	
+
 	//
 	// FIXME: check operand reader below this point
 	//
-
 	static void M(Mode m, Prefixes p, ModRM mrm, InputStream i, OperandType t, Disassembler.Listener b) throws IOException {
 		if (mrm.mod() == 3) // ModR/M byte may refer only to memory
 			b.reportInvalid(); // TODO: be more specific
@@ -411,28 +384,24 @@ class OperandDecoder {
 
 	static void O(Mode m, InputStream i, OperandType t, Disassembler.Listener b) throws IOException {
 		switch (m.getAddressSize()) {
-
-		case _16BIT: {
-			b.appendAbsoluteAddress(LittleEndianReader.readUInt16(i), t);
-			break;
-		}
-
-		case _32BIT: {
-			b.appendAbsoluteAddress(LittleEndianReader.readUInt32(i), t);
-			break;
-		}
-
-		// case _64BIT: { doc says "word or double word", does not speak about
-		// "quad word"
-		// b.appendAbsoluteAddress(new LittleEndianReader(i).readUInt64());
-		// break;
-		// }
-
-		default:
-			throw new AssertionError();
+			case _16BIT: {
+				b.appendAbsoluteAddress(LittleEndianReader.readUInt16(i), t);
+				break;
+			}
+			case _32BIT: {
+				b.appendAbsoluteAddress(LittleEndianReader.readUInt32(i), t);
+				break;
+			}
+			// case _64BIT: { doc says "word or double word", does not speak about
+			// "quad word"
+			// b.appendAbsoluteAddress(new LittleEndianReader(i).readUInt64());
+			// break;
+			// }
+			default:
+				throw new AssertionError();
 		}
 	}
-	
+
 	static void P(ModRM mrm, OperandType t, Disassembler.Listener b) {
 		b.appendRegister(RegisterName.MMX(mrm.reg()), t);
 	}
@@ -469,14 +438,14 @@ class OperandDecoder {
 	static void Rd_Mw(Mode m, Prefixes p, ModRM mrm, InputStream i, Disassembler.Listener b) throws IOException {
 		Rd_M(m, p, mrm, i, OperandType.WORD, b);
 	}
-	
+
 	private static void Ry_M(Mode m, Prefixes p, ModRM mrm, InputStream i, OperandType t, Disassembler.Listener b) throws IOException {
 		if (mrm.mod() == 3)
 			b.appendRegister(RegisterName.GPR32(mrm.rm()), y(m.getOperandSize()));
 		else
 			appendSIBDAddress(m, p, mrm, b, t, i);
 	}
-	
+
 	static void Ry_Mb(Mode m, Prefixes p, ModRM mrm, InputStream i, Disassembler.Listener b) throws IOException {
 		Ry_M(m, p, mrm, i, OperandType.BYTE, b);
 	}
@@ -514,7 +483,7 @@ class OperandDecoder {
 		else
 			appendSIBDAddress(m, p, mrm, b, t, i); // M
 	}
-	
+
 	static void Ux_Md(Mode m, Prefixes p, ModRM mrm, InputStream i, Disassembler.Listener b) throws IOException {
 		Ux_M(m, p, mrm, i, OperandType.DOUBLEWORD, b);
 	}
@@ -536,7 +505,8 @@ class OperandDecoder {
 		if (mrm.mod() == 3) {
 			b.appendRegister(RegisterName.XMM(mrm.rm()), t);
 			// FIXME: or YMM, following operand type
-		} else
+		}
+		else
 			appendSIBDAddress(m, p, mrm, b, t, i);
 	}
 
@@ -560,16 +530,13 @@ class OperandDecoder {
 
 	//
 	// Immediate
-
 	static void _1(Disassembler.Listener b) {
 		b.appendImmediate(new UInt32((byte) 0, (byte) 0, (byte) 0, (byte) 1), OperandType.DOUBLEWORD);
 	}
 
 	//
 	// Register codes (II-B:A.2.3)
-
 	//
-
 	static void AL(Disassembler.Listener b) {
 		b.appendRegister(RegisterName.AL, OperandType.BYTE);
 	}
@@ -643,7 +610,6 @@ class OperandDecoder {
 	}
 
 	//
-
 	static void ALr8b(Mode m, Prefixes p, Disassembler.Listener b) {
 		b.appendRegister(p.getREXB() ? RegisterName.R8B : RegisterName.AL, OperandType.fromBinaryWidth(m.getOperandSize()));
 	}
@@ -677,21 +643,20 @@ class OperandDecoder {
 	}
 
 	//
-
 	static void rAXr8(Mode m, Prefixes p, Disassembler.Listener b) {
 		b.appendRegister(rAXr8(m, p), OperandType.fromBinaryWidth(m.getOperandSize()));
 	}
 
 	static RegisterName rAXr8(Mode m, Prefixes p) {
 		switch (m.getOperandSize()) {
-		case _16BIT:
-			return p.getREXB() ? RegisterName.R8W : RegisterName.AX;
-		case _32BIT:
-			return p.getREXB() ? RegisterName.R8D : RegisterName.EAX;
-		case _64BIT:
-			return p.getREXB() ? RegisterName.R8 : RegisterName.RAX;
-		default:
-			throw new AssertionError();
+			case _16BIT:
+				return p.getREXB() ? RegisterName.R8W : RegisterName.AX;
+			case _32BIT:
+				return p.getREXB() ? RegisterName.R8D : RegisterName.EAX;
+			case _64BIT:
+				return p.getREXB() ? RegisterName.R8 : RegisterName.RAX;
+			default:
+				throw new AssertionError();
 		}
 	}
 
@@ -701,17 +666,17 @@ class OperandDecoder {
 
 	static RegisterName rCXr9(Mode m, Prefixes p) {
 		switch (m.getOperandSize()) {
-		case _16BIT:
-			return p.getREXB() ? RegisterName.R9W : RegisterName.CX;
-		case _32BIT:
-			return p.getREXB() ? RegisterName.R9D : RegisterName.ECX;
-		case _64BIT:
-			return p.getREXB() ? RegisterName.R9 : RegisterName.RCX;
-		default:
-			throw new AssertionError();
+			case _16BIT:
+				return p.getREXB() ? RegisterName.R9W : RegisterName.CX;
+			case _32BIT:
+				return p.getREXB() ? RegisterName.R9D : RegisterName.ECX;
+			case _64BIT:
+				return p.getREXB() ? RegisterName.R9 : RegisterName.RCX;
+			default:
+				throw new AssertionError();
 		}
 	}
-	
+
 	static void rDX(Mode m, Disassembler.Listener b) {
 		// FIXME: b.appendRegister(rDXr10(m, p), OperandType.fromBinaryWidth(m.getOperandSize()));
 	}
@@ -722,14 +687,14 @@ class OperandDecoder {
 
 	static RegisterName rDXr10(Mode m, Prefixes p) {
 		switch (m.getOperandSize()) {
-		case _16BIT:
-			return p.getREXB() ? RegisterName.R10W : RegisterName.DX;
-		case _32BIT:
-			return p.getREXB() ? RegisterName.R10D : RegisterName.EDX;
-		case _64BIT:
-			return p.getREXB() ? RegisterName.R10 : RegisterName.RDX;
-		default:
-			throw new AssertionError();
+			case _16BIT:
+				return p.getREXB() ? RegisterName.R10W : RegisterName.DX;
+			case _32BIT:
+				return p.getREXB() ? RegisterName.R10D : RegisterName.EDX;
+			case _64BIT:
+				return p.getREXB() ? RegisterName.R10 : RegisterName.RDX;
+			default:
+				throw new AssertionError();
 		}
 	}
 
@@ -739,14 +704,14 @@ class OperandDecoder {
 
 	static RegisterName rBXr11(Mode m, Prefixes p) {
 		switch (m.getOperandSize()) {
-		case _16BIT:
-			return p.getREXB() ? RegisterName.R11W : RegisterName.BX;
-		case _32BIT:
-			return p.getREXB() ? RegisterName.R11D : RegisterName.EBX;
-		case _64BIT:
-			return p.getREXB() ? RegisterName.R11 : RegisterName.RBX;
-		default:
-			throw new AssertionError();
+			case _16BIT:
+				return p.getREXB() ? RegisterName.R11W : RegisterName.BX;
+			case _32BIT:
+				return p.getREXB() ? RegisterName.R11D : RegisterName.EBX;
+			case _64BIT:
+				return p.getREXB() ? RegisterName.R11 : RegisterName.RBX;
+			default:
+				throw new AssertionError();
 		}
 	}
 
@@ -756,14 +721,14 @@ class OperandDecoder {
 
 	static RegisterName rSPr12(Mode m, Prefixes p) {
 		switch (m.getOperandSize()) {
-		case _16BIT:
-			return p.getREXB() ? RegisterName.R12W : RegisterName.SP;
-		case _32BIT:
-			return p.getREXB() ? RegisterName.R12D : RegisterName.ESP;
-		case _64BIT:
-			return p.getREXB() ? RegisterName.R12 : RegisterName.RSP;
-		default:
-			throw new AssertionError();
+			case _16BIT:
+				return p.getREXB() ? RegisterName.R12W : RegisterName.SP;
+			case _32BIT:
+				return p.getREXB() ? RegisterName.R12D : RegisterName.ESP;
+			case _64BIT:
+				return p.getREXB() ? RegisterName.R12 : RegisterName.RSP;
+			default:
+				throw new AssertionError();
 		}
 	}
 
@@ -773,14 +738,14 @@ class OperandDecoder {
 
 	static RegisterName rBPr13(Mode m, Prefixes p) {
 		switch (m.getOperandSize()) {
-		case _16BIT:
-			return p.getREXB() ? RegisterName.R13W : RegisterName.BP;
-		case _32BIT:
-			return p.getREXB() ? RegisterName.R13D : RegisterName.EBP;
-		case _64BIT:
-			return p.getREXB() ? RegisterName.R13 : RegisterName.RBP;
-		default:
-			throw new AssertionError();
+			case _16BIT:
+				return p.getREXB() ? RegisterName.R13W : RegisterName.BP;
+			case _32BIT:
+				return p.getREXB() ? RegisterName.R13D : RegisterName.EBP;
+			case _64BIT:
+				return p.getREXB() ? RegisterName.R13 : RegisterName.RBP;
+			default:
+				throw new AssertionError();
 		}
 	}
 
@@ -790,14 +755,14 @@ class OperandDecoder {
 
 	static RegisterName rSIr14(Mode m, Prefixes p) {
 		switch (m.getOperandSize()) {
-		case _16BIT:
-			return p.getREXB() ? RegisterName.R14W : RegisterName.SI;
-		case _32BIT:
-			return p.getREXB() ? RegisterName.R14D : RegisterName.ESI;
-		case _64BIT:
-			return p.getREXB() ? RegisterName.R14 : RegisterName.RSI;
-		default:
-			throw new AssertionError();
+			case _16BIT:
+				return p.getREXB() ? RegisterName.R14W : RegisterName.SI;
+			case _32BIT:
+				return p.getREXB() ? RegisterName.R14D : RegisterName.ESI;
+			case _64BIT:
+				return p.getREXB() ? RegisterName.R14 : RegisterName.RSI;
+			default:
+				throw new AssertionError();
 		}
 	}
 
@@ -807,33 +772,32 @@ class OperandDecoder {
 
 	static RegisterName rDIr15(Mode m, Prefixes p) {
 		switch (m.getOperandSize()) {
-		case _16BIT:
-			return p.getREXB() ? RegisterName.R15W : RegisterName.DI;
-		case _32BIT:
-			return p.getREXB() ? RegisterName.R15D : RegisterName.EDI;
-		case _64BIT:
-			return p.getREXB() ? RegisterName.R15 : RegisterName.RDI;
-		default:
-			throw new AssertionError();
+			case _16BIT:
+				return p.getREXB() ? RegisterName.R15W : RegisterName.DI;
+			case _32BIT:
+				return p.getREXB() ? RegisterName.R15D : RegisterName.EDI;
+			case _64BIT:
+				return p.getREXB() ? RegisterName.R15 : RegisterName.RDI;
+			default:
+				throw new AssertionError();
 		}
 	}
 
 	//
-
 	static void rAX(Mode m, Disassembler.Listener b) {
 		b.appendRegister(rAX(m), OperandType.fromBinaryWidth(m.getOperandSize()));
 	}
 
 	static RegisterName rAX(Mode m) {
 		switch (m.getOperandSize()) {
-		case _16BIT:
-			return RegisterName.AX;
-		case _32BIT:
-			return RegisterName.EAX;
-		case _64BIT:
-			return RegisterName.RAX;
-		default:
-			throw new AssertionError();
+			case _16BIT:
+				return RegisterName.AX;
+			case _32BIT:
+				return RegisterName.EAX;
+			case _64BIT:
+				return RegisterName.RAX;
+			default:
+				throw new AssertionError();
 		}
 	}
 
@@ -843,12 +807,12 @@ class OperandDecoder {
 
 	static RegisterName eAX(Mode m) {
 		switch (m.getOperandSize()) {
-		case _16BIT:
-			return RegisterName.AX;
-		case _32BIT:
-			return RegisterName.EAX;
-		default:
-			throw new AssertionError();
+			case _16BIT:
+				return RegisterName.AX;
+			case _32BIT:
+				return RegisterName.EAX;
+			default:
+				throw new AssertionError();
 		}
 	}
 
@@ -858,12 +822,12 @@ class OperandDecoder {
 
 	static RegisterName eCX(Mode m) {
 		switch (m.getOperandSize()) {
-		case _16BIT:
-			return RegisterName.CX;
-		case _32BIT:
-			return RegisterName.ECX;
-		default:
-			throw new AssertionError();
+			case _16BIT:
+				return RegisterName.CX;
+			case _32BIT:
+				return RegisterName.ECX;
+			default:
+				throw new AssertionError();
 		}
 	}
 
@@ -873,12 +837,12 @@ class OperandDecoder {
 
 	static RegisterName eDX(Mode m) {
 		switch (m.getOperandSize()) {
-		case _16BIT:
-			return RegisterName.DX;
-		case _32BIT:
-			return RegisterName.EDX;
-		default:
-			throw new AssertionError();
+			case _16BIT:
+				return RegisterName.DX;
+			case _32BIT:
+				return RegisterName.EDX;
+			default:
+				throw new AssertionError();
 		}
 	}
 
@@ -888,12 +852,12 @@ class OperandDecoder {
 
 	static RegisterName eBX(Mode m) {
 		switch (m.getOperandSize()) {
-		case _16BIT:
-			return RegisterName.BX;
-		case _32BIT:
-			return RegisterName.EBX;
-		default:
-			throw new AssertionError();
+			case _16BIT:
+				return RegisterName.BX;
+			case _32BIT:
+				return RegisterName.EBX;
+			default:
+				throw new AssertionError();
 		}
 	}
 
@@ -903,12 +867,12 @@ class OperandDecoder {
 
 	static RegisterName eSP(Mode m) {
 		switch (m.getOperandSize()) {
-		case _16BIT:
-			return RegisterName.SP;
-		case _32BIT:
-			return RegisterName.ESP;
-		default:
-			throw new AssertionError();
+			case _16BIT:
+				return RegisterName.SP;
+			case _32BIT:
+				return RegisterName.ESP;
+			default:
+				throw new AssertionError();
 		}
 	}
 
@@ -918,12 +882,12 @@ class OperandDecoder {
 
 	static RegisterName eBP(Mode m) {
 		switch (m.getOperandSize()) {
-		case _16BIT:
-			return RegisterName.BP;
-		case _32BIT:
-			return RegisterName.EBP;
-		default:
-			throw new AssertionError();
+			case _16BIT:
+				return RegisterName.BP;
+			case _32BIT:
+				return RegisterName.EBP;
+			default:
+				throw new AssertionError();
 		}
 	}
 
@@ -933,12 +897,12 @@ class OperandDecoder {
 
 	static RegisterName eSI(Mode m) {
 		switch (m.getOperandSize()) {
-		case _16BIT:
-			return RegisterName.SI;
-		case _32BIT:
-			return RegisterName.ESI;
-		default:
-			throw new AssertionError();
+			case _16BIT:
+				return RegisterName.SI;
+			case _32BIT:
+				return RegisterName.ESI;
+			default:
+				throw new AssertionError();
 		}
 	}
 
@@ -948,13 +912,12 @@ class OperandDecoder {
 
 	static RegisterName eDI(Mode m) {
 		switch (m.getOperandSize()) {
-		case _16BIT:
-			return RegisterName.DI;
-		case _32BIT:
-			return RegisterName.EDI;
-		default:
-			throw new AssertionError();
+			case _16BIT:
+				return RegisterName.DI;
+			case _32BIT:
+				return RegisterName.EDI;
+			default:
+				throw new AssertionError();
 		}
 	}
-
 }

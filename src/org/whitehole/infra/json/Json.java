@@ -33,6 +33,7 @@ package org.whitehole.infra.json;
 import java.io.Writer;
 
 public class Json {
+
 	static public JsonArrayBuilder createArrayBuilder() {
 		return new JsonArrayBuilder.Impl();
 	}
