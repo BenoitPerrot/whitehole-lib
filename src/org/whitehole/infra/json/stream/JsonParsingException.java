@@ -28,82 +28,21 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-package org.whitehole.infra.json;
+package org.whitehole.infra.json.stream;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+public class JsonParsingException extends RuntimeException {
 
-public interface JsonObject extends JsonStructure, Map<String, JsonValue> {
+	private static final long serialVersionUID = -8163636870882012806L;
 
-	static class Impl extends JsonValue.Impl implements JsonObject {
+	private final String _message;
+	private final JsonLocation _location;
 
-		private final SortedMap<String, JsonValue> _data = new TreeMap<String, JsonValue>();
+	public JsonParsingException(String message, JsonLocation location) {
+		_message = message;
+		_location = location;
+	}
 
-		public Impl() {
-			super(ValueType.OBJECT);
-		}
-
-		@Override
-		public void clear() {
-			_data.clear();
-		}
-
-		@Override
-		public boolean containsKey(Object key) {
-			return _data.containsKey(key);
-		}
-
-		@Override
-		public boolean containsValue(Object value) {
-			return _data.containsValue(value);
-		}
-
-		@Override
-		public Set<java.util.Map.Entry<String, JsonValue>> entrySet() {
-			return _data.entrySet();
-		}
-
-		@Override
-		public JsonValue get(Object key) {
-			return _data.get(key);
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return _data.isEmpty();
-		}
-
-		@Override
-		public Set<String> keySet() {
-			return _data.keySet();
-		}
-
-		@Override
-		public JsonValue put(String key, JsonValue value) {
-			return _data.put(key, value);
-		}
-
-		@Override
-		public void putAll(Map<? extends String, ? extends JsonValue> m) {
-			_data.putAll(m);
-		}
-
-		@Override
-		public JsonValue remove(Object key) {
-			return _data.remove(key);
-		}
-
-		@Override
-		public int size() {
-			return _data.size();
-		}
-
-		@Override
-		public Collection<JsonValue> values() {
-			return _data.values();
-		}
+	public String getMessage() {
+		return _location.getLineNumber() + "." + _location.getColumnNumber() + ": " + _message;
 	}
 }

@@ -36,7 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public interface JsonArray extends JsonValue, List<JsonValue> {
+public interface JsonArray extends JsonStructure, List<JsonValue> {
 
 	static class Impl extends JsonValue.Impl implements JsonArray {
 

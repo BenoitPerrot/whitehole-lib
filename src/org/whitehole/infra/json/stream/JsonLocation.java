@@ -28,82 +28,33 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-package org.whitehole.infra.json;
+package org.whitehole.infra.json.stream;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+public interface JsonLocation {
 
-public interface JsonObject extends JsonStructure, Map<String, JsonValue> {
+	public long getColumnNumber();
 
-	static class Impl extends JsonValue.Impl implements JsonObject {
+	public long getLineNumber();
 
-		private final SortedMap<String, JsonValue> _data = new TreeMap<String, JsonValue>();
+	public class Impl implements JsonLocation {
 
-		public Impl() {
-			super(ValueType.OBJECT);
+		public Impl(long columnNumber, long lineNumber) {
+			_columnNumber = columnNumber;
+			_lineNumber = lineNumber;
+		}
+
+		private final long _columnNumber;
+		private final long _lineNumber;
+
+		@Override
+		public long getColumnNumber() {
+			return _columnNumber;
 		}
 
 		@Override
-		public void clear() {
-			_data.clear();
+		public long getLineNumber() {
+			return _lineNumber;
 		}
 
-		@Override
-		public boolean containsKey(Object key) {
-			return _data.containsKey(key);
-		}
-
-		@Override
-		public boolean containsValue(Object value) {
-			return _data.containsValue(value);
-		}
-
-		@Override
-		public Set<java.util.Map.Entry<String, JsonValue>> entrySet() {
-			return _data.entrySet();
-		}
-
-		@Override
-		public JsonValue get(Object key) {
-			return _data.get(key);
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return _data.isEmpty();
-		}
-
-		@Override
-		public Set<String> keySet() {
-			return _data.keySet();
-		}
-
-		@Override
-		public JsonValue put(String key, JsonValue value) {
-			return _data.put(key, value);
-		}
-
-		@Override
-		public void putAll(Map<? extends String, ? extends JsonValue> m) {
-			_data.putAll(m);
-		}
-
-		@Override
-		public JsonValue remove(Object key) {
-			return _data.remove(key);
-		}
-
-		@Override
-		public int size() {
-			return _data.size();
-		}
-
-		@Override
-		public Collection<JsonValue> values() {
-			return _data.values();
-		}
 	}
 }

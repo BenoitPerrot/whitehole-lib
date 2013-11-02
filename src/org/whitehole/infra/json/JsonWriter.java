@@ -39,6 +39,8 @@ import org.whitehole.infra.io.IndentingWriter;
 
 public interface JsonWriter extends Closeable {
 
+	public void write(JsonStructure value) throws IOException;
+
 	public void writeArray(JsonArray array) throws IOException;
 
 	public void writeObject(JsonObject object) throws IOException;
@@ -78,6 +80,14 @@ public interface JsonWriter extends Closeable {
 					writeObject((JsonObject) v);
 					break;
 			}
+		}
+
+		@Override
+		public void write(JsonStructure value) throws IOException {
+			if (value instanceof JsonArray)
+				writeArray((JsonArray) value);
+			else
+				writeObject((JsonObject) value);
 		}
 
 		@Override
