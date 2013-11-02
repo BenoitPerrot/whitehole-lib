@@ -2,7 +2,7 @@
 <project>
 
 	<pathconvert targetos="unix" property="rootdir"><path location="${basedir}"/></pathconvert>
-	<property name="commondir" value="${rootdir}/../whitehole-common" />
+	<property name="commonsdir" value="${rootdir}/../whitehole-commons" />
 
 	<macrodef name="rhinoscript">
 		<attribute name="require-path" default="${rootdir}" />
@@ -68,12 +68,12 @@ require(['@{generator}'],
 	<target name="build-binary-sources">
 		<local name="gendir"/><property name="gendir" value="org/whitehole/binary"/>
 		
-		<generate generator="${gendir}/generateSchemeModel" input="${commondir}/resources/org/whitehole/binary/pe/pe.json" output="org.whitehole.binary.pe" />
+		<generate generator="${gendir}/generateSchemeModel" input="${commonsdir}/resources/org/whitehole/binary/pe/pe.json" output="org.whitehole.binary.pe" />
 	</target>
 
 	<target name="build-assembly.ia32_x64-sources">
 		<local name="gendir"/><property name="gendir" value="org/whitehole/assembly/ia32_x64"/>
-		<local name="rscdir"/><property name="rscdir" value="${commondir}/resources/org/whitehole/assembly/ia32_x64"/>
+		<local name="rscdir"/><property name="rscdir" value="${commonsdir}/resources/org/whitehole/assembly/ia32_x64"/>
 		<local name="outdir"/><property name="outdir" value="${rootdir}/src/org/whitehole/assembly/ia32_x64"/>
 		
 		<generate generator="${gendir}/generateHTML" input="${rscdir}/opcodeMaps.json" output="${outdir}/opcodeMaps.html" />
