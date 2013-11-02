@@ -44,16 +44,5 @@ public class LargeByteBuffer {
 		return _b.get((int) offset);
 	}
 
-	public String getStringASCIIZ(long offset) {
-		StringBuilder sb = new StringBuilder();
-		// Search for null termination
-		while (get(offset) != 0) {
-			sb.append((char) get(offset));
-			++offset;
-		}
-		// Build string
-		return sb.toString();
-	}
-
 	private final ByteBuffer _b;
 }

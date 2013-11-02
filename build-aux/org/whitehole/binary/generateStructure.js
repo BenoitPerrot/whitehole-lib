@@ -37,61 +37,67 @@ define('org/whitehole/binary/generateStructure', [ 'org/whitehole/infra/IO' ], f
 	'use strict';
 
 	return function(ns, schema, name) {
-		var cw, typeData = {}, i, k, f, t, offset, byteSize,
-			s = schema.structures[name],
-			aliases = schema.aliases || {};
-		
+		var cw, builtinTypes = {}, i, n, s = schema.structures[name], aliases = schema.aliases || {};
+
 		function unaliasType(t) {
 			return aliases[t] || t;
 		}
 
 		for (i = 1; i <= 16; i *= 2) {
-			typeData['ByteArray' + i] = {
-				    i : 'org.whitehole.infra.types.ByteArray' + i,
-				    bs : i
+			n = 'ByteArray' + i;
+			builtinTypes[n] = {
+			    deps : [ 'org.whitehole.infra.types.ByteArray' + i, 'org.whitehole.infra.types.LittleEndianReader' ],
+			    read : 'LittleEndianReader.read' + n,
+			    byteSize : i
 			};
-			typeData['Int' + (i * 8)] = {
-			    i : 'org.whitehole.infra.types.Int' + (i * 8),
-			    bs : i
+
+			n = 'Int' + (i * 8);
+			builtinTypes[n] = {
+			    deps : [ 'org.whitehole.infra.types.Int' + (i * 8), 'org.whitehole.infra.types.LittleEndianReader' ],
+			    read : 'LittleEndianReader.read' + n,
+			    byteSize : i
 			};
-			typeData['UInt' + (i * 8)] = {
-			    i : 'org.whitehole.infra.types.UInt' + (i * 8),
-			    bs : i
+
+			n = 'UInt' + (i * 8);
+			builtinTypes[n] = {
+			    deps : [ 'org.whitehole.infra.types.UInt' + (i * 8), 'org.whitehole.infra.types.LittleEndianReader' ],
+			    read : 'LittleEndianReader.read' + n,
+			    byteSize : i
 			};
 		}
+		builtinTypes['StringAsciiz'] = {
+		    deps : [ 'org.whitehole.infra.types.StringAsciiz' ],
+		    at : 'String'
+		};
 
 		cw = new IO.CodeWriter();
+
+		// Prologue
 
 		cw.openDocument().openNamespace(ns);
 
 		cw.openClass('public', name, s.base);
 
-		// Constructors
 		//
-
 		// Reader
-		cw.addImport('org.whitehole.infra.io.LargeByteBuffer');
 
-		offset = 0;
-		byteSize = {
-		    imm : 0,
-		    sum : []
-		};
+		(function generateReader(cw, name, s) {
+			cw.addImport('org.whitehole.infra.io.LargeByteBuffer');
 
-		cw.openFunction('public static ' + name, 'read', 'LargeByteBuffer buffer, long offset');
-		cw.addStatement('return read(buffer, offset, new ' + name + '())');
-		cw.closeFunction();
+			cw.openFunction('public static ' + name, 'read', 'LargeByteBuffer buffer, long offset');
+			cw.addStatement('return read(buffer, offset, new ' + name + '())');
+			cw.closeFunction();
 
-		cw.openFunction('public static ' + name, 'read', 'LargeByteBuffer buffer, long offset, '+ name + ' x');
-		
-		if (s.base && schema.structures[s.base] && (!schema.structures[s.base].fields || schema.structures[s.base].fields.length)) {
-			cw.addStatement(s.base + '.read(buffer, offset, x)');
-			cw.addStatement('offset += ' + s.base + '.byteSize');
-		}
-		
-		for (k in s.fields)
-			if (s.fields.hasOwnProperty(k)) {
-				f = s.fields[k];
+			cw.openFunction('public static ' + name, 'read', 'LargeByteBuffer buffer, long offset, ' + name + ' x');
+
+			if (s.base && schema.structures[s.base] && (!schema.structures[s.base].fields || schema.structures[s.base].fields.length)) {
+				cw.addStatement(s.base + '.read(buffer, offset, x)');
+				cw.addStatement('offset += ' + s.base + '.byteSize');
+			}
+
+			s.fields.forEach(function(f) {
+				var t, read, offset = 0;
+
 				if (f.keep !== false) {
 					t = unaliasType(f.type);
 
@@ -101,71 +107,117 @@ define('org/whitehole/binary/generateStructure', [ 'org/whitehole/infra/IO' ], f
 
 					if (f.count) {
 						t = 'ArrayList<' + t + '>';
-						byteSize = undefined;
 					}
 					else {
-						if (typeData.hasOwnProperty(t)) {
-							cw.addImport('org.whitehole.infra.types.LittleEndianReader');
+						read = t + '.read';
 
-							if (byteSize !== undefined)
-								byteSize.imm += typeData[t].bs;
-
-							cw.addStatement('x.' + IO.CodeWriter.makeMethodName('set', f.name) + '(LittleEndianReader.read' + t + '(buffer, ' + offset + '))');
+						if (builtinTypes.hasOwnProperty(t)) {
+							if (builtinTypes[t].hasOwnProperty('read'))
+								read = builtinTypes[t].read;
 						}
-						else {
-							if (byteSize !== undefined)
-								byteSize.sum.push(t + '.byteSize');
 
-							cw.addStatement('x.' + IO.CodeWriter.makeMethodName('set', f.name) + '(' + t + '.read(buffer, ' + offset + '))');
-						}
+						cw.addStatement('x.' + IO.CodeWriter.makeMethodName('set', f.name) + '(' + read + '(buffer, ' + offset + '))');
 					}
 				}
-			}
-		cw.addStatement('return x');
-		cw.closeFunction();
+			});
 
+			cw.addStatement('return x');
+			cw.closeFunction();
+		}(cw, name, s));
+
+		//
 		// Accessors
-		//
 
-		for (k in s.fields)
-			if (s.fields.hasOwnProperty(k)) {
-				f = s.fields[k];
-				if (f.keep !== false) {
-					t = unaliasType(f.type);
+		s.fields.forEach(function generateAccessor(f) {
+			var at;
+			if (f.keep !== false) {
+				at = unaliasType(f.type);
 
-					cw.openFunction('public ' + t, IO.CodeWriter.makeMethodName('get', f.name));
-					cw.addStatement('return ' + IO.CodeWriter.makeMemberName(f.name));
-					cw.closeFunction();
+				if (builtinTypes.hasOwnProperty(at))
+					if (builtinTypes[at].hasOwnProperty('at'))
+						at = builtinTypes[at].at;
 
-					cw.openFunction('public ' + name, IO.CodeWriter.makeMethodName('set', f.name), t + ' x');
-					cw.addStatement(IO.CodeWriter.makeMemberName(f.name) + ' = x');
-					cw.addStatement('return this');
-					cw.closeFunction();
-				}
+				cw.openFunction('public ' + at, IO.CodeWriter.makeMethodName('get', f.name));
+				cw.addStatement('return ' + IO.CodeWriter.makeMemberName(f.name));
+				cw.closeFunction();
+
+				cw.openFunction('public ' + name, IO.CodeWriter.makeMethodName('set', f.name), at + ' x');
+				cw.addStatement(IO.CodeWriter.makeMemberName(f.name) + ' = x');
+				cw.addStatement('return this');
+				cw.closeFunction();
 			}
+		});
 
-		if (byteSize !== undefined)
-			cw.addStatement('public static final int byteSize = ' + byteSize.imm + (byteSize.sum.length ? ' + ' + byteSize.sum.join(' + ') : ''));
-
-		// Attributes
 		//
+		// Byte size
 
-		for (k in s.fields)
-			if (s.fields.hasOwnProperty(k)) {
-				f = s.fields[k];
+		(function generateByteSize(s) {
+			var byteSize = {
+					imm : 0,
+				    sum : [],
+				    fun: []
+			}, cst;
+
+			s.fields.forEach(function(f) {
+				var t;
 				if (f.keep !== false) {
 					t = unaliasType(f.type);
 
 					if (f.count) {
-						t = 'ArrayList<' + t + '>';
-						cw.addImport('java.util.ArrayList');
+						byteSize.fun.push('FIXME');
 					}
-					else if (typeData.hasOwnProperty(t))
-						cw.addImport(typeData[t].i);
-
-					cw.addStatement('private ' + t + ' ' + IO.CodeWriter.makeMemberName(f.name));
+					else {
+						if (builtinTypes.hasOwnProperty(t)) {
+							if (builtinTypes[t].hasOwnProperty('byteSize'))
+								byteSize.imm += builtinTypes[t].byteSize;
+							else
+								byteSize.fun.push(t + '.byteSize(' + IO.CodeWriter.makeMemberName(f.name) + ')');
+						}
+						else
+							byteSize.sum.push(t + '.byteSize');
+					}
 				}
+			});
+
+			cst = byteSize.imm;
+			if (0 < byteSize.sum.length)
+				cst += ' + ' + byteSize.sum.join(' + ');
+			if (0 < byteSize.fun.length) {
+				cw.openFunction('public int', 'byteSize', '');
+				cw.addStatement('return ' + cst + ' + ' + byteSize.fun.join(' + '));
+				cw.closeFunction();
 			}
+			else
+				cw.addStatement('public static final int byteSize = ' + cst);
+		}(s));
+
+		//
+		// Attributes
+		
+		s.fields.forEach(function generateAttribute(f) {
+			var at;
+			if (f.keep !== false) {
+				at = unaliasType(f.type);
+
+				if (f.count) {
+					cw.addImport('java.util.ArrayList');
+					at = 'ArrayList<' + at + '>';
+				}
+				else if (builtinTypes.hasOwnProperty(at)) {
+
+					builtinTypes[at].deps.forEach(function(i) {
+						cw.addImport(i);
+					});
+
+					if (builtinTypes[at].hasOwnProperty('at'))
+						at = builtinTypes[at].at;
+				}
+
+				cw.addStatement('private ' + at + ' ' + IO.CodeWriter.makeMemberName(f.name));
+			}
+		});
+
+		// Epilogue
 
 		cw.closeClass();
 
