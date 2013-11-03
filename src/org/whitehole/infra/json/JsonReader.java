@@ -365,7 +365,7 @@ public interface JsonReader extends Closeable {
 						if (name == null)
 							_g.write(new BigDecimal(t.word));
 						else
-							_g.write(new BigDecimal(t.word));
+							_g.write(name, new BigDecimal(t.word));
 						break;
 					default:
 						reportSyntaxError(t); // Should not be there
