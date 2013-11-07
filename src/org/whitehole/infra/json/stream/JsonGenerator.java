@@ -30,45 +30,55 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.whitehole.infra.json.stream;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Stack;
 
 import org.whitehole.infra.json.JsonArray;
+import org.whitehole.infra.json.JsonException;
 import org.whitehole.infra.json.JsonNumber;
 import org.whitehole.infra.json.JsonObject;
 import org.whitehole.infra.json.JsonString;
 import org.whitehole.infra.json.JsonStructure;
 import org.whitehole.infra.json.JsonValue;
 
-public interface JsonGenerator {
+public interface JsonGenerator extends Closeable {
 
-	public JsonGenerator write(BigDecimal value);
+	public void close() throws JsonException;
 
-	public JsonGenerator write(boolean value);
+	public JsonGenerator write(BigDecimal value) throws JsonException;
 
-	public JsonGenerator write(String value);
+	public JsonGenerator write(boolean value) throws JsonException;
 
-	public JsonGenerator write(String name, BigDecimal value);
+	public JsonGenerator write(String value) throws JsonException;
 
-	public JsonGenerator write(String name, boolean value);
+	public JsonGenerator write(String name, BigDecimal value) throws JsonException;
 
-	public JsonGenerator write(String name, String value);
+	public JsonGenerator write(String name, boolean value) throws JsonException;
 
-	public JsonGenerator writeEnd() throws Exception;
+	public JsonGenerator write(String name, String value) throws JsonException;
 
-	public JsonGenerator writeNull() throws Exception;
+	public JsonGenerator writeEnd() throws JsonException;
 
-	public JsonGenerator writeNull(String name) throws Exception;
+	public JsonGenerator writeNull() throws JsonException;
 
-	public JsonGenerator writeStartArray() throws Exception;
+	public JsonGenerator writeNull(String name) throws JsonException;
 
-	public JsonGenerator writeStartArray(String name) throws Exception;
+	public JsonGenerator writeStartArray() throws JsonException;
 
-	public JsonGenerator writeStartObject() throws Exception;
+	public JsonGenerator writeStartArray(String name) throws JsonException;
 
-	public JsonGenerator writeStartObject(String name) throws Exception;
+	public JsonGenerator writeStartObject() throws JsonException;
+
+	public JsonGenerator writeStartObject(String name) throws JsonException;
 
 	class Builder implements JsonGenerator {
+
+		@Override
+		public void close() {
+			// Nothing to do.
+		}
 
 		@Override
 		public JsonGenerator write(BigDecimal value) {
@@ -122,7 +132,7 @@ public interface JsonGenerator {
 		}
 
 		@Override
-		public JsonGenerator writeStartObject(final String name) throws Exception {
+		public JsonGenerator writeStartObject(final String name) throws JsonException {
 			return putStart(name, new JsonObject.Impl());
 		}
 
@@ -132,7 +142,7 @@ public interface JsonGenerator {
 		}
 
 		@Override
-		public JsonGenerator writeStartArray(String name) throws Exception {
+		public JsonGenerator writeStartArray(String name) throws JsonException {
 			return putStart(name, new JsonArray.Impl());
 		}
 
@@ -171,6 +181,190 @@ public interface JsonGenerator {
 
 		public JsonStructure get() {
 			return _last;
+		}
+	}
+
+	class Writer implements JsonGenerator {
+
+		public Writer(java.io.Writer w) {
+			_w = w;
+		}
+
+		private final java.io.Writer _w;
+
+		private enum State {
+			FIRST_IN_OBJECT, IN_OBJECT, FIRST_IN_ARRAY, IN_ARRAY
+		}
+
+		private Stack<State> _nest = new Stack<State>();
+
+		private String escape(String s) {
+			return s; // FIXME: do escape
+		}
+
+		private JsonGenerator preWrite() throws IOException {
+			if (!_nest.empty()) {
+				if (_nest.peek() == State.FIRST_IN_ARRAY) {
+					_nest.pop();
+					_nest.push(State.IN_ARRAY);
+				}
+				else if (_nest.peek() == State.FIRST_IN_OBJECT) {
+					_nest.pop();
+					_nest.push(State.IN_OBJECT);
+				}
+				else
+					_w.write(", ");
+			}
+			return this;
+		}
+
+		@Override
+		public void close() throws JsonException {
+			try {
+				_w.close();
+			}
+			catch (Exception x) {
+				throw new JsonException("", x); // FIXME
+			}
+		}
+
+		@Override
+		public JsonGenerator write(BigDecimal value) throws JsonException {
+			return writeEscapedItem(value.toString());
+		}
+
+		@Override
+		public JsonGenerator write(boolean value) throws JsonException {
+			return writeEscapedItem(Boolean.toString(value));
+		}
+
+		@Override
+		public JsonGenerator write(String value) throws JsonException {
+			// Do not concatenate strings to avoid useless copy
+			try {
+				preWrite();
+				_w.write('"');
+				_w.write(escape(value)); // FIXME: escape
+				_w.write('"');
+			}
+			catch (IOException x) {
+				throw new JsonException("", x); // FIXME: say something
+			}
+			return this;
+		}
+
+		private JsonGenerator writeEscapedItem(String value) throws JsonException {
+			try {
+				preWrite();
+				_w.write(value);
+			}
+			catch (IOException x) {
+				throw new JsonException("", x); // FIXME: say something
+			}
+			return this;
+		}
+
+		@Override
+		public JsonGenerator write(String name, BigDecimal value) throws JsonException {
+			return writeEscapedValue(name, value.toString());
+		}
+
+		@Override
+		public JsonGenerator write(String name, boolean value) throws JsonException {
+			return writeEscapedValue(name, Boolean.toString(value));
+		}
+
+		private JsonGenerator writeUnescapedKey(String key) throws IOException {
+			preWrite();
+			// Do not concatenate strings to avoid useless copy
+			_w.write('"');
+			_w.write(escape(key));
+			_w.write('"');
+			_w.write(": "); // TODO: pretty-print
+			return this;
+		}
+
+		private JsonGenerator writeEscapedValue(String name, String value) throws JsonException {
+			try {
+				writeUnescapedKey(name);
+				_w.write(value);
+			}
+			catch (IOException x) {
+				throw new JsonException("", x); // FIXME: say something
+			}
+			return this;
+		}
+
+		@Override
+		public JsonGenerator write(String name, String value) throws JsonException {
+			try {
+				writeUnescapedKey(name);
+				_w.write('"');
+				_w.write(escape(value));
+				_w.write('"');
+			}
+			catch (IOException x) {
+				throw new JsonException("", x); // FIXME: say something
+			}
+			return this;
+		}
+
+		@Override
+		public JsonGenerator writeEnd() throws JsonException {
+			try {
+				switch (_nest.pop()) {
+					case IN_ARRAY:
+					case FIRST_IN_ARRAY:
+						_w.write(" ]");
+						break;
+					case IN_OBJECT:
+					case FIRST_IN_OBJECT:
+						_w.write(" }");
+						break;
+				}
+			}
+			catch (IOException x) {
+				throw new JsonException("", x); // FIXME: say something.
+			}
+			return this;
+		}
+
+		@Override
+		public JsonGenerator writeNull() throws JsonException {
+			return writeEscapedItem("null");
+		}
+
+		@Override
+		public JsonGenerator writeNull(String name) throws JsonException {
+			return writeEscapedValue(name, "null");
+		}
+
+		@Override
+		public JsonGenerator writeStartObject() throws JsonException {
+			writeEscapedItem("{ ");
+			_nest.push(State.FIRST_IN_OBJECT);
+			return this;
+		}
+
+		@Override
+		public JsonGenerator writeStartObject(final String name) throws JsonException {
+			writeEscapedValue(name, "{ ");
+			_nest.push(State.FIRST_IN_OBJECT);
+			return this;
+		}
+
+		@Override
+		public JsonGenerator writeStartArray() throws JsonException {
+			writeEscapedItem("[ ");
+			_nest.push(State.FIRST_IN_ARRAY);
+			return this;
+		}
+
+		@Override
+		public JsonGenerator writeStartArray(String name) throws JsonException {
+			writeEscapedValue(name, "[ ");
+			_nest.push(State.FIRST_IN_ARRAY);
+			return this;
 		}
 	}
 }

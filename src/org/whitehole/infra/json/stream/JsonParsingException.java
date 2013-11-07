@@ -30,19 +30,24 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.whitehole.infra.json.stream;
 
-public class JsonParsingException extends RuntimeException {
+import org.whitehole.infra.json.JsonException;
+
+public class JsonParsingException extends JsonException {
 
 	private static final long serialVersionUID = -8163636870882012806L;
 
-	private final String _message;
 	private final JsonLocation _location;
 
 	public JsonParsingException(String message, JsonLocation location) {
-		_message = message;
+		this(location.getLineNumber() + "." + location.getColumnNumber() + ": " + message, null, location);
+	}
+
+	public JsonParsingException(String message, Throwable cause, JsonLocation location) {
+		super(message, cause);
 		_location = location;
 	}
 
-	public String getMessage() {
-		return _location.getLineNumber() + "." + _location.getColumnNumber() + ": " + _message;
+	public JsonLocation getLocation() {
+		return _location;
 	}
 }
