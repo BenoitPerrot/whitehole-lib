@@ -44,6 +44,15 @@ define('org/whitehole/infra/types/generateSIntN', [ 'org/whitehole/infra/IO' ], 
 		cw.openDocument().openNamespace('org.whitehole.infra.types');
 
 		cw.openClass('public', className, 'ByteArray' + n);
+		
+		// Generate constants
+		//
+		cw.addStatement('public static final ' + className + ' ZERO = new ' + className + '()');
+		l = [];
+		for (i = n - 2; 0 <= i; --i)
+			l.push('(byte) 0');
+		l.push('(byte) 1');
+		cw.addStatement('public static final ' + className + ' ONE = new ' + className + '(' + l.join(', ') + ')');
 
 		// Generate constructors
 		//
