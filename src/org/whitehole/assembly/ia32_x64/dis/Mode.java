@@ -82,4 +82,25 @@ class Mode {
 				throw new AssertionError(); // Cannot be there, all cases are covered by the "switch" statement
 		}
 	}
+
+	//
+	// Overrides
+
+	private Mode(Disassembler.WorkingMode workingMode, BinaryWidth operandSize, BinaryWidth addressSize) {
+		_workingMode = workingMode;
+		_operandSize = operandSize;
+		_addressSize = addressSize;
+	}
+
+	public static Mode d64(Mode original) {
+		// On 64bit mode, default not to 32bit but to 64bit operand size
+		if (original._workingMode == Disassembler.WorkingMode._64BIT && original._operandSize == BinaryWidth._32BIT)
+			return new Mode(original._workingMode, BinaryWidth._64BIT, original._addressSize);
+		else
+			return original;
+	}
+
+	public static Mode f64(Mode original) {
+		return new Mode(original._workingMode, BinaryWidth._64BIT, original._addressSize);
+	}
 }

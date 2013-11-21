@@ -113,7 +113,7 @@ define('org/whitehole/assembly/ia32_x64/dis/generateInstructionDecoder', [ 'org/
 
 	function generatePreconditionedInstDecoder(cw, i, ifOpened, hasModRM) {
 
-		var s, test = [];
+		var s, test = [], overrides = {};
 		
 		// Translate precondition if any
 		if (i.hasOwnProperty('precond')) {
@@ -122,11 +122,9 @@ define('org/whitehole/assembly/ia32_x64/dis/generateInstructionDecoder', [ 'org/
 			else if (i.precond === 'o64')
 				test.push('m.is64BIT()');
 			else if (i.precond === 'd64')
-				// FIXME: handle: When in 64-bit mode, instruction defaults to 64-bit operand size
-				;
+				overrides.defaultOperandSizeTo64bit = true;
 			else if (i.precond === 'f64')
-				// FIXME: handle: When in 64-bit mode, operand size is forced to a 64-bit operand size
-				;
+				overrides.forceOperandSize64Tobit = true;
 		}
 
 		// Translate prefixes if any
@@ -164,12 +162,12 @@ define('org/whitehole/assembly/ia32_x64/dis/generateInstructionDecoder', [ 'org/
 	    	cw.openElse();
 
 	    // Generate instruction creation
-	    generateInstDecoder(cw, i, hasModRM);
+	    generateInstDecoder(cw, i, hasModRM, overrides);
 
 	    return ifOpened;
 	}
 	
-	function generateInstDecoder(cw, i, hasModRM) {
+	function generateInstDecoder(cw, i, hasModRM, overrides) {
 		
 		// Consider operands
 		var operandDecoders = [];
@@ -179,27 +177,33 @@ define('org/whitehole/assembly/ia32_x64/dis/generateInstructionDecoder', [ 'org/
 	    	
 	    	var u = unpackOperand(o);
 
-	    	var args = '';
-	    	if (u.needMode)
-	    		args += 'm, ';
+	    	var args = [];
+	    	if (u.needMode) {
+	    		if (overrides.defaultOperandSizeTo64bit)
+	    			args.push('Mode.d64(m)');
+	    		else if (overrides.forceOperandSize64Tobit)
+	    			args.push('Mode.f64(m)');
+	    		else
+	    			args.push('m');
+	    	}
 	    	if (u.needPrefixes)
-	    		args += 'p, ';
+	    		args.push('p');
 	    	if (u.needModRM) {
-	    		args += 'mrm, ';
+	    		args.push('mrm');
 	    		needModRM = true;
 	    	}
 	    	if (u.needInput)
-	    		args += 'i, ';
+	    		args.push('i');
 	    	
 			var a = o;
 	    	if (u.t) {
 	    		a = a.substring(0, 1);
-	    		args += u.t + ', ';
+	    		args.push(u.t);
 	    	}
 	    	
-	    	args += 'l';
+	    	args.push('l');
 
-	    	operandDecoders.push("OperandDecoder." + a + "(" + args + ")");
+	    	operandDecoders.push("OperandDecoder." + a + "(" + args.join(', ') + ")");
 	    });
 
 	    // Commit
