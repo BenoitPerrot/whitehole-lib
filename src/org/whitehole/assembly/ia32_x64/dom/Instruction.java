@@ -32,11 +32,6 @@ package org.whitehole.assembly.ia32_x64.dom;
 
 public class Instruction {
 
-	public interface Visitor {
-
-		public void visit(Instruction o);
-	}
-
 	private final Modifier _x;
 	private final Mnemonic _m;
 	private final Operand[] _operands;
@@ -57,10 +52,6 @@ public class Instruction {
 
 	public Operand[] getOperands() {
 		return _operands;
-	}
-
-	public void accept(Visitor v) {
-		v.visit(this);
 	}
 
 	public boolean isBranch() {
