@@ -136,6 +136,20 @@ define('org/whitehole/infra/types/generateSIntN', [ 'org/whitehole/infra/IO' ], 
 			cw.addStatement('return new BigInteger(new byte[] { ' + l.join(', ') + ' })');
 			cw.closeFunction();
 		}
+
+		// To long
+		if (n < 8 || (n === 8 && isSigned)) {
+			cw.openFunction('public long', 'toLong');
+			cw.addStatement('return toBigInteger().longValue()');
+			cw.closeFunction();
+		}
+
+		// To int
+		if (n < 4 || (n === 4 && isSigned)) {
+			cw.openFunction('public long', 'toInt');
+			cw.addStatement('return toBigInteger().intValue()');
+			cw.closeFunction();
+		}
 		
 		// Epilogue
 		//
