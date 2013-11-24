@@ -77,6 +77,8 @@ public class Instruction {
 			case JRCXZ:
 			case JS:
 			case JZ:
+			case LOOPE:
+			case LOOPNZ:
 				return true;
 			default:
 				return false;
@@ -84,6 +86,6 @@ public class Instruction {
 	}
 
 	public boolean isUnconditionalBranch() {
-		return _m == Mnemonic.JMP || _m == Mnemonic.RET || _m == Mnemonic.CALL;
+		return _m == Mnemonic.JMP || _m == Mnemonic.LOOP || _m == Mnemonic.RET || _m == Mnemonic.CALL;
 	}
 }
