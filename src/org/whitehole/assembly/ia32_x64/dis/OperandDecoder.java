@@ -109,19 +109,19 @@ class OperandDecoder {
 		final BinaryWidth w = OperandType.toBinaryWidth(t);
 		switch (w) {
 			case _8BIT: {
-				b.appendImmediate(LittleEndianReader.readInt8(i), t);
+				b.appendImmediate(LittleEndianReader.readByteArray1(i), t);
 				break;
 			}
 			case _16BIT: {
-				b.appendImmediate(LittleEndianReader.readUInt16(i), t);
+				b.appendImmediate(LittleEndianReader.readByteArray2(i), t);
 				break;
 			}
 			case _32BIT: {
-				b.appendImmediate(LittleEndianReader.readUInt32(i), t);
+				b.appendImmediate(LittleEndianReader.readByteArray4(i), t);
 				break;
 			}
 			case _64BIT: {
-				b.appendImmediate(LittleEndianReader.readUInt64(i), t);
+				b.appendImmediate(LittleEndianReader.readByteArray8(i), t);
 				break;
 			}
 			case _128BIT:
@@ -611,35 +611,35 @@ class OperandDecoder {
 
 	//
 	static void ALr8b(Mode m, Prefixes p, Disassembler.Listener b) {
-		b.appendRegister(p.getREXB() ? RegisterName.R8B : RegisterName.AL, OperandType.fromBinaryWidth(m.getOperandSize()));
+		b.appendRegister(p.getREXB() ? RegisterName.R8B : RegisterName.AL, OperandType.BYTE);
 	}
 
 	static void CLr9b(Mode m, Prefixes p, Disassembler.Listener b) {
-		b.appendRegister(p.getREXB() ? RegisterName.R9B : RegisterName.CL, OperandType.fromBinaryWidth(m.getOperandSize()));
+		b.appendRegister(p.getREXB() ? RegisterName.R9B : RegisterName.CL, OperandType.BYTE);
 	}
 
 	static void DLr10b(Mode m, Prefixes p, Disassembler.Listener b) {
-		b.appendRegister(p.getREXB() ? RegisterName.R10B : RegisterName.DL, OperandType.fromBinaryWidth(m.getOperandSize()));
+		b.appendRegister(p.getREXB() ? RegisterName.R10B : RegisterName.DL, OperandType.BYTE);
 	}
 
 	static void BLr11b(Mode m, Prefixes p, Disassembler.Listener b) {
-		b.appendRegister(p.getREXB() ? RegisterName.R11B : RegisterName.BL, OperandType.fromBinaryWidth(m.getOperandSize()));
+		b.appendRegister(p.getREXB() ? RegisterName.R11B : RegisterName.BL, OperandType.BYTE);
 	}
 
 	static void AHr12b(Mode m, Prefixes p, Disassembler.Listener b) {
-		b.appendRegister(p.getREXB() ? RegisterName.R12B : RegisterName.AH, OperandType.fromBinaryWidth(m.getOperandSize()));
+		b.appendRegister(p.getREXB() ? RegisterName.R12B : RegisterName.AH, OperandType.BYTE);
 	}
 
 	static void CHr13b(Mode m, Prefixes p, Disassembler.Listener b) {
-		b.appendRegister(p.getREXB() ? RegisterName.R13B : RegisterName.CH, OperandType.fromBinaryWidth(m.getOperandSize()));
+		b.appendRegister(p.getREXB() ? RegisterName.R13B : RegisterName.CH, OperandType.BYTE);
 	}
 
 	static void DHr14b(Mode m, Prefixes p, Disassembler.Listener b) {
-		b.appendRegister(p.getREXB() ? RegisterName.R14B : RegisterName.DH, OperandType.fromBinaryWidth(m.getOperandSize()));
+		b.appendRegister(p.getREXB() ? RegisterName.R14B : RegisterName.DH, OperandType.BYTE);
 	}
 
 	static void BHr15b(Mode m, Prefixes p, Disassembler.Listener b) {
-		b.appendRegister(p.getREXB() ? RegisterName.R15B : RegisterName.BH, OperandType.fromBinaryWidth(m.getOperandSize()));
+		b.appendRegister(p.getREXB() ? RegisterName.R15B : RegisterName.BH, OperandType.BYTE);
 	}
 
 	//
@@ -675,10 +675,6 @@ class OperandDecoder {
 			default:
 				throw new AssertionError();
 		}
-	}
-
-	static void rDX(Mode m, Disassembler.Listener b) {
-		// FIXME: b.appendRegister(rDXr10(m, p), OperandType.fromBinaryWidth(m.getOperandSize()));
 	}
 
 	static void rDXr10(Mode m, Prefixes p, Disassembler.Listener b) {
@@ -841,6 +837,23 @@ class OperandDecoder {
 				return RegisterName.DX;
 			case _32BIT:
 				return RegisterName.EDX;
+			default:
+				throw new AssertionError();
+		}
+	}
+
+	static void rDX(Mode m, Disassembler.Listener b) {
+		b.appendRegister(rDX(m), OperandType.fromBinaryWidth(m.getOperandSize()));
+	}
+
+	static RegisterName rDX(Mode m) {
+		switch (m.getOperandSize()) {
+			case _16BIT:
+				return RegisterName.DX;
+			case _32BIT:
+				return RegisterName.EDX;
+			case _64BIT:
+				return RegisterName.RDX;
 			default:
 				throw new AssertionError();
 		}

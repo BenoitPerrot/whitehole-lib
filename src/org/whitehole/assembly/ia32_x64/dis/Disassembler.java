@@ -37,6 +37,10 @@ import org.whitehole.assembly.ia32_x64.dom.Mnemonic;
 import org.whitehole.assembly.ia32_x64.dom.Modifier;
 import org.whitehole.assembly.ia32_x64.dom.OperandType;
 import org.whitehole.assembly.ia32_x64.dom.RegisterName;
+import org.whitehole.infra.types.ByteArray1;
+import org.whitehole.infra.types.ByteArray2;
+import org.whitehole.infra.types.ByteArray4;
+import org.whitehole.infra.types.ByteArray8;
 import org.whitehole.infra.types.Int8;
 import org.whitehole.infra.types.UInt16;
 import org.whitehole.infra.types.UInt32;
@@ -50,12 +54,13 @@ public class Disassembler {
 
 		public void appendRegister(RegisterName n, OperandType t);
 
-		public void appendImmediate(Int8 i, OperandType t);
-		public void appendImmediate(UInt16 i, OperandType t);
+		public void appendImmediate(ByteArray1 i, OperandType t);
 
-		public void appendImmediate(UInt32 i, OperandType t);
+		public void appendImmediate(ByteArray2 i, OperandType t);
 
-		public void appendImmediate(UInt64 i, OperandType t);
+		public void appendImmediate(ByteArray4 i, OperandType t);
+
+		public void appendImmediate(ByteArray8 i, OperandType t);
 
 		public void appendSIBAddress(RegisterName base, RegisterName index, int scale, OperandType t);
 

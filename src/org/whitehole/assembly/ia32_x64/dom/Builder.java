@@ -33,6 +33,11 @@ package org.whitehole.assembly.ia32_x64.dom;
 import java.util.LinkedList;
 
 import org.whitehole.assembly.ia32_x64.dis.Disassembler;
+import org.whitehole.infra.types.ByteArray1;
+import org.whitehole.infra.types.ByteArray2;
+import org.whitehole.infra.types.ByteArray4;
+import org.whitehole.infra.types.ByteArray8;
+import org.whitehole.infra.types.Endianness;
 import org.whitehole.infra.types.Int8;
 import org.whitehole.infra.types.UInt16;
 import org.whitehole.infra.types.UInt32;
@@ -58,20 +63,20 @@ public class Builder implements Disassembler.Listener {
 		_operands.add(new Register(n, t));
 	}
 
-	public void appendImmediate(Int8 i, OperandType t) {
-		_operands.add(new Immediate(i.toBigInteger(), t));
+	public void appendImmediate(ByteArray1 i, OperandType t) {
+		_operands.add(new Immediate(i.toByteArray(Endianness.LITTLE), t));
 	}
 
-	public void appendImmediate(UInt16 i, OperandType t) {
-		_operands.add(new Immediate(i.toBigInteger(), t));
+	public void appendImmediate(ByteArray2 i, OperandType t) {
+		_operands.add(new Immediate(i.toByteArray(Endianness.LITTLE), t));
 	}
 
-	public void appendImmediate(UInt32 i, OperandType t) {
-		_operands.add(new Immediate(i.toBigInteger(), t));
+	public void appendImmediate(ByteArray4 i, OperandType t) {
+		_operands.add(new Immediate(i.toByteArray(Endianness.LITTLE), t));
 	}
 
-	public void appendImmediate(UInt64 i, OperandType t) {
-		_operands.add(new Immediate(i.toBigInteger(), t));
+	public void appendImmediate(ByteArray8 i, OperandType t) {
+		_operands.add(new Immediate(i.toByteArray(Endianness.LITTLE), t));
 	}
 
 	public void appendSIBAddress(RegisterName base, RegisterName index, int scale, OperandType t) {

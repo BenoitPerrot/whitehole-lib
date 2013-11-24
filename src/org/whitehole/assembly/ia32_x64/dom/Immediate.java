@@ -32,17 +32,43 @@ package org.whitehole.assembly.ia32_x64.dom;
 
 import java.math.BigInteger;
 
+
 public class Immediate extends TypedOperand {
 
-	private final BigInteger _value;
+	private final byte[] _littleEndianValue;
 
-	public Immediate(BigInteger v, OperandType t) {
+	public Immediate(byte[] littleEndianValue, OperandType t) {
 		super(t);
-		_value = v;
+		_littleEndianValue = littleEndianValue;
 	}
 
-	public BigInteger getValue() {
-		return _value;
+	public byte[] getByteArray() {
+		return _littleEndianValue;
+	}
+
+	static private byte[] reverse(byte[] a) {
+		final byte[] r = new byte[a.length];
+		final int end = a.length - 1;
+		for (int i = 0; i < a.length; ++i)
+			r[i] = a[end - i];
+		return r;
+	}
+
+	static private byte[] reversePrepend(byte b0, byte[] a) {
+		final byte[] r = new byte[a.length + 1];
+		r[0] = b0;
+		final int end = a.length - 1;
+		for (int i = 0; i < a.length; ++i)
+			r[i + 1] = a[end - i];
+		return r;
+	}
+
+	public BigInteger getUnsignedInteger() {
+		return new BigInteger(reversePrepend((byte) 0, _littleEndianValue));
+	}
+
+	public BigInteger getSignedInteger() {
+		return new BigInteger(reverse(_littleEndianValue));
 	}
 
 	public void accept(Visitor v) {
