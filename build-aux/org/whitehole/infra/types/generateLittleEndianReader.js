@@ -73,6 +73,13 @@ define('org/whitehole/infra/types/generateLittleEndianReader', [ 'org/whitehole/
 			for (j = i - 1; 0 <= j; --j)
 				l.push('buffer[' + j + ']');
 
+			// Read byte array
+			cw.openFunction('public static ByteArray' + i, 'readByteArray' + i, 'InputStream i', 'throws IOException');
+			cw.addStatement('final byte[] buffer = new byte[' + i + ']');
+			cw.addStatement('i.read(buffer)');
+			cw.addStatement('return new ByteArray' + i + '(' + l.join(', ') + ')');
+			cw.closeFunction();
+
 			// Read unsigned integers
 			cw.openFunction('public static UInt' + (i * 8), 'readUInt' + (i * 8), 'InputStream i', 'throws IOException');
 			cw.addStatement('final byte[] buffer = new byte[' + i + ']');
