@@ -116,7 +116,7 @@ define('org/whitehole/infra/types/generateSIntN', [ 'org/whitehole/infra/IO' ], 
 			// To BigInteger
 			cw.addImport('java.math.BigInteger');
 			cw.openFunction('public BigInteger', 'toBigInteger');
-			cw.addStatement('return new BigInteger(toByteArray())');
+			cw.addStatement('return new BigInteger(toByteArray(Endianness.BIG))');
 			cw.closeFunction();
 		}
 		else {

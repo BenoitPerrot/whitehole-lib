@@ -96,11 +96,15 @@ define('org/whitehole/infra/types/generateByteArrayN', [ 'org/whitehole/infra/IO
 		// 
 
 		// To built-in frozen byte array
-		cw.openFunction('public byte[]', 'toByteArray');
+		cw.openFunction('public byte[]', 'toByteArray', 'Endianness e');
 		l = [];
 		for (i = n - 1; 0 <= i; --i)
 			l.push('_b' + i);
+		cw.openIf('e == Endianness.BIG');
 		cw.addStatement('return new byte[] { ' + l.join(', ') + ' }');
+		cw.openElse();
+		cw.addStatement('return new byte[] { ' + l.reverse().join(', ') + ' }');
+		cw.closeIf();
 		cw.closeFunction();
 
 		// To hexadecimal string
