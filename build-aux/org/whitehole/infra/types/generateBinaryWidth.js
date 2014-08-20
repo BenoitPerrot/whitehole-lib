@@ -32,7 +32,7 @@
 // Build a Java enumeration for commonly used binary widths.
 //
 
-define('org/whitehole/infra/types/generateBinaryWidth', [ 'org/whitehole/infra/IO' ], function(IO) {
+require([ 'org/whitehole/infra/IO' ], function(IO) {
 	'use strict';
 
 	function generate() {
@@ -50,7 +50,5 @@ define('org/whitehole/infra/types/generateBinaryWidth', [ 'org/whitehole/infra/I
 		return cw.toString();
 	}
 
-	return function(destPath) {
-		IO.writeFile(destPath, generate());
-	};
+	IO.writeFile('src/org/whitehole/infra/types/BinaryWidth.java', generate());
 });

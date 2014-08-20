@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2013, Benoit PERROT.
+// Copyright (c) 2004-2014, Benoit PERROT.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@
 // width
 //
 
-define('org/whitehole/infra/types/generateSIntN', [ 'org/whitehole/infra/IO' ], function(IO) {
+require([ 'org/whitehole/infra/IO' ], function(IO) {
 	'use strict';
 
 	function generate(isSigned, n) {
@@ -44,7 +44,7 @@ define('org/whitehole/infra/types/generateSIntN', [ 'org/whitehole/infra/IO' ], 
 		cw.openDocument().openNamespace('org.whitehole.infra.types');
 
 		cw.openClass('public', className, 'ByteArray' + n);
-		
+
 		// Generate constants
 		//
 		cw.addStatement('public static final ' + className + ' ZERO = new ' + className + '()');
@@ -82,7 +82,7 @@ define('org/whitehole/infra/types/generateSIntN', [ 'org/whitehole/infra/IO' ], 
 			for (i = 1; i < n; i *= 2) {
 				// Internal helper for sign extension
 				if (2 < n) { // do not conflict with previously defined Int16
-								// constructor
+					// constructor
 					l = [ 'byte sign' ];
 					for (j = i - 1; 0 <= j; --j)
 						l.push('byte b' + j);
@@ -150,7 +150,7 @@ define('org/whitehole/infra/types/generateSIntN', [ 'org/whitehole/infra/IO' ], 
 			cw.addStatement('return toBigInteger().intValue()');
 			cw.closeFunction();
 		}
-		
+
 		// Epilogue
 		//
 		cw.closeClass();
@@ -160,12 +160,8 @@ define('org/whitehole/infra/types/generateSIntN', [ 'org/whitehole/infra/IO' ], 
 		return cw.toString();
 	}
 
-	return function(destPath) {
-		var i;
-
-		for (i = 1; i <= 16; i *= 2) {
-			IO.writeFile(destPath + '/UInt' + (i * 8) + '.java', generate(false, i));
-			IO.writeFile(destPath + '/Int' + (i * 8) + '.java', generate(true, i));
-		}
-	};
+	for (var i = 1; i <= 16; i *= 2) {
+		IO.writeFile('src/org/whitehole/infra/types/UInt' + (i * 8) + '.java', generate(false, i));
+		IO.writeFile('src/org/whitehole/infra/types/Int' + (i * 8) + '.java', generate(true, i));
+	}
 });

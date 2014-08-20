@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2013, Benoit PERROT.
+// Copyright (c) 2004-2014, Benoit PERROT.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@
 // Build Java classes for fixed-size arrays of bytes
 //
 
-define('org/whitehole/infra/types/generateByteArrayN', [ 'org/whitehole/infra/IO' ], function(IO) {
+require([ 'org/whitehole/infra/IO' ], function(IO) {
 	'use strict';
 
 	function generate(n) {
@@ -160,10 +160,6 @@ define('org/whitehole/infra/types/generateByteArrayN', [ 'org/whitehole/infra/IO
 		return cw.toString();
 	}
 
-	return function(destPath) {
-		var i;
-
-		for (i = 1; i <= 16; i *= 2)
-			IO.writeFile(destPath + '/ByteArray' + i + '.java', generate(i));
-	};
+	for (var i = 1; i <= 16; i *= 2)
+		IO.writeFile('src/org/whitehole/infra/types/ByteArray' + i + '.java', generate(i));
 });

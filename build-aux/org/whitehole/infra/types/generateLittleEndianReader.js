@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2013, Benoit PERROT.
+// Copyright (c) 2004-2014, Benoit PERROT.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@
 // Build a Java class for reading signed or unsigned fixed-size integers
 // when stored least significant byte first. 
 
-define('org/whitehole/infra/types/generateLittleEndianReader', [ 'org/whitehole/infra/IO' ], function(IO) {
+require([ 'org/whitehole/infra/IO' ], function(IO) {
 	'use strict';
 
 	function generate() {
@@ -102,7 +102,5 @@ define('org/whitehole/infra/types/generateLittleEndianReader', [ 'org/whitehole/
 		return cw.toString();
 	}
 
-	return function(destPath) {
-		IO.writeFile(destPath, generate());
-	};
+	IO.writeFile('src/org/whitehole/infra/types/LittleEndianReader.java', generate());
 });
