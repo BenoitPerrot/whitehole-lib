@@ -98,7 +98,7 @@ define('org/whitehole/assembly/ia32_x64/generateHTML', [ 'org/whitehole/infra/IO
 			return ''; // Invalid opcode
 		}
 		
-		var s = '', i, j, a, e, firstTable, firstRow;
+		var s = '', m, i, j, a, e, firstTable, firstRow;
 		
 		s += '<html>';
 		

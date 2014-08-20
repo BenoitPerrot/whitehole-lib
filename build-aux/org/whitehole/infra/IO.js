@@ -286,7 +286,7 @@ define('org/whitehole/infra/IO',
 
                writeFile: function (path, s) {
                    var fw = new java.io.FileWriter(path);
-                   fw.write(s);
+                   fw.write(String(s));
                    fw.close();
                },
 

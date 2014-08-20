@@ -49,6 +49,8 @@ define('org/whitehole/binary/generateSchemeModel',
 		
 		var destPath = 'src/' + destNS.replace(/\./g, '/');
 
+		var k;
+		
 		for (k in schema.enumerations)
 			if (schema.enumerations.hasOwnProperty(k)) {
 				print("Generating " + destPath + '/' + k + '.java' + "...");
