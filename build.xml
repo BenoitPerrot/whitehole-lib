@@ -55,16 +55,6 @@ require(['@{generator}'],
 		</sequential>
 	</macrodef>
 
-	<target name="build-infra.types-sources">
-		<local name="gendir"/><property name="gendir" value="org/whitehole/infra/types"/>
-		<local name="outdir"/><property name="outdir" value="${rootdir}/src/org/whitehole/infra/types"/>
-		
-		<generate generator="${gendir}/generateBinaryWidth" output="${outdir}/BinaryWidth.java" />
-		<generate generator="${gendir}/generateByteArrayN" output="${outdir}" />
-		<generate generator="${gendir}/generateSIntN" output="${outdir}" />
-		<generate generator="${gendir}/generateLittleEndianReader" output="${outdir}/LittleEndianReader.java" />
-	</target>
-
 	<target name="build-binary-sources">
 		<local name="gendir"/><property name="gendir" value="org/whitehole/binary"/>
 		
@@ -82,6 +72,6 @@ require(['@{generator}'],
 		<generate generator="${gendir}/dom/generateRegisterName" input="${rscdir}/registerMaps.json" output="${outdir}/dom/RegisterName.java" />
 	</target>
 
-	<target name="build-sources" depends="build-infra.types-sources, build-binary-sources, build-assembly.ia32_x64-sources" />
+	<target name="build-sources" depends="build-binary-sources, build-assembly.ia32_x64-sources" />
 
 </project>
