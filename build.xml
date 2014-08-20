@@ -55,12 +55,6 @@ require(['@{generator}'],
 		</sequential>
 	</macrodef>
 
-	<target name="build-binary-sources">
-		<local name="gendir"/><property name="gendir" value="org/whitehole/binary"/>
-		
-		<generate generator="${gendir}/generateSchemeModel" input="${commonsdir}/resources/org/whitehole/binary/pe/pe.json" output="org.whitehole.binary.pe" />
-	</target>
-
 	<target name="build-assembly.ia32_x64-sources">
 		<local name="gendir"/><property name="gendir" value="org/whitehole/assembly/ia32_x64"/>
 		<local name="rscdir"/><property name="rscdir" value="${commonsdir}/resources/org/whitehole/assembly/ia32_x64"/>
@@ -72,6 +66,6 @@ require(['@{generator}'],
 		<generate generator="${gendir}/dom/generateRegisterName" input="${rscdir}/registerMaps.json" output="${outdir}/dom/RegisterName.java" />
 	</target>
 
-	<target name="build-sources" depends="build-binary-sources, build-assembly.ia32_x64-sources" />
+	<target name="build-sources" depends="build-assembly.ia32_x64-sources" />
 
 </project>
