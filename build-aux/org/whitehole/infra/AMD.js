@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2013, Benoit PERROT.
+// Copyright (c) 2004-2014, Benoit PERROT.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+//
 // Implement AMD API on top of Rhino.
 //
 
@@ -39,17 +39,17 @@
 
     function trace(msg) {
         if (require.verbose)
-            println(msg);
+            print(msg);
     }
 
     function traceLoadedModules() {
     	var k;
 
     	if (require.verbose) {
-    		println('Loaded modules: ');
+    		trace('Loaded modules:\n');
     		for (k in modules)
     			if (modules.hasOwnProperty(k))
-    				println('  ' + k + ' -> ' + modules[k]);
+    				trace('  ' + k + ' -> ' + modules[k] + '\n');
     	}
     }
 
@@ -60,12 +60,12 @@
         if (m === undefined) {
             modules[moduleName] = null;
 
-            trace('Loading ' + moduleName + ' from ' + modulePath);
+            trace('Loading ' + moduleName + ' from ' + modulePath + '\n');
 
             load(modulePath);
         }
         else if (m === null)
-            trace('Error: cycle detected!');
+            trace('Error: cycle detected!\n');
 
         return modules[moduleName];
     }
@@ -82,14 +82,14 @@
         return l;
     }
 
-    define = function (moduleName, dependencies, f) {
-        trace('Defining ' + moduleName);
+    function define(moduleName, dependencies, f) {
+        trace('Defining ' + moduleName + '\n');
         modules[moduleName] = f.apply(undefined, loadModules(dependencies));
     };
 
-    require = function (dependencies, f) {
+    function require(dependencies, f) {
     	var d, i, k;
-        trace('Entry point');
+        trace('Entry point\n');
         
         d = loadModules(dependencies);
         
