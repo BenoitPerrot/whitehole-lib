@@ -85,12 +85,18 @@ define('org/whitehole/binary/generateFlagSet', [ 'org/whitehole/infra/IO' ], fun
 				cw.closeFunction();
 			}
 
+		// Converters
+		//
+		cw.openFunction('public String', 'toHexString', 'boolean printLeadingZero');
+		cw.addStatement('return _code.toHexString(printLeadingZero)')
+		cw.closeFunction();
+
 		cw.addStatement('static public final int byteSize = ' + fs.byteWidth);
 
 		// Attributes
 		//
 		cw.addStatement('private final ' + underlyingType + ' _code');
-
+		
 		cw.closeClass();
 
 		cw.closeNamespace().closeDocument();

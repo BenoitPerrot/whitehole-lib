@@ -177,6 +177,10 @@ public class SectionFlags {
         return _code.testBit(31);
     }
     
+    public String toHexString(boolean printLeadingZero) {
+        return _code.toHexString(printLeadingZero);
+    }
+    
     static public final int byteSize = 4;
     private final ByteArray4 _code;
 }

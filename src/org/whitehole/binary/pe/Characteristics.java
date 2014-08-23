@@ -81,6 +81,10 @@ public class Characteristics {
         return _code.testBit(15);
     }
     
+    public String toHexString(boolean printLeadingZero) {
+        return _code.toHexString(printLeadingZero);
+    }
+    
     static public final int byteSize = 2;
     private final ByteArray2 _code;
 }
