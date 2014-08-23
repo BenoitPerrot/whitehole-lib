@@ -31,13 +31,19 @@
 package org.whitehole.binary.pe;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 import org.whitehole.infra.io.LargeByteBuffer;
 import org.whitehole.infra.types.LittleEndianReader;
+import org.whitehole.infra.types.StringAsciiz;
 import org.whitehole.infra.types.UInt32;
 
 public class PEHeader {
+
+	private final COFFHeader _coffHeader;
+	private final OptionalHeader _optionalHeader;
+	private final ArrayList<SectionHeader> _sectionHeaders;
 
 	public PEHeader(LargeByteBuffer buffer, long offset) throws IOException {
 		// Signature offset is at 0x3c
@@ -78,7 +84,38 @@ public class PEHeader {
 		return _sectionHeaders;
 	}
 
-	private final COFFHeader _coffHeader;
-	private final OptionalHeader _optionalHeader;
-	private final ArrayList<SectionHeader> _sectionHeaders;
+	//
+	// Shortcuts
+
+	public BigInteger getAddressOfEntryPoint() {
+		return getOptionalHeader().getStandardFields().getAddressOfEntryPoint().toBigInteger();
+	}
+
+	public boolean isPE32x() {
+		return getOptionalHeader().getStandardFields().getMagic().toValid() == org.whitehole.binary.pe.MagicNumber.Valid.PE32x;
+	}
+
+	public BigInteger getImageBase() {
+		final WindowsSpecificPEFields wsf = getOptionalHeader().getWindowsSpecificFields();
+		return (wsf instanceof OptionalHeaderPE32xFields) ? ((OptionalHeaderPE32xFields) wsf).getImageBase().toBigInteger() : ((OptionalHeaderPE32Fields) wsf)
+				.getImageBase().toBigInteger();
+	}
+
+	public SectionHeader findSectionHeaderByRVA(long rva) {
+		for (SectionHeader sh : getSectionHeaders()) {
+			final long sectionRVA = sh.getVirtualAddress().toLong();
+			final long sectionSize = sh.getVirtualSize().toLong();
+			if (sectionRVA <= rva && rva < sectionSize + sectionRVA)
+				return sh;
+		}
+		return null;
+	}
+
+	public SectionHeader findSectionHeaderByName(String name) {
+		for (SectionHeader sh : getSectionHeaders())
+			if (name.equals(StringAsciiz.readLittleEndian(sh.getName())))
+				return sh;
+		return null;
+	}
+
 }
