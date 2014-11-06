@@ -33,17 +33,27 @@ package org.whitehole.assembly.ia32_x64.control;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class Graph {
+public class ControlFlowGraph {
 
 	private final org.whitehole.infra.graph.Graph _g;
+	private final int _entryVertex;
 	private final HashMap<Integer, BasicBlock> _vertexToBasicBlock;
 	private final HashMap<BasicBlock, Integer> _basicBlockToVertex;
 
-	public Graph(org.whitehole.infra.graph.Graph g, HashMap<Integer, BasicBlock> vertexToBasicBlock,
+	public ControlFlowGraph(org.whitehole.infra.graph.Graph g, int entryVertex, HashMap<Integer, BasicBlock> vertexToBasicBlock,
 			HashMap<BasicBlock, Integer> basicBlockToVertex) {
 		_g = g;
+		_entryVertex = entryVertex;
 		_vertexToBasicBlock = vertexToBasicBlock;
 		_basicBlockToVertex = basicBlockToVertex;
+	}
+
+	public int getEntryVertex() {
+		return _entryVertex;
+	}
+
+	public BasicBlock getBasicBlock(int v) {
+		return _vertexToBasicBlock.get(v);
 	}
 
 	public Iterable<BasicBlock> getBasicBlocks() {

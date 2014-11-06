@@ -37,9 +37,9 @@ import java.util.TreeMap;
 
 import org.whitehole.assembly.ia32_x64.dom.InstructionBuffer;
 
-public class GraphBuilder {
+public class ControlFlowGraphBuilder {
 
-	public static Graph build(InstructionBuffer is, long offset, boolean followCall) throws IOException {
+	public static ControlFlowGraph build(InstructionBuffer is, long offset) throws IOException {
 
 		// A basic block is generally described as a sequence of instructions comprised between
 		// an entry point and the immediately following exit point, where a final instruction jumps
@@ -54,7 +54,7 @@ public class GraphBuilder {
 		// one basic block, ending at the next closest entry or exit point.
 
 		// Explore control flow
-		final Trace t = new TraceBuilder(followCall).build(is, offset);
+		final Trace t = new TraceBuilder().build(is, offset);
 
 		// FIXME: iterating over t while modifying it; it works because t.entryPoints is implemented by a TreeSet
 
@@ -103,7 +103,7 @@ public class GraphBuilder {
 						g.makeEdge(v, basicBlockToVertex.get(basicBlocks.get(d)));
 			}
 
-			return new Graph(g, vertexToBasicBlock, basicBlockToVertex);
+			return new ControlFlowGraph(g, basicBlockToVertex.get(basicBlocks.get(offset)), vertexToBasicBlock, basicBlockToVertex);
 		}
 	}
 }
