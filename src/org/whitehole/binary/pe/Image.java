@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 import org.whitehole.infra.io.LargeByteBuffer;
+import org.whitehole.infra.types.StringAsciiz;
 
 public class Image {
 
@@ -53,7 +54,7 @@ public class Image {
 		_et = et;
 	}
 
-	private static class DataDirectoryLocations {
+	public static class DataDirectoryLocations {
 
 		private final long _rvaToOffset;
 		private final long _tableOffset;
@@ -138,6 +139,10 @@ public class Image {
 		return _h.findSectionHeaderByRVA(offset);
 	}
 
+	public String getSectionName(SectionHeader sh) {
+		return StringAsciiz.readLittleEndian(sh.getName());
+	}
+
 	public SectionHeader findSectionHeaderByName(String name) {
 		return _h.findSectionHeaderByName(name);
 	}
@@ -146,12 +151,8 @@ public class Image {
 		return _h.getSectionHeaders();
 	}
 
-	public Iterable<ImportDirectoryTableEntry> getImportDirectoryTableEntries() {
+	public ImportDirectoryTable getImportDirectoryTable() {
 		return _idt;
-	}
-	
-	public ImportLookupTable getImportLookupTable(ImportDirectoryTableEntry e) {
-		return _idt.getLookupTable(e);
 	}
 
 	public ExportDirectoryTable getExportDirectoryTable() {
