@@ -44,10 +44,7 @@ import org.whitehole.assembly.ia32_x64.dom.Operand;
 
 public class TraceBuilder {
 
-	private final boolean _followCall;
-
-	public TraceBuilder(boolean followCall) {
-		_followCall = followCall;
+	public TraceBuilder() {
 	}
 
 	private static Immediate getUniqueOperandAsImmediate(Instruction i) {
@@ -60,7 +57,7 @@ public class TraceBuilder {
 	}
 
 	private boolean isBranching(Instruction i) {
-		return i.isBranch() && (i.getMnemonic() != Mnemonic.CALL || _followCall);
+		return i.isBranch() && i.getMnemonic() != Mnemonic.CALL;
 	}
 
 	public Trace build(InstructionBuffer input, long entryPoint) throws IOException {
