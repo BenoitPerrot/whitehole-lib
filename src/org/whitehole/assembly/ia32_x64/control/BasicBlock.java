@@ -35,7 +35,7 @@ import java.util.Map.Entry;
 
 import org.whitehole.assembly.ia32_x64.dom.Instruction;
 
-public class BasicBlock {
+public class BasicBlock implements Iterable<Entry<Long, Instruction>> {
 
 	private final Trace _t;
 	private final long _entryPoint;
@@ -55,35 +55,30 @@ public class BasicBlock {
 		return _afterExitPoint;
 	}
 
-	public Iterable<Entry<Long, Instruction>> getIterator() {
-		return new Iterable<Entry<Long, Instruction>>() {
+	public Iterator<Entry<Long, Instruction>> iterator() {
+		return new Iterator<Entry<Long, Instruction>>() {
 
-			public Iterator<Entry<Long, Instruction>> iterator() {
-				return new Iterator<Entry<Long, Instruction>>() {
+			Entry<Long, Instruction> _next = _t.getOffsetInstructionAt(_entryPoint);
 
-					Entry<Long, Instruction> _next = _t.getOffsetInstructionAt(_entryPoint);
+			@Override
+			public boolean hasNext() {
+				if (_next != null)
+					if (_next.getKey() < _afterExitPoint)
+						return _next.getValue() != null;
+				return false;
+			}
 
-					@Override
-					public boolean hasNext() {
-						if (_next != null)
-							if (_next.getKey() < _afterExitPoint)
-								return _next.getValue() != null;
-						return false;
-					}
+			@Override
+			public Entry<Long, Instruction> next() {
+				final Entry<Long, Instruction> current = _next;
+				_next = _t.getOffsetInstructionAfter(current.getKey());
+				return current;
+			}
 
-					@Override
-					public Entry<Long, Instruction> next() {
-						final Entry<Long, Instruction> current = _next;
-						_next = _t.getOffsetInstructionAfter(current.getKey());
-						return current;
-					}
+			@Override
+			public void remove() {
+			}
 
-					@Override
-					public void remove() {
-					}
-
-				};
-			};
 		};
 	}
 }
