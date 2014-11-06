@@ -38,6 +38,10 @@ import java.util.TreeMap;
 
 public interface JsonObject extends JsonStructure, Map<String, JsonValue> {
 
+	public JsonString getString(String key);
+
+	public JsonArray getArray(String key);
+
 	static class Impl extends JsonValue.Impl implements JsonObject {
 
 		private final SortedMap<String, JsonValue> _data = new TreeMap<String, JsonValue>();
@@ -69,6 +73,16 @@ public interface JsonObject extends JsonStructure, Map<String, JsonValue> {
 		@Override
 		public JsonValue get(Object key) {
 			return _data.get(key);
+		}
+
+		@Override
+		public JsonString getString(String key) {
+			return (JsonString) get(key);
+		}
+
+		@Override
+		public JsonArray getArray(String key) {
+			return (JsonArray) get(key);
 		}
 
 		@Override

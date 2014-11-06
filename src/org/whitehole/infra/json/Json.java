@@ -30,6 +30,8 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.whitehole.infra.json;
 
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
 
@@ -45,6 +47,10 @@ public class Json {
 
 	static public JsonReader createReader(Reader r) {
 		return new JsonReader.Impl(r);
+	}
+
+	static public JsonReader createReader(FileInputStream in) {
+		return createReader(new InputStreamReader(in));
 	}
 
 	static public JsonWriter createWriter(Writer w) {
