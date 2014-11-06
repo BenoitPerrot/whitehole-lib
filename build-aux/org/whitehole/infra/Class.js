@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2013, Benoit PERROT.
+// Copyright (c) 2004-2014, Benoit PERROT.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -32,67 +32,34 @@
 // Helpers to define/derive classes, roughly implementing WinJS API.
 //
 
-define('org/whitehole/infra/Class',
-       [
-       ],
-       function () {
-           'use strict';
+define('org/whitehole/infra/Class', [], function() {
+	'use strict';
 
-           var initializingChild = {};
+	var Class = {
+		mixin : function(target, source) {
+			Object.keys(source).forEach(function(k) {
+				Object.defineProperty(target, k, Object.getOwnPropertyDescriptor(source, k));
+			});
+		},
 
-           var Class = {
-               derive: function (BaseClass, constructor,
-                                 instanceMembers, staticMembers) {
+		define : function(constructor, instanceMembers, staticMembers) {
+			if (instanceMembers)
+				this.mixin(constructor.prototype, instanceMembers);
+			if (staticMembers)
+				this.mixin(constructor, staticMembers);
+			return constructor;
+		},
 
-                   // Constructor (executed for each instantiation)
-                   //
-                   var T = constructor ? function () {
-                       if (! (arguments.length === 1 &&
-                              arguments[0] === initializingChild))
-                           // Invoke user-defined constructor
-                           constructor.apply(this, arguments);
-                       // else: building super, do nothing.
-                   }
-                   : function () {};
+		derive : function(BaseClass, constructor, instanceMembers, staticMembers) {
+			constructor.prototype = Object.create(BaseClass.prototype);
+			Object.defineProperty(constructor.prototype, 'constructor', {
+				value : constructor
+			});
+			return this.define(constructor, instanceMembers, staticMembers);
+		}
+	};
+	
+	Object.seal(Class);
 
-                   // Definition (executed once per class)
-                   //
-                   var k, v;
-
-                   if (BaseClass !== null)
-                       // Chain prototypes
-                       T.prototype = new BaseClass(initializingChild);
-
-                   // Set instance members
-                   if (instanceMembers)
-                       for (k in instanceMembers) 
-                           if (instanceMembers.hasOwnProperty(k)) {
-                               v = instanceMembers[k];
-                               if (v && (v.hasOwnProperty('get') ||
-                                         v.hasOwnProperty('set')))
-                                   Object.defineProperty(T.prototype, k, v);
-                               else
-                                   T.prototype[k] = v;
-                           }
-
-                   // Set static members
-                   if (staticMembers)
-                       for (k in staticMembers)
-                           if (staticMembers.hasOwnProperty(k))
-                               T[k] = staticMembers[k];
-
-                   // Enforce the constructor to be what is expected
-                   T.prototype.constructor = T;
-
-                   return T;
-               },
-
-               define: function (constructor,
-                                 instanceMembers, staticMembers) {
-                   return this.derive(null, constructor,
-                                      instanceMembers, staticMembers);
-               }
-           };
-
-           return Class;
-       });
+	return Class;
+});
