@@ -1,6 +1,6 @@
-whitehole-java
+whitehole-lib
 ==============
 
-(Watchout! Many sources are generated. See Wiki for more:
-https://github.com/BenoitPerrot/whitehole-java/wiki/How-To-Build-Whitehole-for-Java)
+See Wiki for more:
+https://github.com/BenoitPerrot/whitehole-java/wiki/How-To-Build-Whitehole-for-Java
 
