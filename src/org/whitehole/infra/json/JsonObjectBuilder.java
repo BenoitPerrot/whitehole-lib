@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2013, Benoit PERROT.
+// Copyright (c) 2004-2014, Benoit PERROT.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -75,7 +75,7 @@ public interface JsonObjectBuilder {
 		}
 
 		public JsonObjectBuilder add(String name, BigDecimal value) {
-			return add(name, new JsonNumber.Impl(value));
+			return add(name, new JsonNumber(value));
 		}
 
 		public JsonObjectBuilder add(String name, BigInteger value) {
@@ -95,7 +95,7 @@ public interface JsonObjectBuilder {
 		}
 
 		public JsonObjectBuilder add(String name, String value) {
-			return add(name, new JsonString.Impl(value));
+			return add(name, new JsonString(value));
 		}
 
 		public JsonObjectBuilder add(String name, JsonArrayBuilder builder) {
@@ -110,6 +110,6 @@ public interface JsonObjectBuilder {
 			return _o;
 		}
 
-		private final JsonObject _o = new JsonObject.Impl();
+		private final JsonObject _o = new JsonObject();
 	}
 }

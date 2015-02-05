@@ -1,1 +1,1 @@
-Temporarily provide a rough and limited implementation of JSR-353, waiting for its standardization and inclusion in JDKs.
+In JSR-353, JsonValues are immutable, which is too much restrictive.

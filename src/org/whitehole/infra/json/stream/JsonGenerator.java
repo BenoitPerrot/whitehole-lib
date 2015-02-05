@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2013, Benoit PERROT.
+// Copyright (c) 2004-2014, Benoit PERROT.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -82,7 +82,7 @@ public interface JsonGenerator extends Closeable {
 
 		@Override
 		public JsonGenerator write(BigDecimal value) {
-			return add(new JsonNumber.Impl(value));
+			return add(new JsonNumber(value));
 		}
 
 		@Override
@@ -92,12 +92,12 @@ public interface JsonGenerator extends Closeable {
 
 		@Override
 		public JsonGenerator write(String value) {
-			return add(new JsonString.Impl(value));
+			return add(new JsonString(value));
 		}
 
 		@Override
 		public JsonGenerator write(String name, BigDecimal value) {
-			return put(name, new JsonNumber.Impl(value));
+			return put(name, new JsonNumber(value));
 		}
 
 		@Override
@@ -107,7 +107,7 @@ public interface JsonGenerator extends Closeable {
 
 		@Override
 		public JsonGenerator write(String name, String value) {
-			return put(name, new JsonString.Impl(value));
+			return put(name, new JsonString(value));
 		}
 
 		@Override
@@ -128,22 +128,22 @@ public interface JsonGenerator extends Closeable {
 
 		@Override
 		public JsonGenerator writeStartObject() {
-			return addStart(new JsonObject.Impl());
+			return addStart(new JsonObject());
 		}
 
 		@Override
 		public JsonGenerator writeStartObject(final String name) throws JsonException {
-			return putStart(name, new JsonObject.Impl());
+			return putStart(name, new JsonObject());
 		}
 
 		@Override
 		public JsonGenerator writeStartArray() {
-			return addStart(new JsonArray.Impl());
+			return addStart(new JsonArray());
 		}
 
 		@Override
 		public JsonGenerator writeStartArray(String name) throws JsonException {
-			return putStart(name, new JsonArray.Impl());
+			return putStart(name, new JsonArray());
 		}
 
 		private final Stack<JsonStructure> _structures = new Stack<JsonStructure>();

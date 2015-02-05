@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2013, Benoit PERROT.
+// Copyright (c) 2004-2014, Benoit PERROT.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -30,28 +30,23 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.whitehole.infra.json;
 
-public interface JsonValue {
+public class JsonValue {
 
 	public enum ValueType {
 		NULL, FALSE, TRUE, NUMBER, STRING, ARRAY, OBJECT
 	}
 
-	public static JsonValue NULL = new Impl(ValueType.NULL);
-	public static JsonValue FALSE = new Impl(ValueType.FALSE);
-	public static JsonValue TRUE = new Impl(ValueType.TRUE);
+	public static JsonValue NULL = new JsonValue(ValueType.NULL);
+	public static JsonValue FALSE = new JsonValue(ValueType.FALSE);
+	public static JsonValue TRUE = new JsonValue(ValueType.TRUE);
 
-	public ValueType getValueType();
+	private final ValueType _t;
 
-	static class Impl implements JsonValue {
+	public ValueType getValueType() {
+		return _t;
+	}
 
-		protected Impl(ValueType t) {
-			_valueType = t;
-		}
-
-		public ValueType getValueType() {
-			return _valueType;
-		}
-
-		private final ValueType _valueType;
+	protected JsonValue(ValueType t) {
+		_t = t;
 	}
 }

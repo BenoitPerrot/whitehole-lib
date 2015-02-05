@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2013, Benoit PERROT.
+// Copyright (c) 2004-2014, Benoit PERROT.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -31,134 +31,70 @@
 package org.whitehole.infra.json;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
-public interface JsonArray extends JsonStructure, List<JsonValue> {
+public class JsonArray extends JsonStructure implements Iterable<JsonValue> {
 
-	static class Impl extends JsonValue.Impl implements JsonArray {
+	private final ArrayList<JsonValue> _data = new ArrayList<JsonValue>();
 
-		private final ArrayList<JsonValue> _data = new ArrayList<JsonValue>();
-
-		public Impl() {
-			super(ValueType.ARRAY);
-		}
-
-		@Override
-		public boolean add(JsonValue e) {
-			return _data.add(e);
-		}
-
-		@Override
-		public void add(int index, JsonValue element) {
-			_data.add(index, element);
-		}
-
-		@Override
-		public boolean addAll(Collection<? extends JsonValue> c) {
-			return _data.addAll(c);
-		}
-
-		@Override
-		public boolean addAll(int index, Collection<? extends JsonValue> c) {
-			return _data.addAll(index, c);
-		}
-
-		@Override
-		public void clear() {
-			_data.clear();
-		}
-
-		@Override
-		public boolean contains(Object o) {
-			return _data.contains(o);
-		}
-
-		@Override
-		public boolean containsAll(Collection<?> c) {
-			return _data.containsAll(c);
-		}
-
-		@Override
-		public JsonValue get(int index) {
-			return _data.get(index);
-		}
-
-		@Override
-		public int indexOf(Object o) {
-			return _data.indexOf(o);
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return _data.isEmpty();
-		}
-
-		@Override
-		public Iterator<JsonValue> iterator() {
-			return _data.iterator();
-		}
-
-		@Override
-		public int lastIndexOf(Object o) {
-			return _data.lastIndexOf(o);
-		}
-
-		@Override
-		public ListIterator<JsonValue> listIterator() {
-			return _data.listIterator();
-		}
-
-		@Override
-		public ListIterator<JsonValue> listIterator(int index) {
-			return _data.listIterator(index);
-		}
-
-		@Override
-		public boolean remove(Object o) {
-			return _data.remove(o);
-		}
-
-		@Override
-		public JsonValue remove(int index) {
-			return _data.remove(index);
-		}
-
-		@Override
-		public boolean removeAll(Collection<?> c) {
-			return _data.removeAll(c);
-		}
-
-		@Override
-		public boolean retainAll(Collection<?> c) {
-			return _data.retainAll(c);
-		}
-
-		@Override
-		public JsonValue set(int index, JsonValue element) {
-			return _data.set(index, element);
-		}
-
-		@Override
-		public int size() {
-			return _data.size();
-		}
-
-		@Override
-		public List<JsonValue> subList(int fromIndex, int toIndex) {
-			return _data.subList(fromIndex, toIndex);
-		}
-
-		@Override
-		public Object[] toArray() {
-			return _data.toArray();
-		}
-
-		@Override
-		public <T> T[] toArray(T[] a) {
-			return _data.toArray(a);
-		}
+	public JsonArray() {
+		super(ValueType.ARRAY);
 	}
+
+	public boolean isEmpty() {
+		return _data.isEmpty();
+	}
+
+	public int size() {
+		return _data.size();
+	}
+
+	public boolean contains(JsonValue v) {
+		return _data.contains(v);
+	}
+
+	public int indexOf(JsonValue v) {
+		return _data.indexOf(v);
+	}
+
+	public Iterator<JsonValue> iterator() {
+		return _data.iterator();
+	}
+
+	public boolean add(JsonValue v) {
+		return _data.add(v);
+	}
+
+	public JsonValue set(int i, JsonValue v) {
+		return _data.set(i, v);
+	}
+
+	public JsonValue get(int i) {
+		return _data.get(i);
+	}
+
+	public JsonNumber getNumber(int i) {
+		return (JsonNumber) _data.get(i);
+	}
+
+	public JsonString getString(int i) {
+		return (JsonString) _data.get(i);
+	}
+
+	public JsonArray getArray(int i) {
+		return (JsonArray) _data.get(i);
+	}
+
+	public JsonObject getObject(int i) {
+		return (JsonObject) _data.get(i);
+	}
+
+	public JsonValue remove(int index) {
+		return _data.remove(index);
+	}
+
+	public void clear() {
+		_data.clear();
+	}
+
 }

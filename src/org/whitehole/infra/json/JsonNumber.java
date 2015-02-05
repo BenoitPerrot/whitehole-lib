@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2013, Benoit PERROT.
+// Copyright (c) 2004-2014, Benoit PERROT.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -33,69 +33,49 @@ package org.whitehole.infra.json;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public interface JsonNumber extends JsonValue {
+public class JsonNumber extends JsonValue {
 
-	public BigDecimal bigDecimalValue();
+	private final BigDecimal _value;
 
-	public BigInteger bigIntegerValue();
-
-	public BigInteger bigIntegerValueExact();
-
-	public double doubleValue();
-
-	public int intValue();
-
-	public int intValueExact();
-
-	public long longValue();
-
-	public long longValueExact();
-
-	public String toString();
-
-	static class Impl extends JsonValue.Impl implements JsonNumber {
-
-		public Impl(BigDecimal value) {
-			super(ValueType.NUMBER);
-			_value = value;
-		}
-
-		public BigDecimal bigDecimalValue() {
-			return _value;
-		}
-
-		public BigInteger bigIntegerValue() {
-			return _value.toBigInteger();
-		}
-
-		public BigInteger bigIntegerValueExact() {
-			return _value.toBigIntegerExact();
-		}
-
-		public double doubleValue() {
-			return _value.doubleValue();
-		}
-
-		public int intValue() {
-			return _value.intValue();
-		}
-
-		public int intValueExact() {
-			return _value.intValueExact();
-		}
-
-		public long longValue() {
-			return _value.longValue();
-		}
-
-		public long longValueExact() {
-			return _value.longValueExact();
-		}
-
-		public String toString() {
-			return _value.toString();
-		}
-
-		private final BigDecimal _value;
+	public JsonNumber(BigDecimal value) {
+		super(ValueType.NUMBER);
+		_value = value;
 	}
+
+	public BigDecimal bigDecimalValue() {
+		return _value;
+	}
+
+	public BigInteger bigIntegerValue() {
+		return _value.toBigInteger();
+	}
+
+	public BigInteger bigIntegerValueExact() {
+		return _value.toBigIntegerExact();
+	}
+
+	public double doubleValue() {
+		return _value.doubleValue();
+	}
+
+	public int intValue() {
+		return _value.intValue();
+	}
+
+	public int intValueExact() {
+		return _value.intValueExact();
+	}
+
+	public long longValue() {
+		return _value.longValue();
+	}
+
+	public long longValueExact() {
+		return _value.longValueExact();
+	}
+
+	public String toString() {
+		return _value.toString();
+	}
+
 }

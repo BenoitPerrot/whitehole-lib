@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2013, Benoit PERROT.
+// Copyright (c) 2004-2014, Benoit PERROT.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -30,21 +30,20 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.whitehole.infra.json;
 
-public interface JsonString extends JsonValue {
+public class JsonString extends JsonValue {
 
-	public String getString();
+	private final String _s;
 
-	static class Impl extends JsonValue.Impl implements JsonString {
+	public String getString() {
+		return _s;
+	}
 
-		public Impl(String s) {
-			super(ValueType.STRING);
-			_s = s;
-		}
+	public JsonString(String s) {
+		super(ValueType.STRING);
+		_s = s;
+	}
 
-		public String getString() {
-			return _s;
-		}
-
-		private final String _s;
+	public String toString() {
+		return _s;
 	}
 }

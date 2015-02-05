@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2013, Benoit PERROT.
+// Copyright (c) 2004-2014, Benoit PERROT.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,10 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.whitehole.infra.json;
 
-public interface JsonStructure extends JsonValue {
+public class JsonStructure extends JsonValue {
+
+	protected JsonStructure(JsonValue.ValueType t) {
+		super(t);
+	}
 
 }

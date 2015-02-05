@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2013, Benoit PERROT.
+// Copyright (c) 2004-2014, Benoit PERROT.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -30,94 +30,71 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.whitehole.infra.json;
 
-import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.TreeMap;
 
-public interface JsonObject extends JsonStructure, Map<String, JsonValue> {
+public class JsonObject extends JsonStructure {
 
-	public JsonString getString(String key);
+	private final TreeMap<String, JsonValue> _data = new TreeMap<String, JsonValue>();
 
-	public JsonArray getArray(String key);
-
-	static class Impl extends JsonValue.Impl implements JsonObject {
-
-		private final SortedMap<String, JsonValue> _data = new TreeMap<String, JsonValue>();
-
-		public Impl() {
-			super(ValueType.OBJECT);
-		}
-
-		@Override
-		public void clear() {
-			_data.clear();
-		}
-
-		@Override
-		public boolean containsKey(Object key) {
-			return _data.containsKey(key);
-		}
-
-		@Override
-		public boolean containsValue(Object value) {
-			return _data.containsValue(value);
-		}
-
-		@Override
-		public Set<java.util.Map.Entry<String, JsonValue>> entrySet() {
-			return _data.entrySet();
-		}
-
-		@Override
-		public JsonValue get(Object key) {
-			return _data.get(key);
-		}
-
-		@Override
-		public JsonString getString(String key) {
-			return (JsonString) get(key);
-		}
-
-		@Override
-		public JsonArray getArray(String key) {
-			return (JsonArray) get(key);
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return _data.isEmpty();
-		}
-
-		@Override
-		public Set<String> keySet() {
-			return _data.keySet();
-		}
-
-		@Override
-		public JsonValue put(String key, JsonValue value) {
-			return _data.put(key, value);
-		}
-
-		@Override
-		public void putAll(Map<? extends String, ? extends JsonValue> m) {
-			_data.putAll(m);
-		}
-
-		@Override
-		public JsonValue remove(Object key) {
-			return _data.remove(key);
-		}
-
-		@Override
-		public int size() {
-			return _data.size();
-		}
-
-		@Override
-		public Collection<JsonValue> values() {
-			return _data.values();
-		}
+	public JsonObject() {
+		super(ValueType.OBJECT);
 	}
+
+	public boolean isEmpty() {
+		return _data.isEmpty();
+	}
+
+	public int size() {
+		return _data.size();
+	}
+
+	public boolean containsKey(String key) {
+		return _data.containsKey(key);
+	}
+
+	public boolean containsValue(JsonValue v) {
+		return _data.containsValue(v);
+	}
+
+	public Set<java.util.Map.Entry<String, JsonValue>> entrySet() {
+		return _data.entrySet();
+	}
+
+	public Set<String> keySet() {
+		return _data.keySet();
+	}
+
+	public JsonValue put(String key, JsonValue value) {
+		return _data.put(key, value);
+	}
+
+	public JsonValue get(String key) {
+		return _data.get(key);
+	}
+
+	public JsonNumber getNumber(String key) {
+		return (JsonNumber) _data.get(key);
+	}
+
+	public JsonString getString(String key) {
+		return (JsonString) _data.get(key);
+	}
+
+	public JsonArray getArray(String key) {
+		return (JsonArray) _data.get(key);
+	}
+
+	public JsonObject getObject(String key) {
+		return (JsonObject) _data.get(key);
+	}
+
+	public JsonValue remove(String key) {
+		return _data.remove(key);
+	}
+
+	public void clear() {
+		_data.clear();
+	}
+
 }
