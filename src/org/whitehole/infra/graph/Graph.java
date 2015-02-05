@@ -35,6 +35,13 @@ import java.util.Iterator;
 
 public interface Graph {
 
+	public interface Edge {
+
+		public int getFirst();
+
+		public int getSecond();
+	}
+
 	public int getVertexCount();
 
 	public Iterable<Integer> getVertices();
@@ -43,18 +50,47 @@ public interface Graph {
 
 	public Iterable<Integer> getSuccessors(int v);
 
+	public Iterable<Edge> getOutEdges(int v);
+
 	public int getPredecessorCount(int v);
 
 	public Iterable<Integer> getPredecessors(int v);
 
+	public Iterable<Edge> getInEdges(int v);
+
 	public final class Default implements Graph {
 
-		private final ArrayList<ArrayList<Integer>> _successorsOf = new ArrayList<ArrayList<Integer>>();
-		private final ArrayList<ArrayList<Integer>> _predecessorsOf = new ArrayList<ArrayList<Integer>>();
+		private static class Edge implements Graph.Edge {
 
-		public int getVertexCount() {
-			return _successorsOf.size();
+			final int first;
+			final int second;
+
+			final Edge nextOut;
+			final Edge nextIn;
+
+			public Edge(int first, int second, Edge nextOut, Edge nextIn) {
+				this.first = first;
+				this.second = second;
+				this.nextOut = nextOut;
+				this.nextIn = nextIn;
+			}
+
+			public int getFirst() {
+				return first;
+			}
+
+			public int getSecond() {
+				return second;
+			}
 		}
+
+		private final ArrayList<Edge> _vertexToFirstOutEdge = new ArrayList<>();
+		private final ArrayList<Integer> _vertexToOutEdgeCount = new ArrayList<>();
+
+		private final ArrayList<Edge> _vertexToFirstInEdge = new ArrayList<>();
+		private final ArrayList<Integer> _vertexToInEdgeCount = new ArrayList<>();
+
+		private final ArrayList<Edge> _edges = new ArrayList<>();
 
 		public Iterable<Integer> getVertices() {
 			return new Iterable<Integer>() {
@@ -80,32 +116,143 @@ public interface Graph {
 			};
 		}
 
+		public int getVertexCount() {
+			return _vertexToOutEdgeCount.size(); // Arbitrarily
+		}
+
 		public int getSuccessorCount(int v) {
-			return _successorsOf.get(v).size();
+			return _vertexToOutEdgeCount.get(v);
 		}
 
 		public Iterable<Integer> getSuccessors(int v) {
-			return _successorsOf.get(v);
+			return new Iterable<Integer>() {
+
+				public Iterator<Integer> iterator() {
+					return new Iterator<Integer>() {
+
+						Edge _e = _vertexToFirstOutEdge.get(v);
+
+						public boolean hasNext() {
+							return _e != null;
+						}
+
+						public Integer next() {
+							final Integer i = _e.second;
+							_e = _e.nextOut;
+							return i;
+						}
+
+						public void remove() {
+							throw new AssertionError();
+						}
+					};
+				}
+			};
+		}
+
+		public Iterable<Graph.Edge> getOutEdges(int v) {
+			return new Iterable<Graph.Edge>() {
+
+				public Iterator<Graph.Edge> iterator() {
+					return new Iterator<Graph.Edge>() {
+
+						Edge _e = _vertexToFirstOutEdge.get(v);
+
+						public boolean hasNext() {
+							return _e != null;
+						}
+
+						public Graph.Edge next() {
+							Edge current = _e;
+							_e = _e.nextOut;
+							return current;
+						}
+
+						public void remove() {
+							throw new AssertionError();
+						}
+					};
+				}
+			};
 		}
 
 		public int getPredecessorCount(int v) {
-			return _predecessorsOf.get(v).size();
+			return _vertexToInEdgeCount.get(v);
 		}
 
 		public Iterable<Integer> getPredecessors(int v) {
-			return _predecessorsOf.get(v);
+			return new Iterable<Integer>() {
+
+				public Iterator<Integer> iterator() {
+					return new Iterator<Integer>() {
+
+						Edge _e = _vertexToFirstInEdge.get(v);
+
+						public boolean hasNext() {
+							return _e != null;
+						}
+
+						public Integer next() {
+							final Integer i = _e.first;
+							_e = _e.nextIn;
+							return i;
+						}
+
+						public void remove() {
+							throw new AssertionError();
+						}
+					};
+				}
+			};
+		}
+
+		public Iterable<Graph.Edge> getInEdges(int v) {
+			return new Iterable<Graph.Edge>() {
+
+				public Iterator<Graph.Edge> iterator() {
+					return new Iterator<Graph.Edge>() {
+
+						Edge _e = _vertexToFirstInEdge.get(v);
+
+						public boolean hasNext() {
+							return _e != null;
+						}
+
+						public Graph.Edge next() {
+							Edge current = _e;
+							_e = _e.nextIn;
+							return current;
+						}
+
+						public void remove() {
+							throw new AssertionError();
+						}
+					};
+				}
+			};
 		}
 
 		public int makeVertex() {
-			_successorsOf.add(new ArrayList<Integer>());
-			_predecessorsOf.add(new ArrayList<Integer>());
-			assert _successorsOf.size() == _predecessorsOf.size();
+			_vertexToFirstOutEdge.add(null);
+			_vertexToOutEdgeCount.add(0);
+			//
+			_vertexToFirstInEdge.add(null);
+			_vertexToInEdgeCount.add(0);
+
 			return getVertexCount() - 1;
 		}
 
-		public void makeEdge(int v0, int v1) {
-			_successorsOf.get(v0).add(v1);
-			_predecessorsOf.get(v1).add(v0);
+		public Edge makeEdge(int v0, int v1) {
+			final Edge e = new Edge(v0, v1, _vertexToFirstOutEdge.get(v0), _vertexToFirstInEdge.get(v1));
+			_edges.add(e);
+			//
+			_vertexToFirstOutEdge.set(v0, e);
+			_vertexToOutEdgeCount.set(v0, 1 + _vertexToOutEdgeCount.get(v0));
+			//
+			_vertexToFirstInEdge.set(v1, e);
+			_vertexToInEdgeCount.set(v1, 1 + _vertexToInEdgeCount.get(v1));
+
+			return e;
 		}
 
 		public Reverse reverse() {
@@ -137,12 +284,20 @@ public interface Graph {
 			return _g.getPredecessors(v);
 		}
 
+		public Iterable<Edge> getOutEdges(int v) {
+			return _g.getInEdges(v);
+		}
+
 		public int getPredecessorCount(int v) {
 			return _g.getSuccessorCount(v);
 		}
 
 		public Iterable<Integer> getPredecessors(int v) {
 			return _g.getSuccessors(v);
+		}
+
+		public Iterable<Edge> getInEdges(int v) {
+			return _g.getOutEdges(v);
 		}
 	}
 }
