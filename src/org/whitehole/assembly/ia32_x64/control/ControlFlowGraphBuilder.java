@@ -31,11 +31,13 @@
 package org.whitehole.assembly.ia32_x64.control;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
 
+import org.whitehole.assembly.ia32_x64.control.Trace.BranchReason;
+import org.whitehole.assembly.ia32_x64.control.Trace.MotivatedPoint;
 import org.whitehole.assembly.ia32_x64.dom.InstructionBuffer;
+import org.whitehole.infra.graph.Graph;
 
 public class ControlFlowGraphBuilder {
 
@@ -73,7 +75,7 @@ public class ControlFlowGraphBuilder {
 					final long exitPoint = (higherEntryPoint == null) ? higherExitPoint : Math.min(higherEntryPoint, higherExitPoint);
 
 					if (!t.isExitPoint(exitPoint))
-						t.addExitPoint(exitPoint, exitPoint, Trace.ExitReason.ALWAYS); // Modifying t
+						t.addExitPoint(exitPoint, exitPoint, Trace.BranchReason.ALWAYS);
 
 					basicBlocks.put(p, new BasicBlock(t, p, exitPoint));
 				}
@@ -94,16 +96,19 @@ public class ControlFlowGraphBuilder {
 				basicBlockToVertex.put(bb, v);
 			}
 
+			final HashMap<Graph.Edge, BranchReason> branchingReasons = new HashMap<>();
+			
 			for (final BasicBlock bb : basicBlocks.values()) {
 				final int v = basicBlockToVertex.get(bb);
 
-				final ArrayList<Long> destinations = t.getDestinationsAt(bb.getExitPoint());
-				for (Long d : destinations)
-					if (d != null) // Consider sound destinations only
-						g.makeEdge(v, basicBlockToVertex.get(basicBlocks.get(d)));
+				for (MotivatedPoint x : t.getDestinationsAt(bb.getExitPoint()))
+					if (x.getPoint() != null) { // Consider sound destinations only
+						final Graph.Edge e = g.makeEdge(v, basicBlockToVertex.get(basicBlocks.get(x.getPoint())));
+						branchingReasons.put(e, x.getReason());
+					}
 			}
 
-			return new ControlFlowGraph(g, basicBlockToVertex.get(basicBlocks.get(offset)), vertexToBasicBlock, basicBlockToVertex);
+			return new ControlFlowGraph(g, branchingReasons, basicBlockToVertex.get(basicBlocks.get(offset)), vertexToBasicBlock, basicBlockToVertex);
 		}
 	}
 }

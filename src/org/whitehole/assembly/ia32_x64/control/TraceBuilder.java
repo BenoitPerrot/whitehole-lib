@@ -34,8 +34,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import org.whitehole.assembly.ia32_x64.control.Trace.EntryReason;
-import org.whitehole.assembly.ia32_x64.control.Trace.ExitReason;
+import org.whitehole.assembly.ia32_x64.control.Trace.BranchReason;
 import org.whitehole.assembly.ia32_x64.dom.Immediate;
 import org.whitehole.assembly.ia32_x64.dom.Instruction;
 import org.whitehole.assembly.ia32_x64.dom.InstructionBuffer;
@@ -66,7 +65,7 @@ public class TraceBuilder {
 		final LinkedList<Long> offsetsToExplore = new LinkedList<Long>();
 
 		offsetsToExplore.add(entryPoint);
-		t.addEntryPoint(null, entryPoint, EntryReason.START);
+		t.addEntryPoint(null, entryPoint, BranchReason.START);
 
 		final HashSet<Long> exploredOffsets = new HashSet<Long>();
 		while (!offsetsToExplore.isEmpty()) {
@@ -100,19 +99,19 @@ public class TraceBuilder {
 						}
 
 						// Document reasons to jump
-						final ExitReason reasonToExit;
-						final EntryReason reasonToContinue;
+						final BranchReason reasonToExit;
+						final BranchReason reasonToContinue;
 						if (i.getMnemonic() == Mnemonic.CALL) {
-							reasonToExit = ExitReason.TO_SUB;
-							reasonToContinue = EntryReason.FROM_SUB;
+							reasonToExit = BranchReason.TO_SUB;
+							reasonToContinue = BranchReason.FROM_SUB;
 						}
 						else {
-							reasonToExit = i.getMnemonic() == Mnemonic.RET ? ExitReason.END : i.isConditionalBranch() ? ExitReason.TEST_IS_TRUE : ExitReason.ALWAYS;
-							reasonToContinue = i.isConditionalBranch() ? EntryReason.TEST_IS_FALSE : null;
+							reasonToExit = i.getMnemonic() == Mnemonic.RET ? BranchReason.END : i.isConditionalBranch() ? BranchReason.TEST_IS_TRUE : BranchReason.ALWAYS;
+							reasonToContinue = i.isConditionalBranch() ? BranchReason.TEST_IS_FALSE : null;
 						}
 
 						// Report an exit point
-						t.addExitPoint(after, destination, reasonToExit); // WAS: l.addBranch(after, destination, reasonToExit)
+						t.addExitPoint(after, destination, reasonToExit);
 
 						// <<
 						if (destination != null)
@@ -122,7 +121,7 @@ public class TraceBuilder {
 						// If there is a reason to continue,
 						if (reasonToContinue != null) {
 							// Report a re-entry point
-							t.addEntryPoint(after, after, reasonToContinue); // WAS: l.addBranch(after, after, reasonToContinue)
+							t.addEntryPoint(after, after, reasonToContinue);
 
 							// And do continue
 

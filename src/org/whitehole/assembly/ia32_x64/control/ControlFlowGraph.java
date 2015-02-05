@@ -33,16 +33,21 @@ package org.whitehole.assembly.ia32_x64.control;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.whitehole.assembly.ia32_x64.control.Trace.BranchReason;
+import org.whitehole.infra.graph.Graph;
+
 public class ControlFlowGraph {
 
-	private final org.whitehole.infra.graph.Graph _g;
+	private final Graph _g;
+	private final HashMap<Graph.Edge, BranchReason> _branchingReasons;
 	private final int _entryVertex;
 	private final HashMap<Integer, BasicBlock> _vertexToBasicBlock;
 	private final HashMap<BasicBlock, Integer> _basicBlockToVertex;
 
-	public ControlFlowGraph(org.whitehole.infra.graph.Graph g, int entryVertex, HashMap<Integer, BasicBlock> vertexToBasicBlock,
+	public ControlFlowGraph(Graph g, HashMap<Graph.Edge, BranchReason> branchingReasons, int entryVertex, HashMap<Integer, BasicBlock> vertexToBasicBlock,
 			HashMap<BasicBlock, Integer> basicBlockToVertex) {
 		_g = g;
+		_branchingReasons = branchingReasons;
 		_entryVertex = entryVertex;
 		_vertexToBasicBlock = vertexToBasicBlock;
 		_basicBlockToVertex = basicBlockToVertex;
@@ -64,22 +69,43 @@ public class ControlFlowGraph {
 		return 0 < _g.getSuccessorCount(_basicBlockToVertex.get(bb));
 	}
 
-	public Iterable<BasicBlock> getOutcomingBlocks(BasicBlock bb) {
-		final int v = _basicBlockToVertex.get(bb);
-		return new Iterable<BasicBlock>() {
-			public Iterator<BasicBlock> iterator() {
-				return new Iterator<BasicBlock>() {
+	public class MotivatedBlock {
 
-					final Iterator<Integer> _i = _g.getSuccessors(v).iterator();
+		private final BasicBlock _bb;
+		private final Trace.BranchReason _r;
+
+		public MotivatedBlock(BasicBlock bb, Trace.BranchReason r) {
+			_bb = bb;
+			_r = r;
+		}
+
+		public BasicBlock getBlock() {
+			return _bb;
+		}
+
+		public Trace.BranchReason getReason() {
+			return _r;
+		}
+	}
+
+	public Iterable<MotivatedBlock> getDestinationBlocks(BasicBlock bb) {
+		final int v = _basicBlockToVertex.get(bb);
+		return new Iterable<MotivatedBlock>() {
+
+			public Iterator<MotivatedBlock> iterator() {
+				return new Iterator<MotivatedBlock>() {
+
+					final Iterator<Graph.Edge> _outEdges = _g.getOutEdges(v).iterator();
 
 					@Override
 					public boolean hasNext() {
-						return _i.hasNext();
+						return _outEdges.hasNext();
 					}
 
 					@Override
-					public BasicBlock next() {
-						return _vertexToBasicBlock.get(_i.next());
+					public MotivatedBlock next() {
+						final Graph.Edge e = _outEdges.next();
+						return new MotivatedBlock(_vertexToBasicBlock.get(e.getSecond()), _branchingReasons.get(e));
 					}
 
 					@Override

@@ -39,22 +39,36 @@ import org.whitehole.assembly.ia32_x64.dom.Instruction;
 
 class Trace {
 
-	public enum ExitReason {
-		END, TO_SUB, TEST_IS_TRUE, ALWAYS
-	}
-
-	public enum EntryReason {
+	public enum BranchReason {
+		END, TO_SUB, TEST_IS_TRUE, ALWAYS,
 		START, FROM_SUB, TEST_IS_FALSE
 	}
 
-	private final TreeSet<Long> _entryPoints = new TreeSet<Long>();
-	private final TreeSet<Long> _exitPoints = new TreeSet<Long>();
-	private final TreeMap<Long, ArrayList<Long>> _branches = new TreeMap<Long, ArrayList<Long>>();
+	private final TreeSet<Long> _entryPoints = new TreeSet<>();
+	private final TreeSet<Long> _exitPoints = new TreeSet<>();
 
-	private final TreeMap<Long, Instruction> _offsetToInstruction = new TreeMap<Long, Instruction>();
+	public static class MotivatedPoint {
 
-	public Trace() {
+		private final Long _destination;
+		private final BranchReason _r;
+
+		public MotivatedPoint(Long destination, BranchReason r) {
+			_destination = destination;
+			_r = r;
+		}
+
+		public Long getPoint() {
+			return _destination;
+		}
+
+		public BranchReason getReason() {
+			return _r;
+		}
 	}
+
+	private final TreeMap<Long, ArrayList<MotivatedPoint>> _branches = new TreeMap<>();
+
+	private final TreeMap<Long, Instruction> _offsetToInstruction = new TreeMap<>();
 
 	public Trace addInstruction(long offset, long size, Instruction i) {
 		_offsetToInstruction.put(offset, i);
@@ -64,45 +78,34 @@ class Trace {
 		return this;
 	}
 
-	private void addBranch(long exitPoint, Long entryPoint) {
-		ArrayList<Long> l = _branches.get(exitPoint);
+	private void addBranch(long exitPoint, Long entryPoint, BranchReason r) {
+		ArrayList<MotivatedPoint> l = _branches.get(exitPoint);
 		if (l == null) {
-			l = new ArrayList<Long>();
+			l = new ArrayList<>();
 			_branches.put(exitPoint, l);
 		}
-		l.add(entryPoint);
-
-		// addExitPoint(leavingPoint);
-
-		// if (entryPoint != null)
-		// addEntryPoint(entryPoint);
+		l.add(new MotivatedPoint(entryPoint, r));
 	}
 
-	public Trace addEntryPoint(Long exitPoint, long entryPoint, EntryReason r) {
+	public Trace addEntryPoint(Long exitPoint, long entryPoint, BranchReason r) {
+		// TODO: keep track of starting points (r is START, exitPoint is null)
 		if (exitPoint != null) {
-			// <<
-			addBranch(exitPoint, entryPoint);
-			// >>
+			addBranch(exitPoint, entryPoint, r);
 			_exitPoints.add(exitPoint);
 		}
-		_entryPoints.add(entryPoint); // r
+		_entryPoints.add(entryPoint);
 		return this;
 	}
 
-	public Trace addExitPoint(long exitPoint, Long entryPoint, ExitReason r) {
-		// <<
-		addBranch(exitPoint, entryPoint);
-		// >>
+	public Trace addExitPoint(long exitPoint, Long entryPoint, BranchReason r) {
+		addBranch(exitPoint, entryPoint, r);
 		if (entryPoint != null)
 			_entryPoints.add(entryPoint);
-		_exitPoints.add(exitPoint); // r
+		_exitPoints.add(exitPoint);
 		return this;
 	}
 
-	// @name Getters
-	// @{
-
-	public ArrayList<Long> getDestinationsAt(long offset) {
+	public ArrayList<MotivatedPoint> getDestinationsAt(long offset) {
 		return _branches.get(offset);
 	}
 
@@ -134,6 +137,4 @@ class Trace {
 	public boolean isExitPoint(long point) {
 		return _exitPoints.contains(point);
 	}
-
-	// @}
 }
