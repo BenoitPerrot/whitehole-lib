@@ -36,9 +36,6 @@ import java.io.Reader;
 import java.math.BigDecimal;
 
 import org.whitehole.infra.io.InfinitelyBufferedReader;
-import org.whitehole.infra.json.stream.JsonGenerator;
-import org.whitehole.infra.json.stream.JsonLocation;
-import org.whitehole.infra.json.stream.JsonParsingException;
 
 public class JsonReader implements Closeable {
 

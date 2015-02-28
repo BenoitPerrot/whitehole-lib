@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2014, Benoit PERROT.
+// Copyright (c) 2004-2015, Benoit PERROT.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,20 +28,12 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-package org.whitehole.infra.json.stream;
+package org.whitehole.infra.json;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Stack;
-
-import org.whitehole.infra.json.JsonArray;
-import org.whitehole.infra.json.JsonException;
-import org.whitehole.infra.json.JsonNumber;
-import org.whitehole.infra.json.JsonObject;
-import org.whitehole.infra.json.JsonString;
-import org.whitehole.infra.json.JsonStructure;
-import org.whitehole.infra.json.JsonValue;
 
 public interface JsonGenerator extends Closeable {
 

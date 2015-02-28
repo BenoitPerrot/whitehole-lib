@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.util.TreeMap;
 
 import org.junit.Test;
-import org.whitehole.infra.json.stream.JsonGenerator;
+import org.whitehole.infra.json.JsonGenerator;
 
 public class DominanceTest {
 
