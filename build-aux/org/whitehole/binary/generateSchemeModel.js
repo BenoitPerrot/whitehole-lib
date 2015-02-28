@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2013, Benoit PERROT.
+// Copyright (c) 2004-2015, Benoit PERROT.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -41,14 +41,11 @@ define('org/whitehole/binary/generateSchemeModel',
          function(IO, generateEnumeration, generateFlagSet, generateStructure) {
 	'use strict';
 
-	function generate(ns, name, e) {
-	}
-	
-	return function(schemaPath, destNS) {
+	return function(schemaPath, destPath) {
 		var schema = IO.readJSONFile(schemaPath);
-		
-		var destPath = 'src/' + destNS.replace(/\./g, '/');
 
+		var destNS = 'org.whitehole.binary.pe';
+		
 		var k;
 		
 		for (k in schema.enumerations)

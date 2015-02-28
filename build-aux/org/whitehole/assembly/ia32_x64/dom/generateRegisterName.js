@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2013, Benoit PERROT.
+// Copyright (c) 2004-2015, Benoit PERROT.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -148,6 +148,7 @@ define('org/whitehole/assembly/ia32_x64/dom/generateRegisterName', [ 'org/whiteh
 	}
 
 	return function(registerMapsPath, destPath) {
+		print('Generating ' + destPath);
 		IO.writeFile(destPath, generateCode(IO.readJSONFile(registerMapsPath)));
 	};
 });

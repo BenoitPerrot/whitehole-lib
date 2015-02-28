@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+
+	<pathconvert targetos="unix" property="rootdir"><path location="${basedir}"/></pathconvert>
+	<property name="commonsdir" value="${rootdir}/../whitehole-commons" />
+
+	<macrodef name="javascript-amd">
+		<attribute name="require-path" default="${rootdir}" />
+		<attribute name="require-verbose" default="false" />
+		<attribute name="src" default="" />
+		<text name="text" optional="yes" />
+		<sequential>
+			<script language="javascript">
+				<![CDATA[
+// Rhino's load() is not available when running Ant in Eclipse!?
+function load(path) {
+	return eval('' + org.apache.tools.ant.util.FileUtils.readFully(new java.io.FileReader(path)));
+}
+
+var define, require;
+(function (AMD) {
+	define = AMD.define;
+	require = AMD.require;
+} (load(rootdir + "/build-aux/org/whitehole/infra/AMD.js")));
+// Configure require:
+require.path = "@{require-path}";
+require.verbose = @{require-verbose};
+				
+if ("@{src}" !== "")
+	load("@{src}");
+
+@{text}
+]]>
+			</script>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="generate">
+		<attribute name="generator" />
+		<attribute name="input" default="" />
+		<attribute name="output" />
+		<sequential>
+			<javascript-amd require-path="${rootdir}/build-aux">
+				<![CDATA[
+require(['@{generator}'], function (g) {
+	'use strict';
+	if ("@{input}" !== "")
+		g("@{input}", "@{output}");
+	else
+		g("@{output}");
+});
+]]>
+			</javascript-amd>
+		</sequential>
+	</macrodef>
+
+	<target name="build-infra.types-sources">
+		<local name="gendir"/><property name="gendir" value="org/whitehole/infra/types"/>
+		<local name="outdir"/><property name="outdir" value="${rootdir}/src/org/whitehole/infra/types"/>
+			
+		<generate generator="${gendir}/generateBinaryWidth" output="${outdir}/BinaryWidth.java" />
+		<generate generator="${gendir}/generateByteArrayN" output="${outdir}" />
+		<generate generator="${gendir}/generateSIntN" output="${outdir}" />
+		<generate generator="${gendir}/generateLittleEndianReader" output="${outdir}/LittleEndianReader.java" />
+	</target>
+	
+	<target name="build-binary-sources">
+		<generate generator="org/whitehole/binary/generateSchemeModel" input="${commonsdir}/resources/org/whitehole/binary/pe/pe.json" output="${rootdir}/src/org/whitehole/binary/pe" />
+	</target>
+	
+	<target name="build-assembly.ia32_x64-sources">
+		<local name="gendir"/><property name="gendir" value="org/whitehole/assembly/ia32_x64"/>
+		<local name="rscdir"/><property name="rscdir" value="${commonsdir}/resources/org/whitehole/assembly/ia32_x64"/>
+		<local name="outdir"/><property name="outdir" value="${rootdir}/src/org/whitehole/assembly/ia32_x64"/>
+
+		<generate generator="${gendir}/dis/generateInstructionDecoder" input="${rscdir}/opcodeMaps.json" output="${outdir}/dis/InstructionDecoder.java" />
+		<generate generator="${gendir}/dom/generateMnemonic" input="${rscdir}/opcodeMaps.json" output="${outdir}/dom/Mnemonic.java" />
+		
+		<generate generator="${gendir}/dom/generateRegisterName" input="${rscdir}/registerMaps.json" output="${outdir}/dom/RegisterName.java" />
+	</target>
+	
+	<target name="build-sources" depends="build-infra.types-sources, build-binary-sources, build-assembly.ia32_x64-sources"/>
+
+</project>

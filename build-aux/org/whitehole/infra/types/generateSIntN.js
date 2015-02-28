@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2014, Benoit PERROT.
+// Copyright (c) 2004-2015, Benoit PERROT.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@
 // width
 //
 
-require([ 'org/whitehole/infra/IO' ], function(IO) {
+define('org/whitehole/infra/types/generateSIntN', [ 'org/whitehole/infra/IO' ], function(IO) {
 	'use strict';
 
 	function generate(isSigned, n) {
@@ -160,8 +160,10 @@ require([ 'org/whitehole/infra/IO' ], function(IO) {
 		return cw.toString();
 	}
 
-	for (var i = 1; i <= 16; i *= 2) {
-		IO.writeFile('src/org/whitehole/infra/types/UInt' + (i * 8) + '.java', generate(false, i));
-		IO.writeFile('src/org/whitehole/infra/types/Int' + (i * 8) + '.java', generate(true, i));
-	}
+	return function(outdir) {
+		for (var i = 1; i <= 16; i *= 2) {
+			IO.writeFile(outdir + '/UInt' + (i * 8) + '.java', generate(false, i));
+			IO.writeFile(outdir + '/Int' + (i * 8) + '.java', generate(true, i));
+		}
+	};
 });

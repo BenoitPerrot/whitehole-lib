@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2013, Benoit PERROT.
+// Copyright (c) 2004-2015, Benoit PERROT.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@
 // Build a Java enumeration for commonly used binary widths.
 //
 
-require([ 'org/whitehole/infra/IO' ], function(IO) {
+define('org/whitehole/infra/types/generateBinaryWidth', [ 'org/whitehole/infra/IO' ], function(IO) {
 	'use strict';
 
 	function generate() {
@@ -50,5 +50,7 @@ require([ 'org/whitehole/infra/IO' ], function(IO) {
 		return cw.toString();
 	}
 
-	IO.writeFile('src/org/whitehole/infra/types/BinaryWidth.java', generate());
+	return function (output) {
+		IO.writeFile(output, generate());
+	};
 });
