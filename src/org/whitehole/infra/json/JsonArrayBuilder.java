@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2014, Benoit PERROT.
+// Copyright (c) 2004-2015, Benoit PERROT.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -33,83 +33,56 @@ package org.whitehole.infra.json;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public interface JsonArrayBuilder {
+public class JsonArrayBuilder {
 
-	public JsonArrayBuilder add(JsonValue value);
-
-	public JsonArrayBuilder addNull();
-
-	public JsonArrayBuilder add(boolean value);
-
-	public JsonArrayBuilder add(BigDecimal value);
-
-	public JsonArrayBuilder add(BigInteger value);
-
-	public JsonArrayBuilder add(double value);
-
-	public JsonArrayBuilder add(int value);
-
-	public JsonArrayBuilder add(long value);
-
-	public JsonArrayBuilder add(String value);
-
-	public JsonArrayBuilder add(JsonArrayBuilder builder);
-
-	public JsonArrayBuilder add(JsonObjectBuilder builder);
-
-	public JsonArray build();
-
-	static class Impl implements JsonArrayBuilder {
-
-		public JsonArrayBuilder add(JsonValue value) {
-			_a.add(value);
-			return this;
-		}
-
-		public JsonArrayBuilder addNull() {
-			return add(JsonValue.NULL);
-		}
-
-		public JsonArrayBuilder add(boolean value) {
-			return add(value ? JsonValue.TRUE : JsonValue.FALSE);
-		}
-
-		public JsonArrayBuilder add(BigDecimal value) {
-			return add(new JsonNumber(value));
-		}
-
-		public JsonArrayBuilder add(BigInteger value) {
-			return add(new BigDecimal(value));
-		}
-
-		public JsonArrayBuilder add(double value) {
-			return add(new BigDecimal(value));
-		}
-
-		public JsonArrayBuilder add(int value) {
-			return add(new BigDecimal(value));
-		}
-
-		public JsonArrayBuilder add(long value) {
-			return add(new BigDecimal(value));
-		}
-
-		public JsonArrayBuilder add(String value) {
-			return add(new JsonString(value));
-		}
-
-		public JsonArrayBuilder add(JsonArrayBuilder builder) {
-			return add(builder.build());
-		}
-
-		public JsonArrayBuilder add(JsonObjectBuilder builder) {
-			return add(builder.build());
-		}
-
-		public JsonArray build() {
-			return _a;
-		}
-
-		private final JsonArray _a = new JsonArray();
+	public JsonArrayBuilder add(JsonValue value) {
+		_a.add(value);
+		return this;
 	}
+
+	public JsonArrayBuilder addNull() {
+		return add(JsonValue.NULL);
+	}
+
+	public JsonArrayBuilder add(boolean value) {
+		return add(value ? JsonValue.TRUE : JsonValue.FALSE);
+	}
+
+	public JsonArrayBuilder add(BigDecimal value) {
+		return add(new JsonNumber(value));
+	}
+
+	public JsonArrayBuilder add(BigInteger value) {
+		return add(new BigDecimal(value));
+	}
+
+	public JsonArrayBuilder add(double value) {
+		return add(new BigDecimal(value));
+	}
+
+	public JsonArrayBuilder add(int value) {
+		return add(new BigDecimal(value));
+	}
+
+	public JsonArrayBuilder add(long value) {
+		return add(new BigDecimal(value));
+	}
+
+	public JsonArrayBuilder add(String value) {
+		return add(new JsonString(value));
+	}
+
+	public JsonArrayBuilder add(JsonArrayBuilder builder) {
+		return add(builder.build());
+	}
+
+	public JsonArrayBuilder add(JsonObjectBuilder builder) {
+		return add(builder.build());
+	}
+
+	public JsonArray build() {
+		return _a;
+	}
+
+	private final JsonArray _a = new JsonArray();
 }

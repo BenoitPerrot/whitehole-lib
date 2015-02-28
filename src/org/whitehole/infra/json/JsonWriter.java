@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2013, Benoit PERROT.
+// Copyright (c) 2004-2015, Benoit PERROT.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,95 +37,83 @@ import java.util.Map.Entry;
 
 import org.whitehole.infra.io.IndentingWriter;
 
-public interface JsonWriter extends Closeable {
+public class JsonWriter implements Closeable {
 
-	public void write(JsonStructure value) throws IOException;
-
-	public void writeArray(JsonArray array) throws IOException;
-
-	public void writeObject(JsonObject object) throws IOException;
-
-	static class Impl implements JsonWriter {
-
-		public Impl(Writer w) {
-			_w = new IndentingWriter(w, "  ");
-		}
-
-		@Override
-		public void close() throws IOException {
-			_w.close();
-		}
-
-		private void write(JsonValue v) throws IOException {
-			switch (v.getValueType()) {
-				case NULL:
-					_w.print("null");
-					break;
-				case FALSE:
-					_w.print("false");
-					break;
-				case TRUE:
-					_w.print("true");
-					break;
-				case NUMBER:
-					_w.print(((JsonNumber) v).toString());
-					break;
-				case STRING:
-					_w.print("\"" + ((JsonString) v).getString() + "\"");
-					break;
-				case ARRAY:
-					writeArray((JsonArray) v);
-					break;
-				case OBJECT:
-					writeObject((JsonObject) v);
-					break;
-			}
-		}
-
-		@Override
-		public void write(JsonStructure value) throws IOException {
-			if (value instanceof JsonArray)
-				writeArray((JsonArray) value);
-			else
-				writeObject((JsonObject) value);
-		}
-
-		@Override
-		public void writeArray(JsonArray a) throws IOException {
-			if (a.size() == 0)
-				_w.print("[]");
-			else {
-				_w.endLine("[").indentMore();
-				boolean isFirst = true;
-				for (JsonValue v : a) {
-					if (!isFirst)
-						_w.endLine(",");
-					_w.startLine();
-					write(v);
-					isFirst = false;
-				}
-				_w.endLine().indentLess().startLine("]");
-			}
-		}
-
-		@Override
-		public void writeObject(JsonObject o) throws IOException {
-			if (o.size() == 0)
-				_w.print("{}");
-			else {
-				_w.endLine("{").indentMore();
-				boolean isFirst = true;
-				for (Entry<String, JsonValue> e : o.entrySet()) {
-					if (!isFirst)
-						_w.endLine(",");
-					_w.startLine("\"" + e.getKey() + "\": ");
-					write(e.getValue());
-					isFirst = false;
-				}
-				_w.endLine().indentLess().startLine("}");
-			}
-		}
-
-		private final IndentingWriter _w;
+	public JsonWriter(Writer w) {
+		_w = new IndentingWriter(w, "  ");
 	}
+
+	@Override
+	public void close() throws IOException {
+		_w.close();
+	}
+
+	private void write(JsonValue v) throws IOException {
+		switch (v.getValueType()) {
+			case NULL:
+				_w.print("null");
+				break;
+			case FALSE:
+				_w.print("false");
+				break;
+			case TRUE:
+				_w.print("true");
+				break;
+			case NUMBER:
+				_w.print(((JsonNumber) v).toString());
+				break;
+			case STRING:
+				_w.print("\"" + ((JsonString) v).getString() + "\"");
+				break;
+			case ARRAY:
+				writeArray((JsonArray) v);
+				break;
+			case OBJECT:
+				writeObject((JsonObject) v);
+				break;
+		}
+	}
+
+	public void write(JsonStructure value) throws IOException {
+		if (value instanceof JsonArray)
+			writeArray((JsonArray) value);
+		else
+			writeObject((JsonObject) value);
+	}
+
+	public void writeArray(JsonArray a) throws IOException {
+		if (a.size() == 0)
+			_w.print("[]");
+		else {
+			_w.endLine("[").indentMore();
+			boolean isFirst = true;
+			for (JsonValue v : a) {
+				if (!isFirst)
+					_w.endLine(",");
+				_w.startLine();
+				write(v);
+				isFirst = false;
+			}
+			_w.endLine().indentLess().startLine("]");
+		}
+	}
+
+	public void writeObject(JsonObject o) throws IOException {
+		if (o.size() == 0)
+			_w.print("{}");
+		else {
+			_w.endLine("{").indentMore();
+			boolean isFirst = true;
+			for (Entry<String, JsonValue> e : o.entrySet()) {
+				if (!isFirst)
+					_w.endLine(",");
+				_w.startLine("\"" + e.getKey() + "\": ");
+				write(e.getValue());
+				isFirst = false;
+			}
+			_w.endLine().indentLess().startLine("}");
+		}
+	}
+
+	private final IndentingWriter _w;
 }

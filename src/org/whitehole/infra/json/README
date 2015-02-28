@@ -1,1 +1,8 @@
-In JSR-353, JsonValues are immutable, which is too much restrictive.
+This library provides classes for representing JSON objects, and for 
+reading and writing them.
+
+It was initially a simple implementation of JSR-353, but it proved to be 
+too much restrictive (e.g. JsonValues are immutable), and its design and 
+naming were questionable (e.g. multiplication of interfaces and abstract 
+methods, saying "JsonGenerator" for an instantiation of the "builder"
+design pattern).
