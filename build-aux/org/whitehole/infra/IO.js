@@ -83,11 +83,10 @@ define('org/whitehole/infra/IO',
 
            var CodeWriter = Class.define(
                function() {
-                   this.head = new IndentingStringBuilder('    ');
-                   this.body = new IndentingStringBuilder('    ');
+                   this.head = new IndentingStringBuilder('\t');
+                   this.body = new IndentingStringBuilder('\t');
 
-                   this.ns = [];
-                   this.imports = {};
+                   this.imports = [];
                    this.isFirstEnumMember = [];
                },
                {
@@ -100,28 +99,29 @@ define('org/whitehole/infra/IO',
                    },
 
                    addImport: function (i) {
-                       if (!this.imports.hasOwnProperty(i)) {
-                           this.imports[i] = true;
-                           this.head.printLine('import ' + i + ';');
-                       }
+                       if (this.imports.indexOf(i) === -1)
+                           this.imports.push(i);
                        return this;
                    },
 
                    openNamespace: function (ns) {
-                       this.ns.push(ns);
                        this.head.printLine('package ' + ns + ';');
                        return this;
                    },
                    closeNamespace: function () {
-                       this.ns.pop();
                        return this;
                    },
                    
+                   // Structure
+                   
                    openClass: function (visibility, name, base) {
-                	   this.body.startLine(visibility + ' class ' + name + ' ');
+                	   this.body.startLine(visibility ? visibility + ' ' : '');
+                	   this.body.append('class ' + name + ' ');
                        if (base)
                            this.body.append('extends ' + base + ' ');
-                       return this.openBlock();
+                       this.openBlock();
+                       this.body.endLine();
+                       return this;
                    },
                    closeClass: function () {
                 	   return this.closeBlock();
@@ -136,7 +136,6 @@ define('org/whitehole/infra/IO',
                        this.body.endLine();
                        this.isFirstEnumMember.pop();
                        this.closeBlock();
-                       this.body.endLine();
                        return this;
                    },
                    addEnumMember: function (name, value) {
@@ -167,13 +166,16 @@ define('org/whitehole/infra/IO',
                        this.body.append(') ');
                        if (exs)
                     	   this.body.append(exs).append(' ');
-                       return this.openBlock();
+                       this.openBlock();
+                       return this;
                    },
                    closeFunction: function () {
                        this.closeBlock();
-                       this.body.printLine();
+                	   this.body.endLine();
                        return this;
                    },
+                   
+                   // Statements
                    
                    openIf: function (test) {
                        this.body.startLine("if (" + test + ") ");
@@ -238,8 +240,19 @@ define('org/whitehole/infra/IO',
                    },
 
                    toString: function () {
-                       return this.head.toString() + '\n' +
-                           this.body.toString();
+                	   var lastPrefix = '';
+                       if (0 < this.imports.length) {
+                    	   this.imports.sort();
+                    	   this.imports.forEach(function (i) {
+                    		   var prefix = i.split('.')[0];
+                    		   if (lastPrefix !== prefix) {
+                    			   this.head.endLine();
+                    			   lastPrefix = prefix;
+                    		   }
+                    		   this.head.printLine('import ' + i + ';');
+                    	   }, this);
+                       }
+                       return this.head.endLine().toString() + this.body.toString();
                    }
                },
                {
