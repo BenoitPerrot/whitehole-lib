@@ -222,7 +222,7 @@ class Prefixes {
 
 	//
 	// Reader
-	
+
 	public static Prefixes read(InputStream i, Disassembler.WorkingMode workingMode) throws IOException {
 		final Prefixes p = new Prefixes();
 
@@ -232,7 +232,7 @@ class Prefixes {
 			i.mark(1);
 			final int c = i.read();
 			switch (c) {
-				// Group 1
+			// Group 1
 				case 0xF0:
 					p.setLOCK(true);
 					break;

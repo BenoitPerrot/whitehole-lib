@@ -146,7 +146,7 @@ public class Image {
 	public SectionHeader findSectionHeaderByName(String name) {
 		return _h.findSectionHeaderByName(name);
 	}
-	
+
 	public Iterable<SectionHeader> getSectionHeaders() {
 		return _h.getSectionHeaders();
 	}

@@ -1,6 +1,5 @@
 package org.whitehole.infra.json;
 
-
 public class JsonException extends RuntimeException {
 
 	private static final long serialVersionUID = -1957349673491618346L;

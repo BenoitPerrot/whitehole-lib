@@ -97,7 +97,7 @@ public class ControlFlowGraphBuilder {
 			}
 
 			final HashMap<Graph.Edge, BranchReason> branchingReasons = new HashMap<>();
-			
+
 			for (final BasicBlock bb : basicBlocks.values()) {
 				final int v = basicBlockToVertex.get(bb);
 

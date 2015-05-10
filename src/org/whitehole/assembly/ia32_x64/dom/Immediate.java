@@ -32,7 +32,6 @@ package org.whitehole.assembly.ia32_x64.dom;
 
 import java.math.BigInteger;
 
-
 public class Immediate extends TypedOperand {
 
 	private final byte[] _littleEndianValue;

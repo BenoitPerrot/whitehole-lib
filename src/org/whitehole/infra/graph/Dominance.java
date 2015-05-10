@@ -99,21 +99,21 @@ public class Dominance {
 	}
 
 	public HashSet<Integer> getIteratedDominanceFrontier(int n) {
-	    final HashSet<Integer> iteratedDominanceFrontier = getDominanceFrontier(n);
+		final HashSet<Integer> iteratedDominanceFrontier = getDominanceFrontier(n);
 
 		final ArrayDeque<Integer> s = new ArrayDeque<Integer>();
 		s.addAll(iteratedDominanceFrontier);
 
 		while (0 < s.size()) {
-	    	final Integer e = s.pop();
-	    	HashSet<Integer> idfE = getDominanceFrontier(e);
-	    	for (Integer i : idfE)
-	    		if (!iteratedDominanceFrontier.contains(i)) {
+			final Integer e = s.pop();
+			HashSet<Integer> idfE = getDominanceFrontier(e);
+			for (Integer i : idfE)
+				if (!iteratedDominanceFrontier.contains(i)) {
 					s.push(i);
-	    			iteratedDominanceFrontier.add(i);
-	    		}
-	    }
-	    return iteratedDominanceFrontier;
+					iteratedDominanceFrontier.add(i);
+				}
+		}
+		return iteratedDominanceFrontier;
 	}
 
 	// Helpers <<
@@ -135,6 +135,7 @@ public class Dominance {
 		x.remove(i);
 		return i;
 	}
+
 	// >>
 
 	public static Graph.Default makeDominanceGraph(Graph g, int source) {

@@ -30,7 +30,6 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.whitehole.infra.json;
 
-
 public class JsonParsingException extends JsonException {
 
 	private static final long serialVersionUID = -8163636870882012806L;

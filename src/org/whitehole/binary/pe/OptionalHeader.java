@@ -36,11 +36,11 @@ public class OptionalHeader {
 
 	public OptionalHeader(LargeByteBuffer buffer, long start) {
 		long offset = start;
-		
+
 		// Read standard fields
 		_standardFields = OptionalHeaderStandardFields.read(buffer, offset);
 		offset += OptionalHeaderStandardFields.byteSize;
-		
+
 		// Read windows specific fields
 		MagicNumber.Valid mn = _standardFields.getMagic().toValid();
 		switch (mn) {

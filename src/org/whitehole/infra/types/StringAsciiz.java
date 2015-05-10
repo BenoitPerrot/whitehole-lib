@@ -2,7 +2,6 @@ package org.whitehole.infra.types;
 
 import org.whitehole.infra.io.LargeByteBuffer;
 
-
 public class StringAsciiz {
 
 	static public String read(LargeByteBuffer buffer, long offset) {

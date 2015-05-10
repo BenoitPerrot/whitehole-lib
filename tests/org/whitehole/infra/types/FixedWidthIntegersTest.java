@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 
 import org.junit.Test;
 
-
 public class FixedWidthIntegersTest {
 
 	private static byte[] readByteArray2(byte[] a, boolean isSigned) {

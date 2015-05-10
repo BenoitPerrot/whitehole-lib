@@ -74,6 +74,7 @@ public class DominanceTest {
 		g.makeEdge(vForTest, vE);
 
 		final TreeMap<Integer, String> labels = new TreeMap<Integer, String>() {
+
 			{
 				put(vA, "A: goto E");
 				put(vForInit, "i := 1");
