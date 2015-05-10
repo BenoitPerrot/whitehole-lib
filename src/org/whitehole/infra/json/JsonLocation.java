@@ -30,31 +30,22 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.whitehole.infra.json;
 
-public interface JsonLocation {
+public class JsonLocation {
 
-	public long getColumnNumber();
-
-	public long getLineNumber();
-
-	public class Impl implements JsonLocation {
-
-		public Impl(long columnNumber, long lineNumber) {
-			_columnNumber = columnNumber;
-			_lineNumber = lineNumber;
-		}
-
-		private final long _columnNumber;
-		private final long _lineNumber;
-
-		@Override
-		public long getColumnNumber() {
-			return _columnNumber;
-		}
-
-		@Override
-		public long getLineNumber() {
-			return _lineNumber;
-		}
-
+	public JsonLocation(long columnNumber, long lineNumber) {
+		_columnNumber = columnNumber;
+		_lineNumber = lineNumber;
 	}
+
+	private final long _columnNumber;
+	private final long _lineNumber;
+
+	public long getColumnNumber() {
+		return _columnNumber;
+	}
+
+	public long getLineNumber() {
+		return _lineNumber;
+	}
+
 }

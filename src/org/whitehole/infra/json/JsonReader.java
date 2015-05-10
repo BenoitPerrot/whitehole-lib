@@ -152,7 +152,7 @@ public class JsonReader implements Closeable {
 						return new Token(Token.Code.STRING, b.toString(), _currentLine, column);
 					}
 					else {
-						throw new JsonParsingException("unterminated string", new JsonLocation.Impl(column, _currentLine));
+						throw new JsonParsingException("unterminated string", new JsonLocation(column, _currentLine));
 					}
 				}
 				default: {
@@ -205,7 +205,7 @@ public class JsonReader implements Closeable {
 	static class Parser {
 
 		private void reportSyntaxError(Token t) throws JsonParsingException {
-			throw new JsonParsingException("syntax error on token " + "'" + t.word + "' (" + t.code.toString() + ")", new JsonLocation.Impl(t.column,
+			throw new JsonParsingException("syntax error on token " + "'" + t.word + "' (" + t.code.toString() + ")", new JsonLocation(t.column,
 					t.line));
 		}
 
