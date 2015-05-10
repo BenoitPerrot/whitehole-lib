@@ -1,8 +1,10 @@
 This library provides classes for representing JSON objects, and for 
 reading and writing them.
 
-It was initially a simple implementation of JSR-353, but it proved to be 
-too much restrictive (e.g. JsonValues are immutable), and its design and 
-naming were questionable (e.g. multiplication of interfaces and abstract 
-methods, saying "JsonGenerator" for an instantiation of the "builder"
-design pattern).
+It was initially an implementation of JSR-353, but the following flaws
+were identified:
+- JsonValues are immutable;
+- naming is questionable (e.g. "JsonGenerator", for an instantiation
+  of the "builder" design pattern);
+- it is over-designed: there are too many interfaces and abstract 
+  methods
