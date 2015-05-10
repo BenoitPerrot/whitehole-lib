@@ -35,23 +35,19 @@ import java.math.BigInteger;
 
 public class JsonNumber extends JsonValue {
 
-	private final BigDecimal _value;
+	private final Number _value;
 
-	public JsonNumber(BigDecimal value) {
+	public JsonNumber(Number value) {
 		super(ValueType.NUMBER);
 		_value = value;
 	}
 
 	public BigDecimal bigDecimalValue() {
-		return _value;
+		return (BigDecimal) _value;
 	}
 
 	public BigInteger bigIntegerValue() {
-		return _value.toBigInteger();
-	}
-
-	public BigInteger bigIntegerValueExact() {
-		return _value.toBigIntegerExact();
+		return (BigInteger) _value;
 	}
 
 	public double doubleValue() {
@@ -62,16 +58,8 @@ public class JsonNumber extends JsonValue {
 		return _value.intValue();
 	}
 
-	public int intValueExact() {
-		return _value.intValueExact();
-	}
-
 	public long longValue() {
 		return _value.longValue();
-	}
-
-	public long longValueExact() {
-		return _value.longValueExact();
 	}
 
 	public String toString() {

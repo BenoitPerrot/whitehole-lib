@@ -33,6 +33,7 @@ package org.whitehole.infra.json;
 import java.io.Closeable;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Stack;
 
 public interface JsonGenerator extends Closeable {
@@ -46,6 +47,8 @@ public interface JsonGenerator extends Closeable {
 	public JsonGenerator write(String value) throws JsonException;
 
 	public JsonGenerator write(String name, BigDecimal value) throws JsonException;
+
+	public JsonGenerator write(String name, BigInteger value) throws JsonException;
 
 	public JsonGenerator write(String name, boolean value) throws JsonException;
 
@@ -89,6 +92,11 @@ public interface JsonGenerator extends Closeable {
 
 		@Override
 		public JsonGenerator write(String name, BigDecimal value) {
+			return put(name, new JsonNumber(value));
+		}
+
+		@Override
+		public JsonGenerator write(String name, BigInteger value) {
 			return put(name, new JsonNumber(value));
 		}
 
@@ -258,6 +266,11 @@ public interface JsonGenerator extends Closeable {
 
 		@Override
 		public JsonGenerator write(String name, BigDecimal value) throws JsonException {
+			return writeEscapedValue(name, value.toString());
+		}
+
+		@Override
+		public JsonGenerator write(String name, BigInteger value) throws JsonException {
 			return writeEscapedValue(name, value.toString());
 		}
 
