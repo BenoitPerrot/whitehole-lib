@@ -18,7 +18,6 @@ public class MagicNumber {
 		public final int code;
 
 	}
-
 	public MagicNumber(ByteArray2 c) {
 		code = c;
 	}
@@ -37,10 +36,8 @@ public class MagicNumber {
 
 	public Valid toValid() {
 		switch (((code.getByte1() << 8) | code.getByte0()) & 0x0ffff) {
-			case 0x10b:
-				return Valid.PE32;
-			case 0x20b:
-				return Valid.PE32x;
+			case 0x10b: return Valid.PE32;
+			case 0x20b: return Valid.PE32x;
 			default: {
 				return null;
 			}

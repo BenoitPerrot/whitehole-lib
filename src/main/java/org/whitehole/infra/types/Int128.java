@@ -6,9 +6,7 @@ import java.math.BigInteger;
 public class Int128 extends ByteArray16 {
 
 	public static final Int128 ZERO = new Int128();
-	public static final Int128 ONE = new Int128((byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0,
-			(byte) 1);
-
+	public static final Int128 ONE = new Int128((byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 1);
 	public Int128(byte b15, byte b14, byte b13, byte b12, byte b11, byte b10, byte b9, byte b8, byte b7, byte b6, byte b5, byte b4, byte b3, byte b2, byte b1, byte b0) {
 		super(b15, b14, b13, b12, b11, b10, b9, b8, b7, b6, b5, b4, b3, b2, b1, b0);
 	}

@@ -3,24 +3,23 @@ package org.whitehole.infra.types;
 
 import java.math.BigInteger;
 
-public class UInt8 extends ByteArray1 {
+public class Int8 extends ByteArray1 {
 
-	public static final UInt8 ZERO = new UInt8();
-	public static final UInt8 ONE = new UInt8((byte) 1);
-
-	public UInt8(byte b0) {
+	public static final Int8 ZERO = new Int8();
+	public static final Int8 ONE = new Int8((byte) 1);
+	public Int8(byte b0) {
 		super(b0);
 	}
 
-	public UInt8() {
+	public Int8() {
 	}
 
-	public UInt8(ByteArray1 i) {
+	public Int8(ByteArray1 i) {
 		super(i);
 	}
 
 	public BigInteger toBigInteger() {
-		return new BigInteger(new byte[] { 0, getByte0() });
+		return new BigInteger(toByteArray(Endianness.BIG));
 	}
 
 	public long toLong() {

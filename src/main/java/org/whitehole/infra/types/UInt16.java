@@ -7,7 +7,6 @@ public class UInt16 extends ByteArray2 {
 
 	public static final UInt16 ZERO = new UInt16();
 	public static final UInt16 ONE = new UInt16((byte) 0, (byte) 1);
-
 	public UInt16(byte b1, byte b0) {
 		super(b1, b0);
 	}

@@ -7,7 +7,6 @@ public class Int16 extends ByteArray2 {
 
 	public static final Int16 ZERO = new Int16();
 	public static final Int16 ONE = new Int16((byte) 0, (byte) 1);
-
 	public Int16(byte b1, byte b0) {
 		super(b1, b0);
 	}

@@ -7,7 +7,6 @@ public class Int32 extends ByteArray4 {
 
 	public static final Int32 ZERO = new Int32();
 	public static final Int32 ONE = new Int32((byte) 0, (byte) 0, (byte) 0, (byte) 1);
-
 	public Int32(byte b3, byte b2, byte b1, byte b0) {
 		super(b3, b2, b1, b0);
 	}

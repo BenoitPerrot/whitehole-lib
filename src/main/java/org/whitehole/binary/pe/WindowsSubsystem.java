@@ -27,7 +27,6 @@ public class WindowsSubsystem {
 		public final int code;
 
 	}
-
 	public WindowsSubsystem(ByteArray2 c) {
 		code = c;
 	}
@@ -46,28 +45,17 @@ public class WindowsSubsystem {
 
 	public Valid toValid() {
 		switch (((code.getByte1() << 8) | code.getByte0()) & 0x0ffff) {
-			case 0x0:
-				return Valid.UNKNOWN;
-			case 0x1:
-				return Valid.NATIVE;
-			case 0x2:
-				return Valid.WINDOWS_GUI;
-			case 0x3:
-				return Valid.WINDOWS_CUI;
-			case 0x7:
-				return Valid.POSIX_CUI;
-			case 0x9:
-				return Valid.WINDOWS_CE_GUI;
-			case 0xa:
-				return Valid.EFI_APPLICATION;
-			case 0xb:
-				return Valid.EFI_BOOT_SERVICE_DRIVER;
-			case 0xc:
-				return Valid.EFI_RUNTIME_DRIVER;
-			case 0xd:
-				return Valid.EFI_ROM;
-			case 0xe:
-				return Valid.XBOX;
+			case 0x0: return Valid.UNKNOWN;
+			case 0x1: return Valid.NATIVE;
+			case 0x2: return Valid.WINDOWS_GUI;
+			case 0x3: return Valid.WINDOWS_CUI;
+			case 0x7: return Valid.POSIX_CUI;
+			case 0x9: return Valid.WINDOWS_CE_GUI;
+			case 0xa: return Valid.EFI_APPLICATION;
+			case 0xb: return Valid.EFI_BOOT_SERVICE_DRIVER;
+			case 0xc: return Valid.EFI_RUNTIME_DRIVER;
+			case 0xd: return Valid.EFI_ROM;
+			case 0xe: return Valid.XBOX;
 			default: {
 				return null;
 			}

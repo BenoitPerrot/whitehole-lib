@@ -7,7 +7,6 @@ public class UInt64 extends ByteArray8 {
 
 	public static final UInt64 ZERO = new UInt64();
 	public static final UInt64 ONE = new UInt64((byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 1);
-
 	public UInt64(byte b7, byte b6, byte b5, byte b4, byte b3, byte b2, byte b1, byte b0) {
 		super(b7, b6, b5, b4, b3, b2, b1, b0);
 	}

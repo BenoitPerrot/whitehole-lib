@@ -331,8 +331,7 @@ public class ByteArray16 {
 	}
 
 	public boolean equals(ByteArray16 rhs) {
-		return _b0 == rhs._b0 && _b1 == rhs._b1 && _b2 == rhs._b2 && _b3 == rhs._b3 && _b4 == rhs._b4 && _b5 == rhs._b5 && _b6 == rhs._b6 && _b7 == rhs._b7 && _b8 == rhs._b8 && _b9 == rhs._b9
-				&& _b10 == rhs._b10 && _b11 == rhs._b11 && _b12 == rhs._b12 && _b13 == rhs._b13 && _b14 == rhs._b14 && _b15 == rhs._b15;
+		return _b0 == rhs._b0 && _b1 == rhs._b1 && _b2 == rhs._b2 && _b3 == rhs._b3 && _b4 == rhs._b4 && _b5 == rhs._b5 && _b6 == rhs._b6 && _b7 == rhs._b7 && _b8 == rhs._b8 && _b9 == rhs._b9 && _b10 == rhs._b10 && _b11 == rhs._b11 && _b12 == rhs._b12 && _b13 == rhs._b13 && _b14 == rhs._b14 && _b15 == rhs._b15;
 	}
 
 	final byte _b15;

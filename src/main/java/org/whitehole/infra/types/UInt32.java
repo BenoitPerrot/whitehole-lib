@@ -7,7 +7,6 @@ public class UInt32 extends ByteArray4 {
 
 	public static final UInt32 ZERO = new UInt32();
 	public static final UInt32 ONE = new UInt32((byte) 0, (byte) 0, (byte) 0, (byte) 1);
-
 	public UInt32(byte b3, byte b2, byte b1, byte b0) {
 		super(b3, b2, b1, b0);
 	}
